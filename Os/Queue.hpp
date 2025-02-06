@@ -8,9 +8,9 @@
 #include <FpConfig.hpp>
 #include <Fw/Obj/ObjBase.hpp>
 #include <Fw/Types/Serializable.hpp>
+#include <Os/Mutex.hpp>
 #include <Os/Os.hpp>
 #include <Os/QueueString.hpp>
-#include <Os/Mutex.hpp>
 namespace Os {
 // Forward declaration for registry
 class QueueRegistry;
@@ -278,11 +278,11 @@ class Queue final : public QueueInterface {
     static Os::Mutex& getStaticMutex();
 
   private:
-    QueueString m_name;                           //!< queue name
-    FwSizeType m_depth;                           //!< Queue depth
-    FwSizeType m_size;                            //!< Maximum message size
-    static Os::Mutex s_countLock;                 //!< Lock the count
-    static FwSizeType s_queueCount;               //!< Count of the number of queues
+    QueueString m_name;              //!< queue name
+    FwSizeType m_depth;              //!< Queue depth
+    FwSizeType m_size;               //!< Maximum message size
+    static Os::Mutex s_countLock;    //!< Lock the count
+    static FwSizeType s_queueCount;  //!< Count of the number of queues
 
 #if FW_QUEUE_REGISTRATION
   public:
