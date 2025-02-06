@@ -31,6 +31,7 @@ class QueueInterface {
         OP_OK,             //!<  message sent/received okay
         ALREADY_CREATED,   //!<  creating an already created queue
         EMPTY,             //!<  If non-blocking, all the messages have been drained.
+        NULL_BUFFER,       //!<  Passed in buffer for send/receive is a nullptr.
         UNINITIALIZED,     //!<  Queue wasn't initialized successfully
         SIZE_MISMATCH,     //!<  attempted to send or receive with buffer too large, too small
         SEND_ERROR,        //!<  message send error
