@@ -108,3 +108,17 @@ set(UT_SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/test/ut/PosixRawTimeTests.cpp"
 )
 add_fprime_os_test(PosixRawTimeTest "${UT_SOURCE_FILES}" "Os_RawTime\;Os_RawTime_Posix")
+
+# -----------------------------------------
+### Os/Queue/Posix Test Section
+# -----------------------------------------
+set(UT_SOURCE_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/../test/ut/queue/CommonTests.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/../test/ut/queue/QueueRules.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/test/ut/PosixQueueTests.cpp"
+)
+add_fprime_os_test(PosixQueueTest "${UT_SOURCE_FILES}" "Os_Queue\;Os_Queue_Posix")
+
+if (TARGET PosixQueueTest)
+    target_include_directories(PosixQueueTest PRIVATE "${CMAKE_CURRENT_LIST_DIR}/test/ut")
+endif ()
