@@ -4,13 +4,19 @@
 // ======================================================================
 #ifndef OS_POSIX_QUEUE_HPP
 #define OS_POSIX_QUEUE_HPP
+#include <mqueue.h>
+#include <Fw/Types/String.hpp>
 #include "Os/Queue.hpp"
 
 namespace Os {
 namespace Posix {
 namespace Queue {
 
-struct PosixQueueHandle : public QueueHandle {};
+struct PosixQueueHandle : public QueueHandle {
+    const mqd_t INVALID_QUEUE = reinterpret_cast<mqd_t>(-1);
+    Fw::String m_queueName;
+    mqd_t m_queue = INVALID_QUEUE;
+};
 
 //! \brief posix queue implementation with injectable statuses
 class PosixQueue : public QueueInterface {
@@ -19,7 +25,7 @@ class PosixQueue : public QueueInterface {
     PosixQueue() = default;
 
     //! \brief default queue destructor
-    virtual ~PosixQueue() = default;
+    virtual ~PosixQueue() override;
 
     //! \brief copy constructor is forbidden
     PosixQueue(const QueueInterface& other) = delete;
