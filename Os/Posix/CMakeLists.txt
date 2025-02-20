@@ -29,6 +29,8 @@ register_os_implementation("Task" Posix Os_Posix_Shared Fw_Time)
 register_os_implementation("Mutex;ConditionVariable" Posix Os_Posix_Shared)
 register_os_implementation("RawTime" Posix Os_Posix_Shared)
 
+register_os_implementation("Queue" Posix)
+
 # -----------------------------------------
 ### Os/File/Posix Test Section
 # -----------------------------------------
