@@ -457,3 +457,29 @@ typedef FwSizeStoreType FwBuffSizeType;
 #endif
 
 #endif
+
+/**
+ *
+ * Additional platform configuration for F' targeting RTEMS on GR740
+ */
+
+
+// Force assertion of FW_PORT_SERIALIZATION to off
+#define FW_PORT_SERIALIZATION 0
+
+// Use PolyDB as needed for your system
+#define FW_OBJECT_TO_STRING 1
+#define FW_OBJECT_NAMES 1
+
+// Optional settings for resource-constrained systems
+// Uncomment these if you run into memory issues
+// #define FW_OBJECT_REGISTRATION 0
+// #define FW_PORT_TRACING 0
+
+// If using file system, set appropriate macros for RTEMS
+#define RTEMS_FS 1
+
+// Include the platform types
+#include <PlatformTypes.h>
+
+#endif // FPRIME_CONFIG_H
