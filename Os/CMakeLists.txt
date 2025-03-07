@@ -104,6 +104,7 @@ add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Posix")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Generic")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Linux")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Darwin")
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/RTEMS")
 
 # Basic source files used in every OSAL layer.  Contains common code and helpers.
 set(SOURCE_FILES

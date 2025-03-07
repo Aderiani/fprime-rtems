@@ -1,0 +1,13 @@
+// ======================================================================
+// \title Os/RTEMS/DefaultConsole.cpp
+// \brief sets default Os::Console to RTEMS implementation via linker
+// ======================================================================
+#include "Os/Console.hpp"
+#include "Os/RTEMS/Console.hpp"
+#include "Os/Delegate.hpp"
+
+namespace Os {
+ConsoleInterface* ConsoleInterface::getDelegate(ConsoleHandleStorage& aligned_new_memory) {
+    return Os::Delegate::makeDelegate<ConsoleInterface, Os::RTEMS::Console::RtemsConsole>(aligned_new_memory);
+}
+}
