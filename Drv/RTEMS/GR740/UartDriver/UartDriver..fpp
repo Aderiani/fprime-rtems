@@ -1,56 +1,49 @@
 module Drv {
 
-  @ A GPIO driver for the GR740 board
-  passive component GR740GpioDriver {
+  @ A driver component for GR740 UART controller
+  active component GR740UartDriver {
 
     # ----------------------------------------------------------------------
     # General ports
     # ----------------------------------------------------------------------
 
-    include "../../../Interfaces/GpioInterface.fppi"
+    @ Byte stream driver model input
+    async input port drvDataIn: Drv.ByteStreamSend
+
+    @ Byte stream driver model output
+    output port drvDataOut: Drv.ByteStreamRecv
+    
+    @ Port indicating the driver is ready to receive data
+    output port ready: Drv.ByteStreamReady
 
     # ----------------------------------------------------------------------
     # Special ports
     # ----------------------------------------------------------------------
 
-    @ Event port
     event port Log
 
-    @ Text event port
     text event port LogText
 
-    @ Time get port
     time get port Time
 
     # ----------------------------------------------------------------------
     # Events
     # ----------------------------------------------------------------------
-    
-    @ Error setting GPIO direction
-    event DirectionError(
-                         gpio: U32 @< The GPIO number
-                         direction: I32 @< The direction requested
-                         error: I32 @< The error code
-                        ) \
-      severity warning high \
-      format "Failed to set GPIO {}: direction {} error {}"
+    event UartInitSuccess(device: U32) severity diagnostic format "GR740 UART{} driver initialized successfully"
 
-    @ Error reading GPIO value
-    event ReadError(
-                    gpio: U32 @< The GPIO number
-                    error: I32 @< The error code
-                   ) \
-      severity warning high \
-      format "Failed to read GPIO {}: error {}"
+    event UartInitError(device: U32, error: I32) severity warning high format "Failed to initialize GR740 UART{} driver with error code {}"
 
-    @ Error writing GPIO value
-    event WriteError(
-                     gpio: U32 @< The GPIO number
-                     value: Fw.Logic @< The value being written
-                     error: I32 @< The error code
-                    ) \
-      severity warning high \
-      format "Failed to write GPIO {}: value {} error {}"
+    event UartConfigSuccess(device: U32, baud: U32) severity diagnostic format "Successfully configured UART{} with baud rate {}"
+
+    event UartConfigError(device: U32, error: I32) severity warning high format "Failed to configure UART{} with error code {}"
+
+    event UartSendSuccess(device: U32, bytes: U32) severity diagnostic format "Successfully sent {} bytes on UART{}"
+
+    event UartSendError(device: U32, error: I32) severity warning high format "UART{} send failed with error code {}"
+
+    event UartRecvSuccess(device: U32, bytes: U32) severity diagnostic format "Successfully received {} bytes on UART{}"
+
+    event UartRecvError(device: U32, error: I32) severity warning high format "UART{} receive failed with error code {}"
 
   }
 

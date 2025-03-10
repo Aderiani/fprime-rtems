@@ -5,14 +5,21 @@
 # MOD_DEPS: (optional) module dependencies
 #
 ####
+
+# Only build for RTEMS platform
+if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
+    return()
+endif()
+
 set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/GR740GpioDriver.fpp"
-  "${CMAKE_CURRENT_LIST_DIR}/GR740GpioDriver.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/UartDriver.fpp"
+  "${CMAKE_CURRENT_LIST_DIR}/UartDriver.cpp"
 )
 
+# Dependencies
 set(MOD_DEPS
-  Fw/Types
-  Fw/Log
+  Fw/Logger
+  Drv/ByteStreamDriverModel
   Os
 )
 

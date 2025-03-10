@@ -1,79 +1,94 @@
 // ======================================================================
-// \title  GR740GpioDriver.hpp
-// \author Your Name
-// \brief  hpp file for GR740GpioDriver component implementation class
+// \title  SpiDriver.hpp
+// \author fprime-community
+// \brief  hpp file for GR740SpiDriver component implementation class
 //
 // \copyright
-// Copyright (C) 2023 YourCompany
-// ALL RIGHTS RESERVED
+// Copyright (C) 2024 fprime-community
+// ALL RIGHTS RESERVED.
 //
 // ======================================================================
 
-#ifndef DRV_GR740_GPIO_DRIVER_HPP
-#define DRV_GR740_GPIO_DRIVER_HPP
+#ifndef DRV_GR740_SPI_DRIVER_HPP
+#define DRV_GR740_SPI_DRIVER_HPP
 
-#include "Drv/GR740/GPIO/GR740GpioDriverComponentAc.hpp"
+#include <Drv/RTEMS/GR740/SpiDriver/SpiDriverComponentAc.hpp>
+#include <Drv/RTEMS/include/DriverCommon.hpp>
+
+// GRLIB SPICTRL driver includes
+#include <grlib/spictrl.h>
 
 namespace Drv {
 
-  class GR740GpioDriver final :
-    public GR740GpioDriverComponentBase
-  {
+  class GR740SpiDriver final : public GR740SpiDriverComponentBase {
+  public:
+    // ----------------------------------------------------------------------
+    // Construction, initialization, and destruction
+    // ----------------------------------------------------------------------
 
-    public:
+    //! Construct object GR740SpiDriver
+    //!
+    GR740SpiDriver(
+        const char* const compName /*!< The component name*/
+    );
 
-      // ----------------------------------------------------------------------
-      // Construction, initialization, and destruction
-      // ----------------------------------------------------------------------
+    //! Destroy object GR740SpiDriver
+    //!
+    ~GR740SpiDriver();
 
-      //! Construct object GR740GpioDriver
-      //!
-      GR740GpioDriver(
-          const char *const compName /*!< The component name*/
-      );
+    // ----------------------------------------------------------------------
+    // SPI configuration types
+    // ----------------------------------------------------------------------
+    
+    struct SpiDeviceConfiguration {
+      U32 frequency;           //!< SPI clock frequency in Hz
+      U8 mode;                 //!< SPI mode (0-3)
+      U8 bitsPerWord;          //!< Bits per word (typically 8)
+      bool lsbFirst;           //!< LSB first (true) or MSB first (false)
+      bool chipSelectActive;   //!< CS active high (true) or low (false)
+    };
 
-      //! Destroy object GR740GpioDriver
-      //!
-      ~GR740GpioDriver();
+    //! \brief Initialize the SPI driver
+    //!
+    //! This function initializes the SPI driver by finding the SPICTRL device
+    //! in the system and setting up the driver.
+    //!
+    //! \param instance The instance number of the SPICTRL device (default: 0)
+    //! \return true if initialization was successful, false otherwise
+    bool initialize(NATIVE_INT_TYPE instance = 0);
 
-      //! Configure GPIO pin
-      //!
-      //! \param gpio: GPIO pin number
-      //! \param direction: 0 for input, 1 for output
-      //! \return Status of configuration
-      Drv::GpioStatus configure(
-          const U32 gpio, /*!< The GPIO number */
-          const U32 direction /*!< 0 for input, 1 for output */
-      );
+    //! \brief Configure an SPI device
+    //!
+    //! \param device SPI device number
+    //! \param config SPI device configuration
+    //! \return true if configuration was successful, false otherwise
+    bool configureDevice(
+      NATIVE_UINT_TYPE device,
+      const SpiDeviceConfiguration& config
+    );
 
-    PRIVATE:
+  PRIVATE:
+    // ----------------------------------------------------------------------
+    // Handler implementations for user-defined typed input ports
+    // ----------------------------------------------------------------------
 
-      // ----------------------------------------------------------------------
-      // Handler implementations for user-defined typed input ports
-      // ----------------------------------------------------------------------
+    //! Handler implementation for spiIn
+    //!
+    void spiIn_handler(
+        const FwIndexType portNum, /*!< The port number*/
+        Drv::SpiStatus &status,
+        Fw::Buffer &recvBuffer,
+        const Fw::Buffer &sendBuffer
+    ) override;
 
-      //! Handler implementation for gpioRead
-      //!
-      Drv::GpioStatus gpioRead_handler(
-          const FwIndexType portNum, /*!< The port number*/
-          Fw::Logic& state
-      );
-
-      //! Handler implementation for gpioWrite
-      //!
-      Drv::GpioStatus gpioWrite_handler(
-          const FwIndexType portNum, /*!< The port number*/
-          const Fw::Logic& state
-      );
-
-    PRIVATE:
-
-      // ----------------------------------------------------------------------
-      // Private member variables
-      // ----------------------------------------------------------------------
-
-      U32 m_gpio; //!< GPIO pin number
-      U32 m_direction; //!< GPIO direction (0=input, 1=output)
+    // ----------------------------------------------------------------------
+    // Member variables
+    // ----------------------------------------------------------------------
+    struct drvmgr_dev* m_spiDevice;       //!< SPICTRL device pointer
+    struct spictrl_regs* m_spiRegs;       //!< SPICTRL register structure
+    bool m_initialized;                    //!< Initialization flag
+    U32 m_currentDevice;                   //!< Currently selected device
+    SpiDeviceConfiguration m_deviceConfigs[4]; //!< Configuration for up to 4 SPI devices
   };
 
 } // end namespace Drv

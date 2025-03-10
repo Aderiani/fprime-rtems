@@ -1,56 +1,34 @@
 module Drv {
 
-  @ A GPIO driver for the GR740 board
-  passive component GR740GpioDriver {
+  @ A driver component for GR740 SPI controller
+  passive component GR740SpiDriver {
 
-    # ----------------------------------------------------------------------
-    # General ports
-    # ----------------------------------------------------------------------
-
-    include "../../../Interfaces/GpioInterface.fppi"
+    include "../../../Interfaces/SpiInterface.fppi"
 
     # ----------------------------------------------------------------------
     # Special ports
     # ----------------------------------------------------------------------
 
-    @ Event port
     event port Log
 
-    @ Text event port
     text event port LogText
 
-    @ Time get port
     time get port Time
 
     # ----------------------------------------------------------------------
     # Events
     # ----------------------------------------------------------------------
-    
-    @ Error setting GPIO direction
-    event DirectionError(
-                         gpio: U32 @< The GPIO number
-                         direction: I32 @< The direction requested
-                         error: I32 @< The error code
-                        ) \
-      severity warning high \
-      format "Failed to set GPIO {}: direction {} error {}"
+    event SpiInitSuccess() severity diagnostic format "GR740 SPI driver initialized successfully"
 
-    @ Error reading GPIO value
-    event ReadError(
-                    gpio: U32 @< The GPIO number
-                    error: I32 @< The error code
-                   ) \
-      severity warning high \
-      format "Failed to read GPIO {}: error {}"
+    event SpiInitError(error: I32) severity warning high format "Failed to initialize GR740 SPI driver with error code {}"
 
-    @ Error writing GPIO value
-    event WriteError(
-                     gpio: U32 @< The GPIO number
-                     value: Fw.Logic @< The value being written
-                     error: I32 @< The error code
-                    ) \
-      severity warning high \
-      format "Failed to write GPIO {}: value {} error {}"
+    event SpiConfigureSuccess(device: U32) severity diagnostic format "Successfully configured SPI device {}"
+
+    event SpiConfigureError(device: U32, error: I32) severity warning high format "Failed to configure SPI device {} with error code {}"
+
+    event SpiTransferSuccess(device: U32, bytes: U32) severity diagnostic format "Successfully transferred {} bytes on SPI device {}"
+
+    event SpiTransferError(device: U32, error: I32) severity warning high format "SPI transfer failed on device {} with error code {}"
 
   }
 
