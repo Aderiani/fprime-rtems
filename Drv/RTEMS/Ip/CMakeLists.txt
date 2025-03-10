@@ -14,6 +14,10 @@ endif()
 set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/RtemsTcpServerAdapter.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/RtemsTcpClientAdapter.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/RtemsUdpAdapter.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/DefaultTcpServerAdapter.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/DefaultTcpClientAdapter.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/DefaultUdpAdapter.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/GR740NetworkInit.cpp"
 )
 
@@ -28,3 +32,4 @@ register_fprime_module()
 # Register the RTEMS IP implementations
 register_fprime_implementation("Drv_TcpServer" "Drv_TcpServer_RTEMS")
 register_fprime_implementation("Drv_TcpClient" "Drv_TcpClient_RTEMS")
+register_fprime_implementation("Drv_Udp" "Drv_Udp_RTEMS")
