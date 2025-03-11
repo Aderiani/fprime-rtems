@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "../../../rtems"
+		},
+		{
+			"path": "../../fprime-rtems"
+		},
+		{
+			"path": "../../fprime-rtems-poc"
+		},
+		{
+			"path": "../../fprime-vxworks"
+		},
+		{
+			"path": "../../fprime-vxworks-reference"
+		},
+		{
+			"path": ".."
+		}
+	],
+	"settings": {}
+}

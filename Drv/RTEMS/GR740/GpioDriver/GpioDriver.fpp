@@ -3,7 +3,18 @@ module Drv {
   @ A driver component for GR740 GPIO controller
   passive component GR740GpioDriver {
 
-    include "../../../Interfaces/GpioInterface.fppi"
+    # ----------------------------------------------------------------------
+    # Gpio interface ports
+    # ----------------------------------------------------------------------
+    
+    @ Read a value from GPIO
+    sync input port gpioRead: [3] Drv.GpioRead
+    
+    @ Write a value to GPIO
+    sync input port gpioWrite: [3] Drv.GpioWrite
+    
+    @ GPIO interrupt notification
+    output port gpioInterrupt: [3] Svc.Cycle
 
     # ----------------------------------------------------------------------
     # Special ports

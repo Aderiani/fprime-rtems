@@ -8,11 +8,12 @@ include_guard()
 set(CMAKE_SYSTEM_NAME         RTEMS)
 set(CMAKE_SYSTEM_VERSION      5)
 set(CMAKE_SYSTEM_PROCESSOR    sparc)
+set(FPRIME_PLATFORM           RTEMS)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE
     "STATIC_LIBRARY"
     CACHE STRING "Try Static Lib Type" FORCE)
 
-# Adapt the path to your specific RTEMS installation
+# Path to your RTEMS installation
 set(TOOLCHAIN_PATH "/opt/rtems/rcc-1.3.2-gcc" CACHE PATH "Toolchain path")
 set(RTEMS_BSP "gr740_smp" CACHE STRING "RTEMS BSP")
 

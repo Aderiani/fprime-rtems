@@ -58,9 +58,6 @@ function(add_fprime_supplied_os_module NAMES SUFFIX)
         if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/${NAME}.cpp")
             message(FATAL_ERROR "${CMAKE_CURRENT_LIST_DIR}/${NAME}.cpp does not exist.")
         endif()
-        if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/${NAME}.hpp")
-            message(FATAL_ERROR "${CMAKE_CURRENT_LIST_DIR}/${NAME}.hpp does not exist.")
-        endif()
     endforeach()
 
     # Setup variables

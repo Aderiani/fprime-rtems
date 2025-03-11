@@ -20,6 +20,7 @@ set(SOURCE_FILES
 set(MOD_DEPS
   Fw/Logger
   Os
+  Drv/Interfaces  # Make sure this directory exists with GpioInterface.fppi
 )
 
 register_fprime_module()

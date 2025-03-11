@@ -1,86 +1,110 @@
+# File: Os/RTEMS/CMakeLists.txt
+
 ####
 # F prime CMakeLists.txt for Os/RTEMS:
 #
-# OS implementation for RTEMS on GR740
+# OS implementation for RTEMS
 ####
 restrict_platforms(RTEMS)
 add_custom_target("${FPRIME_CURRENT_MODULE}")
 
-# Register the various RTEMS implementations of OS APIs
-register_os_implementation(Task RTEMS)
-register_os_implementation(Mutex RTEMS)
-register_os_implementation(Queue RTEMS)
-register_os_implementation(RawTime RTEMS)
-register_os_implementation(File RTEMS)
-register_os_implementation(Directory RTEMS)
-register_os_implementation(Cpu RTEMS)
-register_os_implementation(Memory RTEMS)
-register_os_implementation(Console RTEMS)
+# Only register implementations if not already registered
+# This helps avoid duplicate target errors
+set(IMPLEMENTATIONS_NEEDED)
+function(check_and_add_implementation IMPL)
+    get_property(ALREADY_REGISTERED GLOBAL PROPERTY "${IMPL}_REGISTERED" SET)
+    if (NOT ALREADY_REGISTERED)
+        list(APPEND IMPLEMENTATIONS_NEEDED ${IMPL})
+        set_property(GLOBAL PROPERTY "${IMPL}_REGISTERED" TRUE)
+    endif()
+endfunction()
 
+# Check which implementations to register
+check_and_add_implementation(Task)
+check_and_add_implementation(Mutex)
+check_and_add_implementation(Queue)
+check_and_add_implementation(RawTime)
+check_and_add_implementation(File)
+check_and_add_implementation(FileSystem)
+check_and_add_implementation(Directory)
+check_and_add_implementation(Cpu)
+check_and_add_implementation(Memory)
+check_and_add_implementation(Console)
 
-# Set the source files for each implementation
-set(TASK_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Task.cpp"
-)
+# Only register implementations if needed
+foreach(IMPL IN LISTS IMPLEMENTATIONS_NEEDED)
+    register_os_implementation(${IMPL} RTEMS)
+endforeach()
 
-set(MUTEX_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp"
-)
+# Set source files for each implementation only if implementations are needed
+if (NOT "Task" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(TASK_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/Task.cpp"
+    )
+    add_library(Os_Task_RTEMS STATIC ${TASK_SOURCE_FILES})
+    target_link_libraries(Os_Task_RTEMS PUBLIC Fw_Types)
+endif()
 
-set(QUEUE_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Queue.cpp"
-)
+if (NOT "Mutex" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(MUTEX_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp"
+    )
+    add_library(Os_Mutex_RTEMS STATIC ${MUTEX_SOURCE_FILES})
+    target_link_libraries(Os_Mutex_RTEMS PUBLIC Fw_Types)
+endif()
 
-set(FILE_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/File.cpp"
-)
+if (NOT "Queue" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(QUEUE_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/Queue.cpp"
+    )
+    add_library(Os_Queue_RTEMS STATIC ${QUEUE_SOURCE_FILES})
+    target_link_libraries(Os_Queue_RTEMS PUBLIC Fw_Types)
+endif()
 
-set(DIRECTORY_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Directory.cpp"
-)
+if (NOT "File" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(FILE_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/File.cpp"
+    )
+    add_library(Os_File_RTEMS STATIC ${FILE_SOURCE_FILES})
+    target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
+endif()
 
-# Set the source files for the CPU implementation
-set(CPU_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Cpu.cpp"
-)
+if (NOT "Directory" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(DIRECTORY_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/Directory.cpp"
+    )
+    add_library(Os_Directory_RTEMS STATIC ${DIRECTORY_SOURCE_FILES})
+    target_link_libraries(Os_Directory_RTEMS PUBLIC Fw_Types)
+endif()
 
-# Set the source files for the Memory implementation
-set(MEMORY_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Memory.cpp"
-)
+if (NOT "Cpu" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(CPU_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/Cpu.cpp"
+    )
+    add_library(Os_Cpu_RTEMS STATIC ${CPU_SOURCE_FILES})
+    target_link_libraries(Os_Cpu_RTEMS PUBLIC Fw_Types)
+endif()
 
-# Set the source files for the Console implementation
-set(CONSOLE_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
-)
+if (NOT "Memory" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(MEMORY_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/Memory.cpp"
+    )
+    add_library(Os_Memory_RTEMS STATIC ${MEMORY_SOURCE_FILES})
+    target_link_libraries(Os_Memory_RTEMS PUBLIC Fw_Types)
+endif()
 
-# Set the source files for the RawTime implementation
-set(RAWTIME_SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/RawTime.cpp"
-)
+if (NOT "Console" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(CONSOLE_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
+    )
+    add_library(Os_Console_RTEMS STATIC ${CONSOLE_SOURCE_FILES})
+    target_link_libraries(Os_Console_RTEMS PUBLIC Fw_Types)
+endif()
 
-
-
-# Create targets for each implementation
-add_library(Os_Task_RTEMS STATIC ${TASK_SOURCE_FILES})
-add_library(Os_Mutex_RTEMS STATIC ${MUTEX_SOURCE_FILES})
-add_library(Os_Queue_RTEMS STATIC ${QUEUE_SOURCE_FILES})
-add_library(Os_File_RTEMS STATIC ${FILE_SOURCE_FILES})
-add_library(Os_Directory_RTEMS STATIC ${DIRECTORY_SOURCE_FILES})
-add_library(Os_Cpu_RTEMS STATIC ${CPU_SOURCE_FILES})
-add_library(Os_Memory_RTEMS STATIC ${MEMORY_SOURCE_FILES})
-add_library(Os_Console_RTEMS STATIC ${CONSOLE_SOURCE_FILES})
-add_library(Os_RawTime_RTEMS STATIC ${RAWTIME_SOURCE_FILES})
-
-
-# Create dependencies and linking
-target_link_libraries(Os_Task_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_Mutex_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_Queue_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_IntervalTimer_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_Directory_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_Cpu_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_Memory_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_Console_RTEMS PUBLIC Fw_Types)
-target_link_libraries(Os_RawTime_RTEMS PUBLIC Fw_Types)
+if (NOT "RawTime" IN_LIST IMPLEMENTATIONS_NEEDED)
+    set(RAWTIME_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/RawTime.cpp"
+    )
+    add_library(Os_RawTime_RTEMS STATIC ${RAWTIME_SOURCE_FILES})
+    target_link_libraries(Os_RawTime_RTEMS PUBLIC Fw_Types)
+endif()

@@ -12,6 +12,9 @@ endif()
 
 message(STATUS "Building RTEMS drivers for F´")
 
+# Add the IP (networking) directory
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Ip/")
+
 # Add the GR740 drivers
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/GR740/")
 

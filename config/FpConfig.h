@@ -199,13 +199,14 @@ typedef FwIndexType FwQueueSizeType;
 #define FW_PORT_TRACING 1  //!< Indicates whether port calls are traced (more code, more visibility into execution)
 #endif
 
-// This generates code to connect to serialized ports
-#ifndef FW_PORT_SERIALIZATION
-#define FW_PORT_SERIALIZATION \
-    1  //!< Indicates whether there is code in ports to serialize the call (more code, but ability to serialize calls
-       //!< for multi-note systems)
-#endif
-
+/*
+// // This generates code to connect to serialized ports
+// #ifndef FW_PORT_SERIALIZATION
+// #define FW_PORT_SERIALIZATION \
+//     1  //!< Indicates whether there is code in ports to serialize the call (more code, but ability to serialize calls
+//        //!< for multi-note systems)
+// #endif
+*/
 // Component Facilities
 
 // Serialization
@@ -464,17 +465,16 @@ typedef FwSizeStoreType FwBuffSizeType;
  */
 
 
-// Force assertion of FW_PORT_SERIALIZATION to off
-#define FW_PORT_SERIALIZATION 0
+
 
 // Use PolyDB as needed for your system
 #define FW_OBJECT_TO_STRING 1
 #define FW_OBJECT_NAMES 1
 
-// Optional settings for resource-constrained systems
-// Uncomment these if you run into memory issues
-// #define FW_OBJECT_REGISTRATION 0
-// #define FW_PORT_TRACING 0
+#ifdef TGT_OS_TYPE_RTEMS
+#undef FW_PORT_SERIALIZATION
+#define FW_PORT_SERIALIZATION 0
+#endif
 
 // If using file system, set appropriate macros for RTEMS
 #define RTEMS_FS 1
@@ -482,4 +482,4 @@ typedef FwSizeStoreType FwBuffSizeType;
 // Include the platform types
 #include <PlatformTypes.h>
 
-#endif // FPRIME_CONFIG_H
+
