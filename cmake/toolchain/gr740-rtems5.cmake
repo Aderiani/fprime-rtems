@@ -5,10 +5,15 @@
 #
 ####
 include_guard()
-set(CMAKE_SYSTEM_NAME         RTEMS)
+set(CMAKE_SYSTEM_NAME         "RTEMS")
 set(CMAKE_SYSTEM_VERSION      5)
 set(CMAKE_SYSTEM_PROCESSOR    sparc)
 set(FPRIME_PLATFORM           RTEMS)
+
+add_definitions(-DCMAKE_SYSTEM_NAME_RTEMS=1)
+add_definitions(-DTGT_OS_TYPE_RTEMS=1)
+
+
 set(CMAKE_TRY_COMPILE_TARGET_TYPE
     "STATIC_LIBRARY"
     CACHE STRING "Try Static Lib Type" FORCE)
@@ -40,12 +45,12 @@ set(CMAKE_STRIP        "${TOOLCHAIN_PATH}/bin/${CROSS_PREFIX}-strip${CROSS_SUFFI
 set(CMAKE_SIZE         "${TOOLCHAIN_PATH}/bin/${CROSS_PREFIX}-size${CROSS_SUFFIX}"    CACHE PATH "size"       FORCE)
 set(CMAKE_RANLIB       "${TOOLCHAIN_PATH}/bin/${CROSS_PREFIX}-ranlib${CROSS_SUFFIX}"  CACHE PATH "ranlib"     FORCE)
 
-# GR740-specific flags - adjusted for your CPU
+# GR740-specific flags
 set(ISA_FLAG "-mcpu=leon3")
 set(COMMON_FLAGS "-g ${ISA_FLAG}")
 
 # Define compile flags
-set(DEF_FLAGS "")
+set(DEF_FLAGS "-DTGT_OS_TYPE_RTEMS")
 set(C_CXX_FLAGS "-O2 -ffunction-sections -fdata-sections -Wall")
 
 set(C_FLAGS "-Wmissing-prototypes -Wimplicit-function-declaration -Wstrict-prototypes -Wnested-externs")

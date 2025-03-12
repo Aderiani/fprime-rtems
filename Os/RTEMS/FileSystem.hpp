@@ -1,41 +1,46 @@
-#ifndef _Os_RTEMS_FileSystem_hpp_
-#define _Os_RTEMS_FileSystem_hpp_
+// ======================================================================
+// \title Os/RTEMS/FileSystem.hpp
+// \brief RTEMS implementation for Os::FileSystem
+// ======================================================================
+#ifndef OS_RTEMS_FILESYSTEM_HPP
+#define OS_RTEMS_FILESYSTEM_HPP
 
-#include <FpConfig.hpp>
-#include <Fw/Types/BasicTypes.hpp>
-#include <Fw/Types/StringBase.hpp>
+#include <Os/FileSystem.hpp>
 
 namespace Os {
+namespace RTEMS {
+namespace FileSystem {
 
-    class FileSystem {
-        public:
-            enum Status {
-                OP_OK,               //!< Operation successful
-                ALREADY_EXISTS,      //!< File or directory already exists
-                NO_SPACE,            //!< No space left
-                NO_PERMISSION,       //!< No permission
-                NOT_DIR,             //!< Not a directory
-                IS_DIR,              //!< Is a directory
-                NOT_EMPTY,           //!< Directory not empty
-                INVALID_PATH,        //!< Invalid path
-                DOESNT_EXIST,        //!< File or directory doesn't exist
-                FILE_LIMIT,          //!< Too many files open
-                BUSY,                //!< Resource busy
-                NO_MORE_FILES,       //!< No more files
-                BUFFER_TOO_SMALL,    //!< Buffer too small
-                EXDEV_ERROR,         //!< Cross-device error
-                OVERFLOW_ERROR,      //!< Overflow error
-                NOT_SUPPORTED,       //!< Operation not supported
-                OTHER_ERROR          //!< Other error
-            };
+struct RtemsFileSystemHandle : public FileSystemHandle {
+};
 
-            // Static methods for file system operations
-            static Status createDirectory(const Fw::StringBase& path);
-            static Status removeDirectory(const Fw::StringBase& path);
-            static Status removeFile(const Fw::StringBase& path);
-            static Status moveFile(const Fw::StringBase& source, const Fw::StringBase& target);
-            static Status handleFileError(int errorNumber);
-    };
-}
+class RtemsFileSystem : public FileSystemInterface {
+  public:
+    RtemsFileSystem() = default;
+    ~RtemsFileSystem() override = default;
 
-#endif // _Os_RTEMS_FileSystem_hpp_
+    Status createDirectory(const char* path) override;
+    Status removeDirectory(const char* path) override;
+    Status removeFile(const char* path) override;
+    Status moveFile(const char* file1, const char* file2) override;
+    Status copyFile(const char* file1, const char* file2) override;
+    Status getFileSize(const char* path, PlatformSizeType& size) override;
+    Status changeWorkingDirectory(const char* path) override;
+    Status getWorkingDirectory(char* path, PlatformSizeType pathSize) override;
+    Status exists(const char* path, bool& doesExist) override;
+    Status getInfo(const char* path, Info* info) override;
+    Status appendPath(const char* basePath, const char* subsPath, char* fullPath, PlatformSizeType fullPathSize) override;
+    Status getFileCount(const char* path, PlatformSizeType& fileCount) override;
+    Status getFreeSpace(const char* path, PlatformSizeType& freeSpace, PlatformSizeType& totalSpace) override;
+
+    FileSystemHandle* getHandle() override;
+
+  private:
+    static RtemsFileSystemHandle s_handle;
+};
+
+} // namespace FileSystem
+} // namespace RTEMS
+} // namespace Os
+
+#endif // OS_RTEMS_FILESYSTEM_HPP

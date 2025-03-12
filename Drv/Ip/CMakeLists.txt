@@ -1,63 +1,52 @@
 ####
-# F prime CMakeLists.txt for RTEMS IP implementations
+# F prime CMakeLists.txt:
+#
+# SOURCE_FILES: combined list of source and autocoding files
+# MOD_DEPS: (optional) module dependencies
+#
 ####
+restrict_platforms(Posix SOCKETS)
 
-# Only build for RTEMS platform
-if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
-    return()
+set(SOURCE_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/IpSocket.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/TcpClientSocket.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/TcpServerSocket.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/UdpSocket.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/SocketComponentHelper.cpp"
+)
+
+set(MOD_DEPS
+    Os
+    Fw/Buffer
+)
+
+register_fprime_module()
+
+# The PortSelector library and testing helper is only needed on Testing build
+if (BUILD_TESTING)
+    add_library(SocketTestHelper STATIC
+        "${CMAKE_CURRENT_LIST_DIR}/test/ut/PortSelector.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/test/ut/SocketTestHelper.cpp")
+    target_include_directories(SocketTestHelper PUBLIC
+            "${FPRIME_FRAMEWORK_PATH}/STest"
+            "${FPRIME_FRAMEWORK_PATH}/googletest/googletest/include"
+    )
+    add_dependencies(SocketTestHelper STest Fw_Buffer)
+    target_link_libraries(SocketTestHelper STest Fw_Buffer)
 endif()
 
-# Define source files for server
-set(TCP_SERVER_SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/RtemsTcpServerAdapter.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/DefaultTcpServerAdapter.cpp"
+set(UT_MOD_DEPS
+    SocketTestHelper
 )
 
-# Define source files for client
-set(TCP_CLIENT_SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/RtemsTcpClientAdapter.cpp" 
-  "${CMAKE_CURRENT_LIST_DIR}/DefaultTcpClientAdapter.cpp"
+### UTs ###
+set(UT_SOURCE_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/test/ut/TestTcp.cpp"
 )
+register_fprime_ut("Drv_Ip_Tcp_test")
 
-# Define source files for UDP
-set(UDP_SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/RtemsUdpAdapter.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/DefaultUdpAdapter.cpp"
+set(UT_SOURCE_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/test/ut/TestUdp.cpp"
 )
+register_fprime_ut("Drv_Ip_Udp_test")
 
-# Network initialization
-set(NETWORK_SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/GR740NetworkInit.cpp"
-)
-
-# Common dependencies
-set(IP_MOD_DEPS
-  Fw/Logger
-  Drv/Ip
-)
-
-# Create the individual modules first
-set(SOURCE_FILES ${TCP_SERVER_SOURCE_FILES})
-set(MOD_DEPS ${IP_MOD_DEPS})
-set(MODULE_NAME "Drv_TcpServer_RTEMS")
-register_fprime_module()
-
-set(SOURCE_FILES ${TCP_CLIENT_SOURCE_FILES})
-set(MOD_DEPS ${IP_MOD_DEPS})
-set(MODULE_NAME "Drv_TcpClient_RTEMS")
-register_fprime_module()
-
-set(SOURCE_FILES ${UDP_SOURCE_FILES})
-set(MOD_DEPS ${IP_MOD_DEPS})
-set(MODULE_NAME "Drv_Udp_RTEMS")
-register_fprime_module()
-
-set(SOURCE_FILES ${NETWORK_SOURCE_FILES})
-set(MOD_DEPS ${IP_MOD_DEPS})
-set(MODULE_NAME "Drv_Network_RTEMS")
-register_fprime_module()
-
-# Now register them as implementations
-register_fprime_implementation("Drv_TcpServer" "Drv_TcpServer_RTEMS")
-register_fprime_implementation("Drv_TcpClient" "Drv_TcpClient_RTEMS")
-register_fprime_implementation("Drv_Udp" "Drv_Udp_RTEMS")

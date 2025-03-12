@@ -1,5 +1,7 @@
 # File: Os/RTEMS/CMakeLists.txt
 
+# File: Os/RTEMS/CMakeLists.txt
+
 ####
 # F prime CMakeLists.txt for Os/RTEMS:
 #
@@ -8,33 +10,18 @@
 restrict_platforms(RTEMS)
 add_custom_target("${FPRIME_CURRENT_MODULE}")
 
-# Only register implementations if not already registered
-# This helps avoid duplicate target errors
-set(IMPLEMENTATIONS_NEEDED)
-function(check_and_add_implementation IMPL)
-    get_property(ALREADY_REGISTERED GLOBAL PROPERTY "${IMPL}_REGISTERED" SET)
-    if (NOT ALREADY_REGISTERED)
-        list(APPEND IMPLEMENTATIONS_NEEDED ${IMPL})
-        set_property(GLOBAL PROPERTY "${IMPL}_REGISTERED" TRUE)
-    endif()
-endfunction()
+# Register all OSAL implementations for RTEMS
+register_os_implementation("File;FileSystem;Directory" RTEMS)
+register_os_implementation(Console RTEMS)
+register_os_implementation(Task RTEMS)
+register_os_implementation("Mutex" RTEMS)
+register_os_implementation("ConditionVariable" RTEMS)
+register_os_implementation(Cpu RTEMS)
+register_os_implementation(Memory RTEMS)
+register_os_implementation(Queue RTEMS)
+register_os_implementation(RawTime RTEMS)
 
-# Check which implementations to register
-check_and_add_implementation(Task)
-check_and_add_implementation(Mutex)
-check_and_add_implementation(Queue)
-check_and_add_implementation(RawTime)
-check_and_add_implementation(File)
-check_and_add_implementation(FileSystem)
-check_and_add_implementation(Directory)
-check_and_add_implementation(Cpu)
-check_and_add_implementation(Memory)
-check_and_add_implementation(Console)
-
-# Only register implementations if needed
-foreach(IMPL IN LISTS IMPLEMENTATIONS_NEEDED)
-    register_os_implementation(${IMPL} RTEMS)
-endforeach()
+# The rest of your CMake file can remain...
 
 # Set source files for each implementation only if implementations are needed
 if (NOT "Task" IN_LIST IMPLEMENTATIONS_NEEDED)
@@ -61,13 +48,19 @@ if (NOT "Queue" IN_LIST IMPLEMENTATIONS_NEEDED)
     target_link_libraries(Os_Queue_RTEMS PUBLIC Fw_Types)
 endif()
 
-if (NOT "File" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(FILE_SOURCE_FILES
+
+set(FILE_SOURCE_FILES
         "${CMAKE_CURRENT_LIST_DIR}/File.cpp"
-    )
-    add_library(Os_File_RTEMS STATIC ${FILE_SOURCE_FILES})
-    target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
-endif()
+)
+add_library(Os_File_RTEMS STATIC ${FILE_SOURCE_FILES})
+target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
+
+set(FILE_SOURCE_FILES
+        "${CMAKE_CURRENT_LIST_DIR}/FileSystem.cpp"
+)
+add_library(Os_File_RTEMS STATIC ${FILE_SOURCE_FILES})
+target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
+
 
 if (NOT "Directory" IN_LIST IMPLEMENTATIONS_NEEDED)
     set(DIRECTORY_SOURCE_FILES

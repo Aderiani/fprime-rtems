@@ -15,8 +15,8 @@ set(SOURCE_FILES
 set(MOD_DEPS
   Fw/Logger
   # Communication Implementations
-  Drv/Udp
-  Drv/TcpServer
+  #Drv/Udp
+  #Drv/TcpServer
 )
 
 register_fprime_module()

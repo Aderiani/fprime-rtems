@@ -11,13 +11,29 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
     return()
 endif()
 
-set(SOURCE_FILES
+# First, create the RTEMS implementations of the IP interfaces
+add_library(Drv_TcpServer_RTEMS STATIC
   "${CMAKE_CURRENT_LIST_DIR}/RtemsTcpServerAdapter.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/RtemsTcpClientAdapter.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/RtemsUdpAdapter.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/DefaultTcpServerAdapter.cpp"
+)
+
+add_library(Drv_TcpClient_RTEMS STATIC
+  "${CMAKE_CURRENT_LIST_DIR}/RtemsTcpClientAdapter.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/DefaultTcpClientAdapter.cpp"
+)
+
+add_library(Drv_Udp_RTEMS STATIC
+  "${CMAKE_CURRENT_LIST_DIR}/RtemsUdpAdapter.cpp"
   "${CMAKE_CURRENT_LIST_DIR}/DefaultUdpAdapter.cpp"
+)
+
+# Set dependencies
+target_link_libraries(Drv_TcpServer_RTEMS PUBLIC Drv_Ip Fw_Logger)
+target_link_libraries(Drv_TcpClient_RTEMS PUBLIC Drv_Ip Fw_Logger)
+target_link_libraries(Drv_Udp_RTEMS PUBLIC Drv_Ip Fw_Logger)
+
+# Then create the module with the GR740 network initialization
+set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/GR740NetworkInit.cpp"
 )
 

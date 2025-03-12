@@ -1,17 +1,22 @@
-# Platform/RTEMS.cmake
-# Minimal platform file for RTEMS to satisfy CMake's requirements
+# cmake/platform/RTEMS.cmake
+# Platform file for RTEMS systems
 
-# Tell CMake we're cross-compiling
-set(CMAKE_CROSSCOMPILING TRUE)
+# Define operating system
+add_definitions(-DTGT_OS_TYPE_RTEMS)
 
-# Specify compilation as static libraries
-set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+# Configure compiler flags
+set(CMAKE_C_FLAGS
+  "${CMAKE_C_FLAGS} -mcpu=leon3 -g -ffunction-sections -fdata-sections -Wall -Wmissing-prototypes -Wimplicit-function-declaration -Wstrict-prototypes -Wnested-externs"
+)
+set(CMAKE_CXX_FLAGS
+  "${CMAKE_CXX_FLAGS} -mcpu=leon3 -g -ffunction-sections -fdata-sections -Wall -fno-exceptions -fno-rtti"
+)
 
-# Basic default settings for RTEMS
-set(RTEMS_BSP "${RTEMS_BSP}" CACHE STRING "RTEMS BSP in use")
+# Find thread package (not needed if using baremetal scheduler)
+if (NOT DEFINED FPRIME_USE_BAREMETAL_SCHEDULER)
+   set(FPRIME_USE_BAREMETAL_SCHEDULER OFF)
+   message(STATUS "Using RTEMS scheduler")
+endif()
 
-# Don't try to find programs on the host when cross-compiling
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+# Include RTEMS system headers and platform types
+# include_directories(SYSTEM "${FPRIME_FRAMEWORK_PATH}/Os/RTEMS")
