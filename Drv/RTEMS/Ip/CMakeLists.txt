@@ -34,7 +34,7 @@ target_link_libraries(Drv_Udp_RTEMS PUBLIC Drv_Ip Fw_Logger)
 
 # Then create the module with the GR740 network initialization
 set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/GR740NetworkInit.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/../GR740/Network/GR740NetworkInit.cpp"
 )
 
 # Dependencies

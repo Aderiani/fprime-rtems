@@ -1,8 +1,9 @@
-// File: Drv/RTEMS/GR740/Network/NetworkPorts.fpp
+
+
 
 module Drv {
   @ Port for starting the network
-  port StartNetwork(
+  port InitializeNetwork(
     useDhcp: bool @< Use DHCP flag
     ipAddress: string @< Static IP address if not using DHCP
     netmask: string @< Netmask if not using DHCP
@@ -10,7 +11,7 @@ module Drv {
   )
   
   @ Port for retrieving network status
-  port NetworkStatusGet(
+  port RetrieveNetworkStatus(
     ref connected: bool @< Whether the network is connected
     ref ipAddress: string @< Current IP address
     ref netmask: string @< Current netmask

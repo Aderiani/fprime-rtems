@@ -1,4 +1,4 @@
-// File: Drv/RTEMS/GR740/Network/NetworkComponent.fpp
+
 
 module Drv {
   @ A component that initializes and manages the GR740 network interface

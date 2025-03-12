@@ -1,7 +1,5 @@
 # File: Os/RTEMS/CMakeLists.txt
 
-# File: Os/RTEMS/CMakeLists.txt
-
 ####
 # F prime CMakeLists.txt for Os/RTEMS:
 #
@@ -11,93 +9,108 @@ restrict_platforms(RTEMS)
 add_custom_target("${FPRIME_CURRENT_MODULE}")
 
 # Register all OSAL implementations for RTEMS
-register_os_implementation("File;FileSystem;Directory" RTEMS)
+register_os_implementation(File RTEMS)
+message(STATUS "Registered Os_File_RTEMS: ${Os_File_RTEMS}")
+register_os_implementation(FileSystem RTEMS)
+register_os_implementation(Directory RTEMS)
 register_os_implementation(Console RTEMS)
 register_os_implementation(Task RTEMS)
-register_os_implementation("Mutex" RTEMS)
-register_os_implementation("ConditionVariable" RTEMS)
+register_os_implementation("Mutex;ConditionVariable" RTEMS)
 register_os_implementation(Cpu RTEMS)
 register_os_implementation(Memory RTEMS)
 register_os_implementation(Queue RTEMS)
 register_os_implementation(RawTime RTEMS)
 
-# The rest of your CMake file can remain...
 
-# Set source files for each implementation only if implementations are needed
-if (NOT "Task" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(TASK_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/Task.cpp"
-    )
-    add_library(Os_Task_RTEMS STATIC ${TASK_SOURCE_FILES})
-    target_link_libraries(Os_Task_RTEMS PUBLIC Fw_Types)
-endif()
+set(FPRIME_OS_FILE_IMPL "Os_File_RTEMS" CACHE STRING "Os_File implementation for RTEMS" FORCE)
+# # The remainder of the file isn't needed because register_os_implementation 
+# # already does the work of setting up the libraries. If you need to add
+# # custom functionality, use the following pattern:
 
-if (NOT "Mutex" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(MUTEX_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp"
-    )
-    add_library(Os_Mutex_RTEMS STATIC ${MUTEX_SOURCE_FILES})
-    target_link_libraries(Os_Mutex_RTEMS PUBLIC Fw_Types)
-endif()
+# # Task implementation
+# if (TARGET Os_Task_RTEMS)
+#     target_sources(Os_Task_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/Task.cpp"
+#     )
+#     target_link_libraries(Os_Task_RTEMS PUBLIC Fw_Types)
+# endif()
 
-if (NOT "Queue" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(QUEUE_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/Queue.cpp"
-    )
-    add_library(Os_Queue_RTEMS STATIC ${QUEUE_SOURCE_FILES})
-    target_link_libraries(Os_Queue_RTEMS PUBLIC Fw_Types)
-endif()
+# # Mutex implementation
+# if (TARGET Os_Mutex_RTEMS)
+#     target_sources(Os_Mutex_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/Mutex.cpp"
+#     )
+#     target_link_libraries(Os_Mutex_RTEMS PUBLIC Fw_Types)
+# endif()
 
+# File implementation 
+# if (TARGET Os_File_RTEMS)
+#     target_sources(Os_File_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/File.cpp"
+#     )
+#     target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
+# endif()
 
-set(FILE_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/File.cpp"
-)
-add_library(Os_File_RTEMS STATIC ${FILE_SOURCE_FILES})
-target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
+# # FileSystem implementation
+# if (TARGET Os_FileSystem_RTEMS)
+#     target_sources(Os_FileSystem_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/FileSystem.cpp"
+#     )
+#     target_link_libraries(Os_FileSystem_RTEMS PUBLIC Fw_Types)
+# endif()
 
-set(FILE_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/FileSystem.cpp"
-)
-add_library(Os_File_RTEMS STATIC ${FILE_SOURCE_FILES})
-target_link_libraries(Os_File_RTEMS PUBLIC Fw_Types)
+# # Directory implementation
+# if (TARGET Os_Directory_RTEMS)
+#     target_sources(Os_Directory_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/Directory.cpp"
+#     )
+#     target_link_libraries(Os_Directory_RTEMS PUBLIC Fw_Types)
+# endif()
 
+# # Queue implementation
+# if (TARGET Os_Queue_RTEMS)
+#     target_sources(Os_Queue_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/Queue.cpp"
+#     )
+#     target_link_libraries(Os_Queue_RTEMS PUBLIC Fw_Types)
+# endif()
 
-if (NOT "Directory" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(DIRECTORY_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/Directory.cpp"
-    )
-    add_library(Os_Directory_RTEMS STATIC ${DIRECTORY_SOURCE_FILES})
-    target_link_libraries(Os_Directory_RTEMS PUBLIC Fw_Types)
-endif()
+# # Cpu implementation
+# if (TARGET Os_Cpu_RTEMS)
+#     target_sources(Os_Cpu_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/Cpu.cpp"
+#     )
+#     target_link_libraries(Os_Cpu_RTEMS PUBLIC Fw_Types)
+# endif()
 
-if (NOT "Cpu" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(CPU_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/Cpu.cpp"
-    )
-    add_library(Os_Cpu_RTEMS STATIC ${CPU_SOURCE_FILES})
-    target_link_libraries(Os_Cpu_RTEMS PUBLIC Fw_Types)
-endif()
+# # Memory implementation
+# if (TARGET Os_Memory_RTEMS)
+#     target_sources(Os_Memory_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/Memory.cpp"
+#     )
+#     target_link_libraries(Os_Memory_RTEMS PUBLIC Fw_Types)
+# endif()
 
-if (NOT "Memory" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(MEMORY_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/Memory.cpp"
-    )
-    add_library(Os_Memory_RTEMS STATIC ${MEMORY_SOURCE_FILES})
-    target_link_libraries(Os_Memory_RTEMS PUBLIC Fw_Types)
-endif()
+# # Console implementation
+# if (TARGET Os_Console_RTEMS)
+#     target_sources(Os_Console_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
+#     )
+#     target_link_libraries(Os_Console_RTEMS PUBLIC Fw_Types)
+# endif()
 
-if (NOT "Console" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(CONSOLE_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/Console.cpp"
-    )
-    add_library(Os_Console_RTEMS STATIC ${CONSOLE_SOURCE_FILES})
-    target_link_libraries(Os_Console_RTEMS PUBLIC Fw_Types)
-endif()
+# # RawTime implementation
+# if (TARGET Os_RawTime_RTEMS)
+#     target_sources(Os_RawTime_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/RawTime.cpp"
+#     )
+#     target_link_libraries(Os_RawTime_RTEMS PUBLIC Fw_Types)
+# endif()
 
-if (NOT "RawTime" IN_LIST IMPLEMENTATIONS_NEEDED)
-    set(RAWTIME_SOURCE_FILES
-        "${CMAKE_CURRENT_LIST_DIR}/RawTime.cpp"
-    )
-    add_library(Os_RawTime_RTEMS STATIC ${RAWTIME_SOURCE_FILES})
-    target_link_libraries(Os_RawTime_RTEMS PUBLIC Fw_Types)
-endif()
+# # ConditionVariable implementation
+# if (TARGET Os_ConditionVariable_RTEMS)
+#     target_sources(Os_ConditionVariable_RTEMS PRIVATE
+#         "${CMAKE_CURRENT_LIST_DIR}/ConditionVariable.cpp"
+#     )
+#     target_link_libraries(Os_ConditionVariable_RTEMS PUBLIC Fw_Types)
+# endif()

@@ -14,6 +14,7 @@ set(SOURCE_FILES
 )
 set(MOD_DEPS
   Fw/Logger
+  Os_RTEMS
   # Communication Implementations
   #Drv/Udp
   #Drv/TcpServer
