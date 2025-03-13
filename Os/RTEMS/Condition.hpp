@@ -28,13 +28,13 @@ class RtemsConditionVariable : public ConditionVariableInterface {
     ~RtemsConditionVariable() override;
 
     //! Wait on condition variable
-    Status pend(Mutex& mutex) override;
+    Status wait(Mutex& mutex) override;
 
-    //! Notify one thread waiting on condition variable
-    void notify() override;
+    //! Signal one thread waiting on condition variable
+    Status signal() override;
 
-    //! Notify all threads waiting on condition variable
-    void notifyAll() override;
+    //! Broadcast to all threads waiting on condition variable
+    Status broadcast() override;
 
     //! Get handle to condition variable
     ConditionVariableHandle* getHandle() override;

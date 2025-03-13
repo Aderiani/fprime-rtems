@@ -139,7 +139,7 @@ namespace Drv {
     m_gateway[sizeof(m_gateway)-1] = '\0';
     
     // Initialize the network
-    bool success = Drv::RTEMS::Network::initializeGR740Network(
+    bool success = Drv::RTEMS::Network::GR740InitNetwork(
         useDhcp,
         m_ipAddress,
         m_netmask,

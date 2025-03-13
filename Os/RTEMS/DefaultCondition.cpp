@@ -1,8 +1,8 @@
 // ======================================================================
-// \title Os/RTEMS/DefaultConditionVariable.cpp
-// \brief sets default Os::ConditionVariable to RTEMS implementation via linker
+// \title Os/RTEMS/DefaultCondition.cpp
+// \brief sets default Os::Condition to RTEMS implementation via linker
 // ======================================================================
-#include "Os/ConditionVariable.hpp"
+#include "Os/Condition.hpp"
 #include "Os/RTEMS/ConditionVariable.hpp"
 #include "Os/Delegate.hpp"
 

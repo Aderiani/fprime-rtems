@@ -1,5 +1,5 @@
 
-
+    
 module Drv {
   @ A component that initializes and manages the GR740 network interface
   active component GR740NetworkComponent {
@@ -18,10 +18,10 @@ module Drv {
     command resp port cmdResponseOut
 
     @ Port for starting the network with given configurations
-    async input port startNetwork: Drv.StartNetwork
+    async input port startNetwork: Drv.GR740InitNetwork
     
     @ Port for checking network status
-    sync input port networkStatusGet: Drv.NetworkStatusGet
+    sync input port networkStatusGet: Drv.GR740NetworkStatus
     
     # ----------------------------------------------------------------------
     # Special ports
@@ -52,7 +52,7 @@ module Drv {
     )
     
     @ Command to reset the network
-    async command RESET_NETWORK
+    async command RESET_NETWORK()
     
     # ----------------------------------------------------------------------
     # Events
@@ -102,18 +102,18 @@ module Drv {
     # ----------------------------------------------------------------------
     
     @ Auto-start network on initialization
-    param AUTO_START: bool id 0 default true
+    param AUTO_START: bool default true id 0 
     
     @ Default DHCP setting
-    param DEFAULT_USE_DHCP: bool id 1 default true
+    param DEFAULT_USE_DHCP: bool default true id 1 
     
     @ Default IP address
-    param DEFAULT_IP_ADDRESS: string size 20 id 2 default "192.168.1.10"
+    param DEFAULT_IP_ADDRESS: string size 20  default "192.168.1.10" id 2
     
     @ Default netmask
-    param DEFAULT_NETMASK: string size 20 id 3 default "255.255.255.0"
+    param DEFAULT_NETMASK: string size 20  default "255.255.255.0" id 3
     
     @ Default gateway
-    param DEFAULT_GATEWAY: string size 20 id 4 default ""
+    param DEFAULT_GATEWAY: string size 20 default ""  id 4
   }
 }

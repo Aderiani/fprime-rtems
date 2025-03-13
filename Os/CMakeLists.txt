@@ -18,23 +18,41 @@
 function(add_named_os_module NAMES)
     # Get first element of list
     list(GET NAMES 0 FIRST_ITEM)
-    set(OS_MODULE_NAME "Os_${FIRST_ITEM}_Common")
-    # Clear variables
-    set(SOURCE_FILES)
-    set(SOURCE_HEADERS)
-    # Add files for each name supplied
-    foreach (NAME IN LISTS NAMES)
-        list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/${NAME}.cpp")
-        list(APPEND SOURCE_HEADERS "${CMAKE_CURRENT_LIST_DIR}/${NAME}.hpp")
-    endforeach ()
-    # Set up module
-    set(MOD_DEPS Fw_Types ${ARGN})
-    require_fprime_implementation("Os_${FIRST_ITEM}")
-    register_fprime_module("${OS_MODULE_NAME}")
-    add_dependencies(Os "${OS_MODULE_NAME}")
-    target_link_libraries(Os PUBLIC "${OS_MODULE_NAME}")
+    
+    # If only one name is provided, create a single module
+    if(${ARGC} EQUAL 1 AND ";${NAMES};" STREQUAL ";${FIRST_ITEM};")
+        set(OS_MODULE_NAME "Os_${FIRST_ITEM}_Common")
+        # Clear variables
+        set(SOURCE_FILES)
+        set(SOURCE_HEADERS)
+        # Add files for the single name
+        list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/${FIRST_ITEM}.cpp")
+        list(APPEND SOURCE_HEADERS "${CMAKE_CURRENT_LIST_DIR}/${FIRST_ITEM}.hpp")
+        # Set up module
+        set(MOD_DEPS Fw_Types ${ARGN})
+        require_fprime_implementation("Os_${FIRST_ITEM}")
+        register_fprime_module("${OS_MODULE_NAME}")
+        add_dependencies(Os "${OS_MODULE_NAME}")
+        target_link_libraries(Os PUBLIC "${OS_MODULE_NAME}")
+    else()
+        # Multiple names provided, create individual modules for each
+        foreach(NAME IN LISTS NAMES)
+            set(OS_MODULE_NAME "Os_${NAME}_Common")
+            # Clear variables for this module
+            set(SOURCE_FILES)
+            set(SOURCE_HEADERS)
+            # Add files for this name
+            list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/${NAME}.cpp")
+            list(APPEND SOURCE_HEADERS "${CMAKE_CURRENT_LIST_DIR}/${NAME}.hpp")
+            # Set up module
+            set(MOD_DEPS Fw_Types ${ARGN})
+            require_fprime_implementation("Os_${NAME}")
+            register_fprime_module("${OS_MODULE_NAME}")
+            add_dependencies(Os "${OS_MODULE_NAME}")
+            target_link_libraries(Os PUBLIC "${OS_MODULE_NAME}")
+        endforeach()
+    endif()
 endfunction()
-
 ####
 # WARNING: not for use outside of fprime/Os
 #

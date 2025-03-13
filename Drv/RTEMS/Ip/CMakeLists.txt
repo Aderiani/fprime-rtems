@@ -32,19 +32,6 @@ target_link_libraries(Drv_TcpServer_RTEMS PUBLIC Drv_Ip Fw_Logger)
 target_link_libraries(Drv_TcpClient_RTEMS PUBLIC Drv_Ip Fw_Logger)
 target_link_libraries(Drv_Udp_RTEMS PUBLIC Drv_Ip Fw_Logger)
 
-# Then create the module with the GR740 network initialization
-set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/../GR740/Network/GR740NetworkInit.cpp"
-)
-
-# Dependencies
-set(MOD_DEPS
-  Fw/Logger
-  Drv/Ip
-)
-
-register_fprime_module()
-
 # Register the RTEMS IP implementations
 register_fprime_implementation("Drv_TcpServer" "Drv_TcpServer_RTEMS")
 register_fprime_implementation("Drv_TcpClient" "Drv_TcpClient_RTEMS")

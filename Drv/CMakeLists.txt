@@ -3,6 +3,9 @@
 # Ports
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Ports/")
 
+# Interfaces
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Interfaces/")
+
 # Components
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/BlockDriver/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/ByteStreamDriverModel/")
@@ -12,7 +15,6 @@ add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/LinuxSpiDriver/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/LinuxI2cDriver/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/StreamCrossover/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/RTEMS/")
-
 
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Ip/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/TcpClient/")
