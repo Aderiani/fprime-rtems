@@ -3,7 +3,7 @@
 // \brief sets default Os::Condition to RTEMS implementation via linker
 // ======================================================================
 #include "Os/Condition.hpp"
-#include "Os/RTEMS/ConditionVariable.hpp"
+#include "Os/RTEMS/Condition.hpp"
 #include "Os/Delegate.hpp"
 
 namespace Os {

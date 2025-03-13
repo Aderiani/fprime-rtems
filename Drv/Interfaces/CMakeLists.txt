@@ -11,6 +11,7 @@ set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/SpiInterface.fppi"
   "${CMAKE_CURRENT_LIST_DIR}/ByteStreamDriverInterface.fppi"
   "${CMAKE_CURRENT_LIST_DIR}/TickInterface.fppi"
+  "${CMAKE_CURRENT_LIST_DIR}/Stub.cpp"
 )
 
 register_fprime_module()

@@ -53,7 +53,11 @@ choose_fprime_implementation(Os/Cpu Os/Cpu/RTEMS)
 choose_fprime_implementation(Os/Memory Os/Memory/RTEMS)
 choose_fprime_implementation(Os/FileSystem Os/FileSystem/RTEMS)
 choose_fprime_implementation(Os/Directory Os/Directory/RTEMS)
-
+choose_fprime_implementation(Os/Condition Os/Condition/RTEMS)
+# Choose RTEMS-specific implementations
+choose_fprime_implementation(Drv_TcpServer Drv_TcpServer_RTEMS)
+choose_fprime_implementation(Drv_TcpClient Drv_TcpClient_RTEMS)
+choose_fprime_implementation(Drv_Udp Drv_Udp_RTEMS)
 # Include RTEMS system headers and platform types if needed
 # Uncomment and adjust the path if your RTEMS-specific headers are in a custom location
 # include_directories(SYSTEM "${FPRIME_FRAMEWORK_PATH}/Os/RTEMS")
@@ -61,3 +65,6 @@ choose_fprime_implementation(Os/Directory Os/Directory/RTEMS)
 
 # Optional: Indicate RTEMS-specific features
 set(FPRIME_USE_POSIX OFF)  # RTEMS isn’t POSIX-compliant by default
+# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_RESTRICTIONS_Drv_Udp)
+# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_RESTRICTIONS_Drv_TcpServer)
+# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_RESTRICTIONS_Drv_TcpClient)

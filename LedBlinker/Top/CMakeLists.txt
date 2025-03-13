@@ -12,12 +12,20 @@ set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/topology.fpp"
   "${CMAKE_CURRENT_LIST_DIR}/LedBlinkerTopology.cpp"
 )
-set(MOD_DEPS
-  Fw/Logger
-  Os_RTEMS
-  # Communication Implementations
-  #Drv/Udp
-  #Drv/TcpServer
-)
-
+if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
+  set(MOD_DEPS
+    Fw/Logger
+    Os
+    # These will use the RTEMS implementations when on RTEMS
+    Drv/TcpServer  
+    Drv/Udp
+  )
+else()
+  set(MOD_DEPS
+    Fw/Logger
+    Os
+    Drv/TcpServer
+    Drv/Udp
+  )
+endif()
 register_fprime_module()
