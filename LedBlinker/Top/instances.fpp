@@ -105,7 +105,7 @@ module LedBlinker {
   # ----------------------------------------------------------------------
 
   @ Communications driver. May be swapped with other com drivers like UART or TCP
-  instance comDriver: Drv.TcpServer base id 0x4000
+  instance comDriver: Drv.GR740NetworkComponent base id 0x4000
 
   instance framer: Svc.Framer base id 0x4100
 
@@ -127,13 +127,13 @@ module LedBlinker {
 
   instance comStub: Svc.ComStub base id 0x4B00
 
-  # instance gpioDriver: Drv.GR740GpioDriver base id 0x4C00
+  instance gpioDriver: Drv.GR740GpioDriver base id 0x4C00
 
-  # instance gr740Network: Drv.GR740NetworkComponent base id 0x4D00
+  instance gr740Network: Drv.GR740NetworkComponent base id 0x4D00
 
-  # instance uartDriver: Drv.GR740UartDriver base id 0x4E00
+  instance uartDriver: Drv.GR740UartDriver base id 0x4E00
 
-  # instance spiDriver: Drv.GR740SpiDriver base id 0x4F00
+  instance spiDriver: Drv.GR740SpiDriver base id 0x4F00
 
 
 }

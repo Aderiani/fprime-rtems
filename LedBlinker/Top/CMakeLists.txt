@@ -17,8 +17,12 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
     Fw/Logger
     Os
     # These will use the RTEMS implementations when on RTEMS
-    Drv/TcpServer  
-    Drv/Udp
+    Drv/RTEMS/GR740/Network
+    Drv/RTEMS/GR740/GpioDriver
+    Drv/RTEMS/GR740/UartDriver
+    Drv/RTEMS/GR740/SpiDriver
+    Drv/RTEMS/GR740/I2cDriver
+
   )
 else()
   set(MOD_DEPS
