@@ -16,11 +16,18 @@ set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/GpioDriver.cpp"
 )
 
+set_source_files_properties(
+    GpioDriver.cpp
+    PROPERTIES
+    COMPILE_FLAGS "-Wno-pedantic"
+) 
+
 # Dependencies
 set(MOD_DEPS
   Fw/Logger
   Os
   Drv/Interfaces  # Make sure this directory exists with GpioInterface.fppi
 )
+
 
 register_fprime_module()

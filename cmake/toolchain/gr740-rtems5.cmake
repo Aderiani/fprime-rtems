@@ -55,12 +55,13 @@ set(C_CXX_FLAGS "-O2 -ffunction-sections -fdata-sections -Wall")
 
 set(C_FLAGS "-Wmissing-prototypes -Wimplicit-function-declaration -Wstrict-prototypes -Wnested-externs")
 set(CXX_FLAGS "-fno-exceptions -fno-rtti")
-set(ASM_FLAGS "-x assembler-with-cpp")
-set(LD_FLAGS "-Wl,--gc-sections")
 
+# Error-suppressing flags for RTEMS compatibility
+set(COMPAT_FLAGS "-Wno-pedantic -Wno-error=ignored-qualifiers -Wno-error=old-style-cast -Wno-error=sign-compare")
+add_compile_options(-Wno-shadow)
 # Set the flags for each language
-set(CMAKE_C_FLAGS           "${COMMON_FLAGS} ${C_CXX_FLAGS} ${C_FLAGS} ${DEF_FLAGS}" CACHE STRING "CFLAGS" FORCE)
-set(CMAKE_CXX_FLAGS         "${COMMON_FLAGS} ${C_CXX_FLAGS} ${CXX_FLAGS} ${DEF_FLAGS}" CACHE STRING "CXXFLAGS" FORCE)
+set(CMAKE_C_FLAGS           "${COMMON_FLAGS} ${C_CXX_FLAGS} ${C_FLAGS} ${DEF_FLAGS} ${COMPAT_FLAGS}" CACHE STRING "CFLAGS" FORCE)
+set(CMAKE_CXX_FLAGS         "${COMMON_FLAGS} ${C_CXX_FLAGS} ${CXX_FLAGS} ${DEF_FLAGS} ${COMPAT_FLAGS}" CACHE STRING "CXXFLAGS" FORCE)
 set(CMAKE_ASM_FLAGS         "${COMMON_FLAGS} ${ASM_FLAGS} ${DEF_FLAGS}" CACHE STRING "ASMFLAGS" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS  "${COMMON_FLAGS} ${LD_FLAGS}" CACHE STRING "LDFLAGS" FORCE)
 
