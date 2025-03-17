@@ -17,6 +17,16 @@
 // Used for 1Hz synthetic cycling
 #include <Os/Mutex.hpp>
 
+#if defined(TGT_OS_TYPE_RTEMS)
+  // Use RTEMS-specific networking component
+  Drv::GR740NetworkComponent& networkComp = LedBlinker::gr740Network;
+#else
+  // Use standard TCP server
+  Drv::TcpServer& comDriver = LedBlinker::comDriver;
+#endif
+
+
+
 // Allows easy reference to objects in FPP/autocoder required namespaces
 using namespace LedBlinker;
 
@@ -132,8 +142,15 @@ void configureTopology(const TopologyState& state) {
     configurationTable.entries[2] = {.depth = 100, .priority = 1};
     // Allocation identifier is 0 as the MallocAllocator discards it
     comQueue.configure(configurationTable, 0, mallocator);
+
+
+    // Initialize RTEMS network
     if (state.hostname != nullptr && state.port != 0) {
-        comDriver.configure(state.hostname, state.port);
+      bool useDhcp = false;
+      Fw::String ipAddress(state.hostname);
+      Fw::String netmask("255.255.255.0");
+      Fw::String gateway("");
+      networkComp.startNetwork_out(0, useDhcp, ipAddress, netmask, gateway);
     }
 
     // Initialize the GR740 GPIO driver
@@ -146,6 +163,11 @@ void configureTopology(const TopologyState& state) {
     if (!gpioDriver.configurePin(1, Drv::GR740GpioDriver::GPIO_DIRECTION_OUTPUT, Fw::Logic::LOW)) {
         Fw::Logger::logMsg("[ERROR] Failed to configure GPIO pin 13\n");
     }
+
+
+
+
+
 }
 
 // Public functions for use in main program are namespaced with deployment name LedBlinker
