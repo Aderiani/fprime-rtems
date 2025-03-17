@@ -21,7 +21,6 @@ module Drv {
     ref state: Fw.Logic
   ) -> GpioStatus
 }
-
 @ Port used to write to a GPIO pin
 sync input port gpioWrite: Drv.GpioWrite
 
