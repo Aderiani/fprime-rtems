@@ -6,29 +6,62 @@ module Drv {
     include "../../../Interfaces/SpiInterface.fppi"
 
     # ----------------------------------------------------------------------
-    # Special ports
+    # Special ports 
     # ----------------------------------------------------------------------
 
     event port Log
+
+    telemetry port Tlm
 
     text event port LogText
 
     time get port Time
 
+
+    @ Bytes Sent/Received
+    telemetry SPI_Bytes: U32 id 0
+
+
+
     # ----------------------------------------------------------------------
     # Events
     # ----------------------------------------------------------------------
-    event SpiInitSuccess() severity diagnostic format "GR740 SPI driver initialized successfully"
+@ SPI open error
+event SPI_OpenError(
+                     select: I32 @< The chip select
+                     error: I32 @< The error code
+                   ) \
+  severity warning high \
+  id 0 \
+  format "Error opening SPI device {}: {}"
 
-    event SpiInitError(error: I32) severity warning high format "Failed to initialize GR740 SPI driver with error code {}"
+@ SPI config error
+event SPI_ConfigError(
+                       select: I32 @< The chip select
+                       error: I32 @< The error code
+                     ) \
+  severity warning high \
+  id 1 \
+  format "Error configuring SPI device {}: {}"
 
-    event SpiConfigureSuccess(device: U32) severity diagnostic format "Successfully configured SPI device {}"
+@ SPI write error
+event SPI_WriteError(
+                      select: I32 @< The chip select
+                      error: I32 @< The error code
+                    ) \
+  severity warning high \
+  id 2 \
+  format "Error writing/reading SPI device {}: {}" \
+  throttle 5
 
-    event SpiConfigureError(device: U32, error: I32) severity warning high format "Failed to configure SPI device {} with error code {}"
+@ SPI open notification
+event SPI_PortOpened(
+                      select: I32 @< The chip select
+                    ) \
+  severity activity high \
+  id 4 \
+  format "SPI Device {} configured"
 
-    event SpiTransferSuccess(device: U32, bytes: U32) severity diagnostic format "Successfully transferred {} bytes on SPI device {}"
-
-    event SpiTransferError(device: U32, error: I32) severity warning high format "SPI transfer failed on device {} with error code {}"
 
   }
 

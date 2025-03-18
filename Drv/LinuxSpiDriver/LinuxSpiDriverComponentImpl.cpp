@@ -82,7 +82,7 @@ namespace Drv {
 
         fd = ::open(devString.toChar(), O_RDWR);
         if (fd == -1) {
-            this->log_WARNING_HI_SPI_OpenError(device,select,fd);
+            c
             return false;
         }
 

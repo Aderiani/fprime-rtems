@@ -22,9 +22,9 @@ module Drv {
 
     event I2cInitError() severity warning high format "Failed to initialize GR740 I2C driver"
 
-    event I2cTransactionSuccess(addr: U32) severity diagnostic format "Successful I2C transaction with device 0x{x} text {}"
+    event I2cTransactionSuccess() severity diagnostic format "Successful I2C transaction with device"
 
-    event I2cTransactionError(addr: U32, status: I32) severity warning high format "I2C transaction with device 0x{x} failed with status {} text {}"
+    event I2cTransactionError() severity warning high format "I2C transaction with device failed"
 
   }
 

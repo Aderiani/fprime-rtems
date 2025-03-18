@@ -11,45 +11,29 @@ namespace Drv {
 
   GR740GpioDriver::GR740GpioDriver(const char* const compName) :
       GR740GpioDriverComponentBase(compName),
-      m_gpioDevice(nullptr),
       m_gpioRegs(nullptr),
       m_initialized(false)
   {
     // Initialize pin state arrays
     for (NATIVE_UINT_TYPE i = 0; i < MAX_GPIO_PINS; i++) {
       m_outputState[i] = Fw::Logic::LOW;
-      m_pinDirection[i] = Drv::GR740GpioDriver::GpioDirection::GPIO_INPUT;
+      m_pinDirection[i] = GpioDirection::GPIO_DIRECTION_INPUT;
     }
   }
 
   GR740GpioDriver::~GR740GpioDriver()
   {
-    // No cleanup needed as the driver manager handles device resources
+    // No cleanup needed
   }
 
-  bool GR740GpioDriver::initialize(NATIVE_INT_TYPE instance)
+  bool GR740GpioDriver::initialize()
   {
     if (m_initialized) {
       return true; // Already initialized
     }
 
-    // Find the GPIO device
-    m_gpioDevice = RTEMS::DriverUtil::findAmbaDevice(
-      RTEMS::GAISLER_VENDOR_ID,
-      RTEMS::DeviceId::GRGPIO,
-      instance
-    );
-
-    if (m_gpioDevice == nullptr) {
-      this->log_WARNING_HI_GpioInitError();
-      return false;
-    }
-
-    // Set the register pointer using base address from device tree
-    uintptr_t base_addr = (uintptr_t)m_gpioDevice->base_addr;
-    
-    // Set the register pointer
-    m_gpioRegs = reinterpret_cast<volatile gr740_gpio_regs*>(base_addr);
+    // Set the register pointer to the known base address
+    m_gpioRegs = reinterpret_cast<volatile gr740_gpio_regs*>(RTEMS::BaseAddress::GPIO);
 
     // Initialize the GPIO controller (reset it)
     m_gpioRegs->output = 0;
@@ -64,24 +48,22 @@ namespace Drv {
 
   bool GR740GpioDriver::configurePin(
       NATIVE_UINT_TYPE pin,
-      Drv::GR740GpioDriver::GpioDirection direction,
-      Fw::Logic initialValue,
-      bool enableInterrupt
+      GpioDirection direction,
+      Fw::Logic initialValue
   )
   {
     if (!m_initialized || m_gpioRegs == nullptr) {
-      this->log_WARNING_HI_GpioInitError(pin, -1);
+      this->log_WARNING_HI_GpioInitError();
       return false;
     }
 
     // Verify pin number is valid
     if (pin >= MAX_GPIO_PINS) {
-      this->log_WARNING_HI_GpioInitError(pin, -2);
       return false;
     }
 
     // Configure pin direction
-    if (direction == Drv::GR740GpioDriver::GpioDirection::GPIO_OUTPUT) {
+    if (direction == GpioDirection::GPIO_DIRECTION_OUTPUT) {
       // Set as GPIO_OUTPUT
       m_gpioRegs->dir |= (1U << pin);
       
@@ -97,9 +79,21 @@ namespace Drv {
       // Set as input
       m_gpioRegs->dir &= ~(1U << pin);
       
-      // Configure interrupts if requested
-      if (enableInterrupt) {
-        // Enable interrupt for this pin
+      // Configure interrupts if needed based on direction
+      if (direction == GpioDirection::GPIO_DIRECTION_INTERRUPT_RISING ||
+          direction == GpioDirection::GPIO_DIRECTION_INTERRUPT_BOTH) {
+        // Enable rising edge detection
+        m_gpioRegs->edge |= (1U << pin);
+      }
+      
+      if (direction == GpioDirection::GPIO_DIRECTION_INTERRUPT_FALLING ||
+          direction == GpioDirection::GPIO_DIRECTION_INTERRUPT_BOTH) {
+        // Enable falling edge detection
+        m_gpioRegs->ipol |= (1U << pin);
+      }
+      
+      if (direction != GpioDirection::GPIO_DIRECTION_INPUT) {
+        // Enable interrupt for the pin
         m_gpioRegs->imask |= (1U << pin);
       }
     }
@@ -107,21 +101,18 @@ namespace Drv {
     // Store pin direction
     m_pinDirection[pin] = direction;
 
-    this->log_DIAGNOSTIC_GpioPinWriteSuccess(
-      pin,
-      (direction == Drv::GR740GpioDriver::GpioDirection::GPIO_OUTPUT) ? "OUTPUT" : "INPUT"
-    );
+    this->log_DIAGNOSTIC_GpioPinWriteSuccess(pin);
     return true;
   }
 
- GpioStatus GR740GpioDriver::gpioRead_handler(
+  GpioStatus GR740GpioDriver::gpioRead_handler(
       const FwIndexType portNum,
       Fw::Logic& state
   )
   {
     if (!m_initialized || m_gpioRegs == nullptr) {
       this->log_WARNING_HI_GpioPinReadError(portNum);
-      return GpioStatus::UNKNOWN_ERROR;
+      return GpioStatus::NOT_OPENED;
     }
 
     // Check if the pin is in the valid range
@@ -144,19 +135,19 @@ namespace Drv {
   )
   {
     if (!m_initialized || m_gpioRegs == nullptr) {
-      this->log_WARNING_HI_GpioInitError(portNum);
+      this->log_WARNING_HI_GpioPinWriteError(portNum);
       return GpioStatus::NOT_OPENED;
     }
 
     // Check if the pin is in the valid range
     if (static_cast<U32>(portNum) >= MAX_GPIO_PINS) {
-      this->log_WARNING_HI_GpioInitError(portNum);
+      this->log_WARNING_HI_GpioPinWriteError(portNum);
       return GpioStatus::INVALID_MODE;
     }
 
     // Check if the pin is configured as output
-    if (m_pinDirection[portNum] != Drv::GR740GpioDriver::GpioDirection::GPIO_OUTPUT) {
-      this->log_WARNING_HI_GpioInitError(portNum);
+    if (m_pinDirection[portNum] != GpioDirection::GPIO_DIRECTION_OUTPUT) {
+      this->log_WARNING_HI_GpioPinWriteError(portNum);
       return GpioStatus::INVALID_MODE;
     }
 
@@ -172,15 +163,6 @@ namespace Drv {
 
     this->log_DIAGNOSTIC_GpioPinWriteSuccess(portNum);
     return GpioStatus::OP_OK;
-  }
-
-  void GR740GpioDriver::isrCallback(void* arg)
-  {
-    // This is a placeholder for GPIO interrupt handling
-    GR740GpioDriver* driver = static_cast<GR740GpioDriver*>(arg);
-    FW_ASSERT(driver != nullptr);
-    
-    // TODO: Implement specific interrupt handling logic
   }
 
 } // end namespace Drv
