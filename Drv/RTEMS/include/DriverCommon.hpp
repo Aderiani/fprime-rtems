@@ -1,14 +1,3 @@
-// ======================================================================
-// \title  DriverCommon.hpp
-// \author fprime-community
-// \brief  Common definitions for RTEMS drivers
-//
-// \copyright
-// Copyright (C) 2024 fprime-community
-// ALL RIGHTS RESERVED.
-//
-// ======================================================================
-
 #ifndef DRV_RTEMS_DRIVER_COMMON_HPP
 #define DRV_RTEMS_DRIVER_COMMON_HPP
 
@@ -16,15 +5,15 @@
 
 // RTEMS includes
 #include <rtems.h>
-#include <bsp.h>
-#include <rtems/libio.h>
-
-// RTEMS Driver Manager includes
 #include <drvmgr/drvmgr.h>
-#include <drvmgr/drvmgr_confdefs.h>
+#include <grlib/ambapp.h>
 
-// GRLIB RTEMS driver includes
-#include <grlib/ambapp_bus.h>
+// Suppress pedantic warnings for system headers
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#include <drvmgr/drvmgr.h>
+#include <grlib/ambapp.h>
+#pragma GCC diagnostic pop
 
 namespace Drv {
 namespace RTEMS {
@@ -44,24 +33,9 @@ namespace DeviceId {
 class DriverUtil {
 public:
     /**
-     * Initializes the driver manager - this should be called once at startup
-     * if not already initialized by the BSP
-     */
-    static void initializeDriverManager() {
-        // If RTEMS_DRVMGR_STARTUP is defined, the BSP has already initialized
-        // the driver manager, so we don't need to do it
-#ifndef RTEMS_DRVMGR_STARTUP
-        // Register the GRLIB AMBA Plug & Play bus as the root bus driver
-        ambapp_grlib_root_register();
-        
-        // Initialize the driver manager
-        drvmgr_init();
-#endif
-    }
-    
-    /**
      * Finds an AMBA device by device ID and instance
      * 
+     * @param vendor_id Vendor ID to search for
      * @param device_id Device ID to search for
      * @param instance Instance number (0-based)
      * @return Pointer to the device, or nullptr if not found
@@ -70,25 +44,36 @@ public:
         int index = 0;
         struct drvmgr_dev* dev = NULL;
         
-        // Traverse all AMBA devices
-        while ((dev = drvmgr_for_each_dev(&ambapp_bus_drv, dev)) != NULL) {
-            // Get device information
-            struct ambapp_dev *ambapp_dev = (struct ambapp_dev *)dev->businfo;
-            
-            // Check if device matches
-            if ((ambapp_dev->id.vendor == vendor_id) && 
-                (ambapp_dev->id.device == device_id)) {
+        // Get the AMBA bus
+        struct drvmgr_bus* abus = drvmgr_get_bus(&ambapp_bus_drv, 0);
+        if (!abus)
+            return NULL;
+        
+        // Iterate through devices on the bus
+        while ((dev = drvmgr_get_dev(abus, DRVMGR_BUS_DEVICE, index)) != NULL) {
+            if (dev->businfo) {
+                struct ambapp_dev* ambapp_dev = (struct ambapp_dev*)dev->businfo;
                 
-                // If this is the instance we're looking for, return it
-                if (index == instance) {
-                    return dev;
+                // Check if this device matches the vendor and device ID
+                if ((ambapp_dev->id.vendor == vendor_id) && 
+                    (ambapp_dev->id.device == device_id)) {
+                    
+                    // If this is the instance we're looking for, return it
+                    if (instance == 0) {
+                        return dev;
+                    }
+                    instance--;
                 }
-                index++;
             }
+            index++;
         }
         
         // Device not found
-        return nullptr;
+        return NULL;
+    }
+        
+        // Device not found
+        return NULL;
     }
 };
 

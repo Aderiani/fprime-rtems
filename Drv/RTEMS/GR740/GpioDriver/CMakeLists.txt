@@ -19,8 +19,8 @@ set(SOURCE_FILES
 set_source_files_properties(
     GpioDriver.cpp
     PROPERTIES
-    COMPILE_FLAGS "-Wno-pedantic"
-) 
+    COMPILE_FLAGS "-Wno-pedantic -Wno-error=pedantic -fpermissive"
+)
 
 # Dependencies
 set(MOD_DEPS
