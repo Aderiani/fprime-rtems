@@ -1,141 +1,136 @@
 // ======================================================================
 // \title  UartDriver.hpp
-// \author fprime-community
-// \brief  hpp file for GR740UartDriver component implementation class
+// \author [Your Name]
+// \brief  hpp file for UartDriver component implementation class for GR740 (RTEMS)
 //
 // \copyright
-// Copyright (C) 2024 fprime-community
+// Copyright 2025, [Your Organization or Name].
 // ALL RIGHTS RESERVED.
 //
 // ======================================================================
 
-#ifndef DRV_GR740_UART_DRIVER_HPP
-#define DRV_GR740_UART_DRIVER_HPP
+#ifndef DRV_RTEMS_GR740_UART_DRIVER_HPP
+#define DRV_RTEMS_GR740_UART_DRIVER_HPP
 
-#include <Drv/RTEMS/GR740/UartDriver/UartDriverComponentAc.hpp>
-#include <Drv/RTEMS/include/DriverCommon.hpp>
-#include <Os/Mutex.hpp>
+#include "Drv/RTEMS/GR740/UartDriver/GR740UartDriverComponentAc.hpp"
+#include "Drv/RTEMS/include/DriverCommon.hpp"
 #include <Os/Task.hpp>
-
-// GRLIB APBUART driver includes
-#include <grlib/apbuart.h>
-
-// Buffer size for receiving data
-#define UART_RECEIVE_BUFFER_SIZE 256
+#include <Fw/Types/SerialBuffer.hpp>
 
 namespace Drv {
 
-  class GR740UartDriver final : public GR740UartDriverComponentBase {
+class UartDriver final : public GR740UartDriverComponentBase {
   public:
+    // UART configuration enums 
+    enum UartBaudRate {
+        BAUD_9600,
+        BAUD_19200,
+        BAUD_38400,
+        BAUD_57600,
+        BAUD_115K,
+        BAUD_230K,
+        BAUD_460K,
+        BAUD_921K,
+        BAUD_1000K,
+        BAUD_1152K,
+        BAUD_1500K,
+        BAUD_2000K,
+        BAUD_2500K,
+        BAUD_3000K,
+        BAUD_3500K,
+        BAUD_4000K
+    };
+
+    enum UartFlowControl {
+        NO_FLOW,
+        HW_FLOW
+    };
+
+    enum UartParity {
+        PARITY_NONE,
+        PARITY_ODD,
+        PARITY_EVEN
+    };
+
     // ----------------------------------------------------------------------
     // Construction, initialization, and destruction
     // ----------------------------------------------------------------------
 
-    //! Construct object GR740UartDriver
-    //!
-    GR740UartDriver(
-        const char* const compName, /*!< The component name*/
-        const U32 uartInstance      /*!< The UART instance number to use*/
-    );
+    //! Construct object UartDriver
+    UartDriver(const char* const compName);
 
-    //! Initialize component
-    //!
-    void init(
-        const FwIndexType instance = 0 /*!< The instance number*/
-    );
+    //! Initialize the UART driver
+    void init(const NATIVE_INT_TYPE instance);
 
-    //! Destroy object GR740UartDriver
-    //!
-    ~GR740UartDriver();
+    //! Open and configure the UART hardware
+    bool open(const char* const device, UartBaudRate baud, UartFlowControl fc, UartParity parity, U32 allocationSize);
 
-    // ----------------------------------------------------------------------
-    // UART configuration types
-    // ----------------------------------------------------------------------
-    
-    struct UartConfiguration {
-      U32 baudRate;             //!< Baud rate (bps)
-      U8 dataBits;              //!< Data bits (5-8)
-      U8 stopBits;              //!< Stop bits (1-2)
-      bool parityEnabled;       //!< Parity enabled flag
-      bool parityOdd;           //!< Parity odd (true) or even (false)
-      bool flowControlEnabled;  //!< Hardware flow control enabled flag
-    };
+    //! Destroy object UartDriver
+    ~UartDriver();
 
-    //! \brief Initialize the UART driver
-    //!
-    //! This function initializes the UART driver by finding the APBUART device
-    //! in the system and setting up the driver.
-    //!
-    //! \return true if initialization was successful, false otherwise
-    bool initialize();
+    //! Start the read task
+    void start(Os::Task::ParamType priority, Os::Task::ParamType stackSize, Os::Task::ParamType cpuAffinity);
 
-    //! \brief Configure the UART
-    //!
-    //! \param config UART configuration
-    //! \return true if configuration was successful, false otherwise
-    bool configure(const UartConfiguration& config);
+    //! Quit the read thread
+    void quitReadThread();
 
-    //! \brief Start the receive task
-    //!
-    //! \param priority Task priority (default: OS task default)
-    //! \param stackSize Task stack size (default: OS task default)
-    //! \return true if task started successfully, false otherwise
-    bool startReceiveTask(
-      NATIVE_INT_TYPE priority = Os::Task::TASK_DEFAULT,
-      NATIVE_INT_TYPE stackSize = Os::Task::TASK_DEFAULT);
-
-    //! \brief Stop the receive task
-    void stopReceiveTask();
+    //! Join the read task
+    Os::Task::Status join();
 
   PRIVATE:
     // ----------------------------------------------------------------------
     // Handler implementations for user-defined typed input ports
     // ----------------------------------------------------------------------
 
-    //! Handler implementation for drvDataIn
-    //!
-    Drv::SendStatus drvDataIn_handler(
-        const FwIndexType portNum, /*!< The port number*/
-        Fw::Buffer &fwBuffer
-    ) override;
-
-    //! \brief Receive task entry point
-    //!
-    //! \param arg Pointer to driver instance
-    static void receiveTaskEntry(void* arg);
-
-    //! \brief Receive task implementation
-    void receiveTask();
-
-    //! \brief Send a buffer over UART
-    //!
-    //! \param buffer Data buffer to send
-    //! \param size Size of data to send
-    //! \return true if send was successful, false otherwise
-    bool sendBuffer(const U8* buffer, size_t size);
-
-    //! \brief Receive data from UART
-    //!
-    //! \param buffer Buffer to store received data
-    //! \param size Size of buffer
-    //! \return Number of bytes received, negative value on error
-    I32 receiveBuffer(U8* buffer, size_t size);
+    //! Handler implementation for send port
+    Drv::SendStatus send_handler(
+        const NATIVE_INT_TYPE portNum, /*!< The port number */
+        Fw::Buffer& serBuffer          /*!< Buffer containing data to send */
+    );
 
     // ----------------------------------------------------------------------
-    // Member variables
+    // Private methods
     // ----------------------------------------------------------------------
-    const U32 m_uartInstance;                 //!< UART instance number
-    struct drvmgr_dev* m_uartDevice;          //!< APBUART device pointer
-    struct apbuart_regs* m_uartRegs;          //!< APBUART register structure
-    bool m_initialized;                        //!< Initialization flag
-    bool m_configured;                         //!< Configuration flag
-    UartConfiguration m_config;                //!< Current configuration
-    Os::Task m_receiveTask;                    //!< Receive task
-    Os::Mutex m_mutex;                         //!< Mutex for thread protection
-    bool m_receiveTaskRunning;                 //!< Flag to control receive task
-    U8 m_receiveBuffer[UART_RECEIVE_BUFFER_SIZE]; //!< Buffer for received data
-  };
+
+    //! Task entry point for reading UART data
+    static void serialReadTaskEntry(void* ptr);
+
+    // ----------------------------------------------------------------------
+    // Private member variables
+    // ----------------------------------------------------------------------
+
+    volatile U32* m_baseAddr;      //!< Pointer to UART register base address
+    Fw::String m_device;           //!< Device name (e.g., "UART0")
+    U32 m_allocationSize;          //!< Buffer size for receive
+    bool m_quitReadThread;         //!< Flag to stop read thread
+    Os::Task m_readTask;           //!< Task for reading UART data
+
+    // GR740 APBUART register offsets (based on GRLIB APBUART documentation)
+    enum UartRegisters {
+        UART_DATA  = 0x00 / 4, //!< Data register
+        UART_STAT  = 0x04 / 4, //!< Status register
+        UART_CTRL  = 0x08 / 4, //!< Control register
+        UART_SCAL  = 0x0C / 4  //!< Scaler (baud rate) register
+    };
+
+    // UART control register bits
+    enum UartCtrlBits {
+        CTRL_RE = 1 << 0,  //!< Receiver enable
+        CTRL_TE = 1 << 1,  //!< Transmitter enable
+        CTRL_PE = 1 << 2,  //!< Parity enable
+        CTRL_PS = 1 << 3,  //!< Parity select (0=even, 1=odd)
+        CTRL_FL = 1 << 4   //!< Flow control enable
+    };
+
+    // UART status register bits
+    enum UartStatBits {
+        STAT_DR = 1 << 0, //!< Data ready (receive)
+        STAT_TS = 1 << 1, //!< Transmitter shift register empty
+        STAT_TH = 1 << 2, //!< Transmitter hold register empty
+        STAT_OR = 1 << 3  //!< Overrun error
+    };
+};
 
 } // end namespace Drv
 
-#endif
+#endif // DRV_RTEMS_GR740_UART_DRIVER_HPP

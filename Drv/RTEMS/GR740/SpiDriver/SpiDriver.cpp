@@ -27,7 +27,7 @@ bool SpiDriver::open(NATIVE_INT_TYPE select, SpiFrequency clock, SpiMode spiMode
     }
 
     // Set base address from DriverCommon.hpp
-    m_baseAddr = reinterpret_cast<volatile U8*>(RTEMS::BaseAddress::SPI);
+    m_baseAddr = reinterpret_cast<volatile U32*>(RTEMS::BaseAddress::SPI);
     if (!m_baseAddr) {
         this->log_WARNING_HI_SPI_OpenError(select, -1);
         return false;
@@ -57,7 +57,7 @@ bool SpiDriver::open(NATIVE_INT_TYPE select, SpiFrequency clock, SpiMode spiMode
 
     // Calculate prescaler from clock frequency (assuming 50 MHz system clock)
     // Example: prescaler = (system_clock / desired_clock) - 1
-    U8 prescaler = (50000000 / clock) - 1; // Adjust system clock as needed
+    U32 prescaler = (50000000 / clock) - 1; // Adjust system clock as needed
     m_baseAddr[SPI_PRESC] = prescaler;
 
     // Initialize SPI hardware (master mode, mode bits)
@@ -104,14 +104,14 @@ void SpiDriver::SpiReadWrite_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& 
 
     // Perform transfer
     for (U32 i = 0; i < size; i++) {
-        m_baseAddr[SPI_DATA] = writeData[i];
-        if (!waitForComplete()) {
-            m_baseAddr[SPI_SSEL] = 0; // Deselect slave on error
-            this->log_WARNING_HI_SPI_WriteError(m_select, -1); // Generic error code
-            return;
-        }
-        readData[i] = m_baseAddr[SPI_DATA];
-    }
+      m_baseAddr[SPI_DATA] = writeData[i];
+      if (!waitForComplete()) {
+          m_baseAddr[SPI_SSEL] = 0; // Deselect slave on error
+          this->log_WARNING_HI_SPI_WriteError(m_select, -1); // Generic error code
+          return;
+      }
+      readData[i] = static_cast<U8>(m_baseAddr[SPI_DATA]); // Extract lower 8 bits
+  }
 
     // Deselect slave
     m_baseAddr[SPI_SSEL] = 0;

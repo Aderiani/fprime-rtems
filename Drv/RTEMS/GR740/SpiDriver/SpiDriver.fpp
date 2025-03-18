@@ -19,7 +19,7 @@ module Drv {
 
 
     @ Bytes Sent/Received
-    telemetry SPI_Bytes: U32 id 0
+    telemetry SPI_Bytes: U64 id 0
 
 
 

@@ -1,20 +1,19 @@
 module Drv {
 
   @ A driver component for GR740 UART controller
-  active component GR740UartDriver {
+  passive component GR740UartDriver {
 
     # ----------------------------------------------------------------------
     # General ports
     # ----------------------------------------------------------------------
+    include "../../../Interfaces/ByteStreamDriverInterface.fppi"
 
-    @ Byte stream driver model input
-    async input port drvDataIn: Drv.ByteStreamSend
+    @ Allocation port used for allocating memory in the receive task
+    output port allocate: Fw.BufferGet
 
-    @ Byte stream driver model output
-    output port drvDataOut: Drv.ByteStreamRecv
-    
-    @ Port indicating the driver is ready to receive data
-    output port ready: Drv.ByteStreamReady
+    @ Deallocates buffers passed to the "send" port
+    output port deallocate: Fw.BufferSend
+
 
     # ----------------------------------------------------------------------
     # Special ports
@@ -22,28 +21,88 @@ module Drv {
 
     event port Log
 
+    telemetry port Tlm
+
     text event port LogText
 
     time get port Time
-
     # ----------------------------------------------------------------------
     # Events
     # ----------------------------------------------------------------------
-    event UartInitSuccess(device: U32) severity diagnostic format "GR740 UART{} driver initialized successfully"
+  @ UART open error
+  event OpenError(
+                    device: string size 40 @< The device
+                    error: I32 @< The error code
+                    name: string size 40 @< error string
+                  ) \
+  severity warning high \
+  id 0 \
+  format "Error opening UART device {}: {} {}"
 
-    event UartInitError(device: U32, error: I32) severity warning high format "Failed to initialize GR740 UART{} driver with error code {}"
+  @ UART config error
+  event ConfigError(
+                      device: string size 40 @< The device
+                      error: I32 @< The error code
+                    ) \
+  severity warning high \
+  id 1 \
+  format "Error configuring UART device {}: {}"
 
-    event UartConfigSuccess(device: U32, baud: U32) severity diagnostic format "Successfully configured UART{} with baud rate {}"
+  @ UART write error
+  event WriteError(
+                     device: string size 40 @< The device
+                     error: I32 @< The error code
+                   ) \
+  severity warning high \
+  id 2 \
+  format "Error writing UART device {}: {}" \
+  throttle 5
 
-    event UartConfigError(device: U32, error: I32) severity warning high format "Failed to configure UART{} with error code {}"
+  @ UART read error
+  event ReadError(
+                    device: string size 40 @< The device
+                    error: I32 @< The error code
+                  ) \
+  severity warning high \
+  id 3 \
+  format "Error reading UART device {}: {}" \
+  throttle 5
 
-    event UartSendSuccess(device: U32, bytes: U32) severity diagnostic format "Successfully sent {} bytes on UART{}"
+  @ UART port opened event
+  event PortOpened(
+                     device: string size 40 @< The device
+                   ) \
+  severity activity high \
+  id 4 \
+  format "UART Device {} configured"
 
-    event UartSendError(device: U32, error: I32) severity warning high format "UART{} send failed with error code {}"
+  @ UART ran out of buffers
+  event NoBuffers(
+                    device: string size 40 @< The device
+                  ) \
+  severity warning high \
+  id 5 \
+  format "UART Device {} ran out of buffers" \
+  throttle 20
 
-    event UartRecvSuccess(device: U32, bytes: U32) severity diagnostic format "Successfully received {} bytes on UART{}"
+  @ UART ran out of buffers
+  event BufferTooSmall(
+                         device: string size 40 @< The device
+                         $size: U32 @< The provided buffer size
+                         needed: U32 @< The buffer size needed
+                       ) \
+  severity warning high \
+  id 6 \
+  format "UART Device {} target buffer too small. Size: {} Needs: {}"
 
-    event UartRecvError(device: U32, error: I32) severity warning high format "UART{} receive failed with error code {}"
+
+  @ Bytes Sent
+  telemetry BytesSent: U32 id 0
+
+  @ Bytes Received
+  telemetry BytesRecv: U32 id 1
+
+
 
   }
 

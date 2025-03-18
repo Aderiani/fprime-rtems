@@ -12,8 +12,6 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
 endif()
 
 set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/GR740NetworkInit.cpp"
-  "${CMAKE_CURRENT_LIST_DIR}/NetworkPorts.fpp"
   "${CMAKE_CURRENT_LIST_DIR}/NetworkComponent.fpp"
   "${CMAKE_CURRENT_LIST_DIR}/NetworkComponent.cpp"
 )

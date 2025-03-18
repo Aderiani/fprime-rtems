@@ -1,350 +1,193 @@
 // ======================================================================
 // \title  UartDriver.cpp
-// \author fprime-community
-// \brief  cpp file for GR740UartDriver component implementation class
+// \author [Your Name]
+// \brief  cpp file for UartDriver component implementation class for GR740 (RTEMS)
 //
 // \copyright
-// Copyright (C) 2024 fprime-community
+// Copyright 2025, [Your Organization or Name].
 // ALL RIGHTS RESERVED.
 //
 // ======================================================================
 
 #include <Drv/RTEMS/GR740/UartDriver/UartDriver.hpp>
-#include <FpConfig.hpp>
 #include <Fw/Types/Assert.hpp>
-#include <Fw/Logger/Logger.hpp>
-
+#include "Fw/Types/BasicTypes.hpp"
 namespace Drv {
 
-  // ----------------------------------------------------------------------
-  // Construction, initialization, and destruction
-  // ----------------------------------------------------------------------
+UartDriver::UartDriver(const char* const compName)
+    : GR740UartDriverComponentBase(compName),
+      m_baseAddr(nullptr),
+      m_device("NOT_EXIST"),
+      m_allocationSize(0),
+      m_quitReadThread(false) {}
 
-  GR740UartDriver ::
-    GR740UartDriver(const char* const compName, const U32 uartInstance) :
-      GR740UartDriverComponentBase(compName),
-      m_uartInstance(uartInstance),
-      m_uartDevice(nullptr),
-      m_uartRegs(nullptr),
-      m_initialized(false),
-      m_configured(false),
-      m_receiveTaskRunning(false)
-  {
-    // Initialize configuration with defaults
-    m_config.baudRate = 115200;
-    m_config.dataBits = 8;
-    m_config.stopBits = 1;
-    m_config.parityEnabled = false;
-    m_config.parityOdd = false;
-    m_config.flowControlEnabled = false;
-  }
-
-  void GR740UartDriver ::
-    init(const FwIndexType instance)
-  {
+void UartDriver::init(const NATIVE_INT_TYPE instance) {
     GR740UartDriverComponentBase::init(instance);
-  }
+}
 
-  GR740UartDriver ::
-    ~GR740UartDriver()
-  {
-    // Ensure receive task is stopped
-    if (m_receiveTaskRunning) {
-      stopReceiveTask();
-    }
-  }
+bool UartDriver::open(const char* const device, UartBaudRate baud, UartFlowControl fc, UartParity parity, U32 allocationSize) {
+    FW_ASSERT(device != nullptr);
+    m_allocationSize = allocationSize;
+    m_device = device;
 
-  bool GR740UartDriver ::
-    initialize()
-  {
-    if (m_initialized) {
-      return true; // Already initialized
-    }
-
-    // Initialize driver manager if not already initialized by BSP
-    RTEMS::DriverUtil::initializeDriverManager();
-
-    // Find the APBUART device in the system
-    m_uartDevice = RTEMS::DriverUtil::findAmbaDevice(
-      RTEMS::GAISLER_VENDOR_ID,
-      RTEMS::DeviceId::APBUART,
-      m_uartInstance
-    );
-
-    if (m_uartDevice == nullptr) {
-      this->log_WARNING_HI_UartInitError(m_uartInstance, -1);
-      return false;
+    // Map device name to GR740 UART base address
+    if (strcmp(device, "UART0") == 0) {
+        m_baseAddr = reinterpret_cast<volatile U32*>(RTEMS::BaseAddress::UART0);
+    } else if (strcmp(device, "UART1") == 0) {
+        m_baseAddr = reinterpret_cast<volatile U32*>(RTEMS::BaseAddress::UART1);
+    } else {
+        this->log_WARNING_HI_OpenError(Fw::LogStringArg(device), -1, Fw::LogStringArg("Unknown device"));
+        return false;
     }
 
-    // Get the APBUART register structure
-    struct ambapp_dev* ambapp_dev = (struct ambapp_dev*)m_uartDevice->businfo;
-    m_uartRegs = (struct apbuart_regs*)ambapp_dev->apb_slv->start;
-
-    if (m_uartRegs == nullptr) {
-      this->log_WARNING_HI_UartInitError(m_uartInstance, -2);
-      return false;
+    if (!m_baseAddr) {
+        this->log_WARNING_HI_OpenError(Fw::LogStringArg(device), -1, Fw::LogStringArg("Invalid base address"));
+        return false;
     }
 
-    // Initialize the UART controller
-    // Reset the controller
-    m_uartRegs->ctrl = 0;
-    
-    // Enable receiver and transmitter
-    m_uartRegs->ctrl = APBUART_CTRL_RE | APBUART_CTRL_TE;
-
-    // Initialize success
-    m_initialized = true;
-    this->log_DIAGNOSTIC_UartInitSuccess(m_uartInstance);
-    
-    // Signal that the driver is ready
-    this->ready_out(0);
-    
-    return true;
-  }
-
-  bool GR740UartDriver ::
-    configure(const UartConfiguration& config)
-  {
-    Os::LockGuard guard(m_mutex);
-
-    if (!m_initialized) {
-      this->log_WARNING_HI_UartConfigError(m_uartInstance, -1);
-      return false;
+    // Calculate scaler for baud rate (assuming 50 MHz system clock)
+    U32 scaler = 0;
+    switch (baud) {
+        case BAUD_9600:   scaler = (50000000 / (9600 * 8)) - 1; break;
+        case BAUD_19200:  scaler = (50000000 / (19200 * 8)) - 1; break;
+        case BAUD_38400:  scaler = (50000000 / (38400 * 8)) - 1; break;
+        case BAUD_57600:  scaler = (50000000 / (57600 * 8)) - 1; break;
+        case BAUD_115K:   scaler = (50000000 / (115200 * 8)) - 1; break;
+        case BAUD_230K:   scaler = (50000000 / (230400 * 8)) - 1; break;
+        case BAUD_460K:   scaler = (50000000 / (460800 * 8)) - 1; break;
+        case BAUD_921K:   scaler = (50000000 / (921600 * 8)) - 1; break;
+        case BAUD_1000K:  scaler = (50000000 / (1000000 * 8)) - 1; break;
+        case BAUD_1152K:  scaler = (50000000 / (1152000 * 8)) - 1; break;
+        case BAUD_1500K:  scaler = (50000000 / (1500000 * 8)) - 1; break;
+        case BAUD_2000K:  scaler = (50000000 / (2000000 * 8)) - 1; break;
+        case BAUD_2500K:  scaler = (50000000 / (2500000 * 8)) - 1; break;
+        case BAUD_3000K:  scaler = (50000000 / (3000000 * 8)) - 1; break;
+        case BAUD_3500K:  scaler = (50000000 / (3500000 * 8)) - 1; break;
+        case BAUD_4000K:  scaler = (50000000 / (4000000 * 8)) - 1; break;
+        default:
+            FW_ASSERT(0, static_cast<FwAssertArgType>(baud));
+            break;
     }
-
-    // Store the configuration
-    m_config = config;
-
-    // Calculate the scaler value based on system clock and desired baud rate
-    // For GR740, the typical system clock is 50 MHz
-    // SCALER = (50,000,000 / (baud * 8)) - 1
-    U32 systemClock = 50000000; // 50 MHz - you may need to adjust this based on your system
-    U32 scaler = (systemClock / (config.baudRate * 8)) - 1;
 
     // Configure UART
-    U32 ctrl = m_uartRegs->ctrl;
-    
-    // Set basic control bits (receiver and transmitter enabled)
-    ctrl |= APBUART_CTRL_RE | APBUART_CTRL_TE;
-
-    // Configure parity
-    if (config.parityEnabled) {
-      ctrl |= APBUART_CTRL_PE;  // Enable parity
-      if (config.parityOdd) {
-        ctrl |= APBUART_CTRL_PS;  // Set odd parity
-      } else {
-        ctrl &= ~APBUART_CTRL_PS; // Set even parity
-      }
-    } else {
-      ctrl &= ~APBUART_CTRL_PE;  // Disable parity
+    U32 ctrl = CTRL_RE | CTRL_TE; // Enable receiver and transmitter
+    if (fc == HW_FLOW) {
+        ctrl |= CTRL_FL;
+    }
+    if (parity == PARITY_EVEN) {
+        ctrl |= CTRL_PE;
+    } else if (parity == PARITY_ODD) {
+        ctrl |= CTRL_PE | CTRL_PS;
     }
 
-    // Configure flow control
-    if (config.flowControlEnabled) {
-      ctrl |= APBUART_CTRL_FL;
-    } else {
-      ctrl &= ~APBUART_CTRL_FL;
+    m_baseAddr[UART_SCAL] = scaler;
+    m_baseAddr[UART_CTRL] = ctrl;
+
+    this->log_ACTIVITY_HI_PortOpened(Fw::LogStringArg(device));
+    if (this->isConnected_ready_OutputPort(0)) {
+        this->ready_out(0); // Indicate the driver is connected
     }
-
-    // Configure data bits (APBUART typically uses 8 bits, so this is ignored in this implementation)
-    
-    // Apply the configuration
-    m_uartRegs->ctrl = ctrl;
-    
-    // Set the scaler
-    m_uartRegs->scaler = scaler;
-
-    // Configuration succeeded
-    m_configured = true;
-    this->log_DIAGNOSTIC_UartConfigSuccess(m_uartInstance, config.baudRate);
     return true;
-  }
+}
 
-  bool GR740UartDriver ::
-    startReceiveTask(NATIVE_INT_TYPE priority, NATIVE_INT_TYPE stackSize)
-  {
-    if (!m_initialized || !m_configured) {
-      return false;
+UartDriver::~UartDriver() {
+    if (m_baseAddr) {
+        m_baseAddr[UART_CTRL] = 0; // Disable UART
     }
+}
 
-    if (m_receiveTaskRunning) {
-      return true; // Already running
-    }
+// ----------------------------------------------------------------------
+// Handler implementations
+// ----------------------------------------------------------------------
 
-    // Set running flag
-    m_receiveTaskRunning = true;
+Drv::SendStatus UartDriver::send_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& serBuffer) {
+    Drv::SendStatus status = Drv::SendStatus::SEND_OK;
+    if (!m_baseAddr || serBuffer.getData() == nullptr || serBuffer.getSize() == 0) {
+        status = Drv::SendStatus::SEND_ERROR;
+    } else {
+        U8* data = serBuffer.getData();
+        U32 size = serBuffer.getSize();
 
-    // Start the receive task
-    Os::TaskString name("UartRecvTask");
-    Os::Task::Status status = m_receiveTask.start(name, 
-                                                 GR740UartDriver::receiveTaskEntry,
-                                                 this,
-                                                 priority,
-                                                 stackSize);
-
-    return (status == Os::Task::OP_OK);
-  }
-
-  void GR740UartDriver ::
-    stopReceiveTask()
-  {
-    if (!m_receiveTaskRunning) {
-      return;
-    }
-
-    // Clear running flag to signal task to exit
-    {
-      Os::LockGuard guard(m_mutex);
-      m_receiveTaskRunning = false;
-    }
-
-    // Wait for task to terminate
-    m_receiveTask.join();
-  }
-
-  // ----------------------------------------------------------------------
-  // Handler implementations for user-defined typed input ports
-  // ----------------------------------------------------------------------
-
-  Drv::SendStatus GR740UartDriver ::
-    drvDataIn_handler(
-        const FwIndexType portNum,
-        Fw::Buffer &fwBuffer
-    )
-  {
-    Os::LockGuard guard(m_mutex);
-
-    if (!m_initialized || !m_configured) {
-      this->log_WARNING_HI_UartSendError(m_uartInstance, -1);
-      return Drv::SendStatus::SEND_ERROR;
-    }
-
-    // Get buffer parameters
-    const U8* data = fwBuffer.getData();
-    U32 size = fwBuffer.getSize();
-
-    if (data == nullptr || size == 0) {
-      this->log_WARNING_HI_UartSendError(m_uartInstance, -2);
-      return Drv::SendStatus::SEND_ERROR;
-    }
-
-    // Send the data
-    if (!sendBuffer(data, size)) {
-      this->log_WARNING_HI_UartSendError(m_uartInstance, -3);
-      return Drv::SendStatus::SEND_ERROR;
-    }
-
-    // Log success
-    this->log_DIAGNOSTIC_UartSendSuccess(m_uartInstance, size);
-    return Drv::SendStatus::SEND_OK;
-  }
-
-  // ----------------------------------------------------------------------
-  // Private methods
-  // ----------------------------------------------------------------------
-
-  void GR740UartDriver ::
-    receiveTaskEntry(void* arg)
-  {
-    GR740UartDriver* driver = static_cast<GR740UartDriver*>(arg);
-    FW_ASSERT(driver != nullptr);
-
-    driver->receiveTask();
-  }
-
-  void GR740UartDriver ::
-    receiveTask()
-  {
-    while (true) {
-      // Check if we should exit
-      {
-        Os::LockGuard guard(m_mutex);
-        if (!m_receiveTaskRunning) {
-          break;
+        for (U32 i = 0; i < size; i++) {
+            // Wait for transmitter to be ready
+            while (!(m_baseAddr[UART_STAT] & STAT_TH)) {
+                // Check for overrun or other errors
+                if (m_baseAddr[UART_STAT] & STAT_OR) {
+                    this->log_WARNING_HI_WriteError(Fw::LogStringArg(m_device), -1);
+                    status = Drv::SendStatus::SEND_ERROR;
+                    break;
+                }
+            }
+            if (status == Drv::SendStatus::SEND_ERROR) {
+                break;
+            }
+            m_baseAddr[UART_DATA] = data[i];
         }
-      }
-
-      // Receive data
-      I32 bytesReceived = receiveBuffer(m_receiveBuffer, sizeof(m_receiveBuffer));
-
-      if (bytesReceived > 0) {
-        // Create a buffer to hold the received data
-        Fw::Buffer recvBuffer = Fw::Buffer(m_receiveBuffer, bytesReceived);
-        
-        // Send the data to the output port
-        this->drvDataOut_out(0, recvBuffer, Drv::RecvStatus::RECV_OK);
-        
-        // Log success
-        this->log_DIAGNOSTIC_UartRecvSuccess(m_uartInstance, bytesReceived);
-      } 
-      else if (bytesReceived < 0) {
-        // Error occurred
-        this->log_WARNING_HI_UartRecvError(m_uartInstance, bytesReceived);
-
-        // Create an empty buffer for error reporting
-        Fw::Buffer errorBuffer = Fw::Buffer(nullptr, 0);
-        
-        // Send error status
-        this->drvDataOut_out(0, errorBuffer, Drv::RecvStatus::RECV_ERROR);
-
-        // Small delay before retrying to prevent CPU hogging on persistent errors
-        Os::Task::delay(10);
-      }
-      else {
-        // No data available, small delay before polling again
-        Os::Task::delay(10);
-      }
-    }
-  }
-
-  bool GR740UartDriver ::
-    sendBuffer(const U8* buffer, size_t size)
-  {
-    if (!m_initialized || !m_configured || buffer == nullptr) {
-      return false;
     }
 
-    // Send data byte by byte
-    for (size_t i = 0; i < size; i++) {
-      // Wait for transmitter to be ready
-      while (!(m_uartRegs->status & APBUART_STATUS_TE)) {
-        // This is a busy-wait loop - in a real driver you might use timeouts
-      }
-
-      // Send the byte
-      m_uartRegs->data = buffer[i];
+    if (isConnected_deallocate_OutputPort(0)) {
+        deallocate_out(0, serBuffer);
     }
+    return status;
+}
 
-    return true;
-  }
+// ----------------------------------------------------------------------
+// Private methods
+// ----------------------------------------------------------------------
 
-  I32 GR740UartDriver ::
-    receiveBuffer(U8* buffer, size_t size)
-  {
-    if (!m_initialized || !m_configured || buffer == nullptr || size == 0) {
-      return -1;
+void UartDriver::serialReadTaskEntry(void* ptr) {
+    FW_ASSERT(ptr != nullptr);
+    UartDriver* comp = reinterpret_cast<UartDriver*>(ptr);
+
+    while (!comp->m_quitReadThread) {
+        Fw::Buffer buff = comp->allocate_out(0, comp->m_allocationSize);
+
+        if (buff.getData() == nullptr) {
+            comp->log_WARNING_HI_NoBuffers(Fw::LogStringArg(comp->m_device));
+            comp->recv_out(0, buff, Drv::RecvStatus::RECV_ERROR);
+            Os::Task::delay(Fw::TimeInterval(0, 50000)); // 50 ms delay
+            continue;
+        }
+
+        U8* data = buff.getData();
+        U32 size = buff.getSize();
+        U32 bytesRead = 0;
+
+        // Read with timeout (1 sec equivalent)
+        U32 timeout = 10000; // ~1 sec at 1 kHz tick rate, adjust as needed
+        while (bytesRead < size && timeout-- && !comp->m_quitReadThread) {
+            if (comp->m_baseAddr[UART_STAT] & STAT_DR) { // Data ready
+                data[bytesRead++] = static_cast<U8>(comp->m_baseAddr[UART_DATA]);
+            }
+            if (comp->m_baseAddr[UART_STAT] & STAT_OR) { // Overrun error
+                comp->log_WARNING_HI_ReadError(Fw::LogStringArg(comp->m_device), -1);
+                break;
+            }
+        }
+
+        Drv::RecvStatus status = Drv::RecvStatus::RECV_OK;
+        if (bytesRead > 0) {
+            buff.setSize(bytesRead);
+        } else {
+            status = Drv::RecvStatus::RECV_ERROR;
+        }
+        comp->recv_out(0, buff, status);
     }
+}
 
-    I32 bytesReceived = 0;
-    
-    // Check if data is available
-    if (!(m_uartRegs->status & APBUART_STATUS_DR)) {
-      return 0; // No data available
-    }
+void UartDriver::start(Os::Task::ParamType priority, Os::Task::ParamType stackSize, Os::Task::ParamType cpuAffinity) {
+    Os::TaskString task("UartReader");
+    Os::Task::Arguments arguments(task, serialReadTaskEntry, this, priority, stackSize, cpuAffinity);
+    Os::Task::Status stat = this->m_readTask.start(arguments);
+    FW_ASSERT(stat == Os::Task::OP_OK, stat);
+}
 
-    // Read data until either buffer is full or no more data available
-    for (size_t i = 0; i < size; i++) {
-      // Check if data is available
-      if (!(m_uartRegs->status & APBUART_STATUS_DR)) {
-        break;
-      }
+void UartDriver::quitReadThread() {
+    this->m_quitReadThread = true;
+}
 
-      // Read the byte
-      buffer[i] = m_uartRegs->data & 0xFF;
-      bytesReceived++;
-    }
-
-    return bytesReceived;
-  }
+Os::Task::Status UartDriver::join() {
+    return m_readTask.join();
+}
 
 } // end namespace Drv

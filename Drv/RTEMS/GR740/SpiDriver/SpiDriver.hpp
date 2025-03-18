@@ -70,7 +70,7 @@ class SpiDriver final : public GR740SpiDriverComponentBase {
     // Private member variables
     // ----------------------------------------------------------------------
 
-    volatile U8* m_baseAddr; //!< Pointer to SPI register base address
+    volatile U32* m_baseAddr; //!< Pointer to SPI register base address
     NATIVE_INT_TYPE m_select; //!< Slave select index
     bool m_isOpen;            //!< Tracks if the driver is open
     U64 m_bytes;              //!< Total bytes transferred (for telemetry)
