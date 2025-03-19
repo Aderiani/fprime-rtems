@@ -1,4 +1,5 @@
 module LedBlinker {
+  
 
   # ----------------------------------------------------------------------
   # Symbolic constants for port numbers
@@ -21,7 +22,6 @@ module LedBlinker {
     instance tlmSend
     instance cmdDisp
     instance cmdSeq
-    instance comDriver
     instance comQueue
     instance comStub
     instance deframer
@@ -43,9 +43,9 @@ module LedBlinker {
     instance systemResources
     instance led
     instance gpioDriver
-    instance gr740Network
     instance uartDriver
     instance spiDriver
+    instance tcpServer
 
 
 
@@ -71,6 +71,8 @@ module LedBlinker {
     # Direct graph specifiers
     # ----------------------------------------------------------------------
 
+    
+
     connections Downlink {
 
       eventLogger.PktSend -> comQueue.comQueueIn[0]
@@ -84,12 +86,12 @@ module LedBlinker {
       framer.framedOut -> comStub.comDataIn
       framer.bufferDeallocate -> fileDownlink.bufferReturn
 
-      comDriver.deallocate -> bufferManager.bufferSendIn
-      comDriver.ready -> comStub.drvConnected
+      tcpServer.deallocate -> bufferManager.bufferSendIn
+      tcpServer.ready -> comStub.drvConnected
 
       comStub.comStatus -> framer.comStatusIn
       framer.comStatusOut -> comQueue.comStatusIn
-      comStub.drvDataOut -> comDriver.$send
+      comStub.drvDataOut -> tcpServer.$send
 
     }
 
@@ -125,8 +127,8 @@ module LedBlinker {
 
     connections Uplink {
 
-      comDriver.allocate -> bufferManager.bufferGetCallee
-      comDriver.$recv -> comStub.drvDataIn
+      tcpServer.allocate -> bufferManager.bufferGetCallee
+      tcpServer.$recv -> comStub.drvDataIn
       comStub.comDataOut -> deframer.framedIn
 
       deframer.framedDeallocate -> bufferManager.bufferSendIn

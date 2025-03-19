@@ -93,6 +93,8 @@ module LedBlinker {
     stack size Default.STACK_SIZE \
     priority 96
 
+
+
   # ----------------------------------------------------------------------
   # Queued component instances
   # ----------------------------------------------------------------------
@@ -104,9 +106,11 @@ module LedBlinker {
   # Passive component instances
   # ----------------------------------------------------------------------
 
-  @ Communications driver. May be swapped with other com drivers like UART or TCP
-  instance comDriver: Drv.GR740NetworkComponent base id 0x4000
-
+  # @ Communications driver. May be swapped with other com drivers like UART or TCP
+  instance network: Drv.GR740NetworkComponent base id 0x1000
+  
+  instance tcpServer: Drv.TcpServer base id 0x3000
+  
   instance framer: Svc.Framer base id 0x4100
 
   instance fatalAdapter: Svc.AssertFatalAdapter base id 0x4200
@@ -129,11 +133,9 @@ module LedBlinker {
 
   instance gpioDriver: Drv.GR740GpioDriver base id 0x4C00
 
-  instance gr740Network: Drv.GR740NetworkComponent base id 0x4D00
+  instance uartDriver: Drv.GR740UartDriver base id 0x4D00
 
-  instance uartDriver: Drv.GR740UartDriver base id 0x4E00
-
-  instance spiDriver: Drv.GR740SpiDriver base id 0x4F00
+  instance spiDriver: Drv.GR740SpiDriver base id 0x4E00
 
 
 }

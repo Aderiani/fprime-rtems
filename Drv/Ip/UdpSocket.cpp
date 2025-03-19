@@ -1,19 +1,19 @@
 // ======================================================================
 // \title  UdpSocket.cpp
-// \author mstarch
+// \author mstarch, [Your Name]
 // \brief  cpp file for UdpSocket core implementation classes
 //
 // \copyright
 // Copyright 2009-2020, by the California Institute of Technology.
-// ALL RIGHTS RESERVED.  United States Government Sponsorship
-// acknowledged.
-//
+// ALL RIGHTS RESERVED.  United States Government Sponsorship acknowledged.
+// Updates for RTEMS Copyright 2025, [Your Organization or Name].
 // ======================================================================
+
 #include <Drv/Ip/UdpSocket.hpp>
 #include <Fw/Logger/Logger.hpp>
 #include <Fw/Types/Assert.hpp>
+#include <Fw/Types/StringUtils.hpp> // For string_copy
 #include <FpConfig.hpp>
-#include <Fw/Types/StringUtils.hpp>
 
 #ifdef TGT_OS_TYPE_VXWORKS
     #include <socket.h>
@@ -27,179 +27,142 @@
     #include <sysLib.h>
     #include <errnoLib.h>
     #include <cstring>
-#elif defined TGT_OS_TYPE_LINUX || TGT_OS_TYPE_DARWIN
+#elif defined TGT_OS_TYPE_LINUX || defined TGT_OS_TYPE_DARWIN || defined __rtems__
     #include <sys/socket.h>
     #include <unistd.h>
     #include <arpa/inet.h>
+    #include <netinet/in.h>
 #else
     #error OS not supported for IP Socket Communications
 #endif
 
+#include <cstdio>
 #include <cstring>
-#include <new>
+#include <cerrno>
 
 namespace Drv {
 
-struct SocketState {
-    struct sockaddr_in m_addr_send;  //!< UDP server address, maybe unused
-    struct sockaddr_in m_addr_recv;  //!< UDP server address, maybe unused
-
-    SocketState() {
-        ::memset(&m_addr_send, 0, sizeof(m_addr_send));
-        ::memset(&m_addr_recv, 0, sizeof(m_addr_recv));
-    }
-};
-
-UdpSocket::UdpSocket() : IpSocket(), m_state(new(std::nothrow) SocketState), m_recv_port(0) {
-    FW_ASSERT(m_state != nullptr);
+UdpSocket::UdpSocket() : IpSocket(), m_state(nullptr), m_recv_port(0) {
+    ::memset(m_recv_hostname, 0, sizeof(m_recv_hostname));
 }
 
 UdpSocket::~UdpSocket() {
-    FW_ASSERT(m_state);
-    delete m_state;
+    // m_state cleanup would go here if allocated, but it's not used in this implementation
 }
 
-SocketIpStatus UdpSocket::configure(const char* const hostname, const U16 port, const U32 timeout_seconds, const U32 timeout_microseconds) {
-    FW_ASSERT(0); // Must use configureSend and/or configureRecv
-    return SocketIpStatus::SOCK_INVALID_CALL;
+SocketIpStatus UdpSocket::configure(const char* hostname, const U16 port, const U32 send_timeout_seconds,
+                                   const U32 send_timeout_microseconds) {
+    FW_ASSERT(0); // configure() is disabled per header
+    return SOCK_FAILED_TO_SET_SOCKET_OPTIONS;
 }
 
-
-SocketIpStatus UdpSocket::configureSend(const char* const hostname, const U16 port, const U32 timeout_seconds, const U32 timeout_microseconds) {
-    //Timeout is for the send, so configure send will work with the base class
-    FW_ASSERT(port != 0, port); // Send cannot be on port 0
+SocketIpStatus UdpSocket::configureSend(const char* hostname, const U16 port, const U32 send_timeout_seconds,
+                                        const U32 send_timeout_microseconds) {
+    FW_ASSERT(this->isValidPort(port), static_cast<FwAssertArgType>(port));
     FW_ASSERT(hostname != nullptr);
-    return this->IpSocket::configure(hostname, port, timeout_seconds, timeout_microseconds);
-}
-
-SocketIpStatus UdpSocket::configureRecv(const char* hostname, const U16 port) {
-    FW_ASSERT(this->isValidPort(port));
-    FW_ASSERT(hostname != nullptr);
-    this->m_recv_port = port;
-    (void) Fw::StringUtils::string_copy(this->m_recv_hostname, hostname, static_cast<FwSizeType>(SOCKET_MAX_HOSTNAME_SIZE));
+    this->m_timeoutSeconds = send_timeout_seconds;
+    this->m_timeoutMicroseconds = send_timeout_microseconds;
+    this->m_port = port; // Send port stored in IpSocket's m_port
+    (void) Fw::StringUtils::string_copy(this->m_hostname, hostname, sizeof(m_hostname));
     return SOCK_SUCCESS;
 }
 
-U16 UdpSocket::getRecvPort() {
-    U16 port = this->m_recv_port;
-    return port;
+SocketIpStatus UdpSocket::configureRecv(const char* hostname, const U16 port) {
+    FW_ASSERT(this->isValidPort(port), static_cast<FwAssertArgType>(port));
+    this->m_recv_port = port; // Receive port stored separately
+    if (hostname != nullptr) {
+        (void) Fw::StringUtils::string_copy(this->m_recv_hostname, hostname, sizeof(m_recv_hostname));
+    } else {
+        ::memset(m_recv_hostname, 0, sizeof(m_recv_hostname)); // Clear if null
+    }
+    return SOCK_SUCCESS;
 }
 
-
 SocketIpStatus UdpSocket::bind(const PlatformIntType fd) {
-    struct sockaddr_in address;
-    FW_ASSERT(fd != -1);
+    struct sockaddr_in recvAddr;
+    ::memset(&recvAddr, 0, sizeof(recvAddr));
+    recvAddr.sin_family = AF_INET;
+    recvAddr.sin_port = htons(this->m_recv_port);
 
-    // Set up the address port and name
-    address.sin_family = AF_INET;
-    address.sin_port = htons(this->m_recv_port);
-    // OS specific settings
-#if defined TGT_OS_TYPE_VXWORKS || TGT_OS_TYPE_DARWIN
-    address.sin_len = static_cast<U8>(sizeof(struct sockaddr_in));
+#if defined TGT_OS_TYPE_VXWORKS || defined TGT_OS_TYPE_DARWIN
+    recvAddr.sin_len = static_cast<U8>(sizeof(struct sockaddr_in));
 #endif
 
-    // First IP address to socket sin_addr
-    if (IpSocket::addressToIp4(m_recv_hostname, &address.sin_addr) != SOCK_SUCCESS) {
-        return SOCK_INVALID_IP_ADDRESS;
-    };
-    // UDP (for receiving) requires bind to an address to the socket
-    if (::bind(fd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
-        return SOCK_FAILED_TO_BIND;
+    // Use INADDR_ANY if m_recv_hostname is empty, otherwise convert it
+    if (m_recv_hostname[0] == '\0' || IpSocket::addressToIp4(m_recv_hostname, &(recvAddr.sin_addr)) != SOCK_SUCCESS) {
+        recvAddr.sin_addr.s_addr = INADDR_ANY; // Default to all interfaces
     }
 
-    socklen_t size = sizeof(address);
-    if (::getsockname(fd, reinterpret_cast<struct sockaddr *>(&address), &size) == -1) {
-        return SOCK_FAILED_TO_READ_BACK_PORT;
+    if (::bind(fd, reinterpret_cast<struct sockaddr*>(&recvAddr), sizeof(recvAddr)) < 0) {
+        Fw::Logger::log("[ERROR] Failed to bind UDP socket to %s:%hu: %d\n", m_recv_hostname, m_recv_port, errno);
+        return SOCK_FAILED_TO_CONNECT;
     }
-
-    FW_ASSERT(sizeof(this->m_state->m_addr_recv) == sizeof(address), sizeof(this->m_state->m_addr_recv), sizeof(address));
-    memcpy(&this->m_state->m_addr_recv, &address, sizeof(this->m_state->m_addr_recv));
-
     return SOCK_SUCCESS;
 }
 
 SocketIpStatus UdpSocket::openProtocol(SocketDescriptor& socketDescriptor) {
-    SocketIpStatus status = SOCK_SUCCESS;
     NATIVE_INT_TYPE socketFd = -1;
-    struct sockaddr_in address;
 
-    U16 port = this->m_port;
-
-    // Acquire a socket, or return error
     if ((socketFd = ::socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
+        Fw::Logger::log("[ERROR] Failed to create UDP socket: %d\n", errno);
         return SOCK_FAILED_TO_GET_SOCKET;
     }
 
-    // May not be sending in all cases
-    if (port != 0) {
-        // Set up the address port and name
-        address.sin_family = AF_INET;
-        address.sin_port = htons(this->m_port);
-
-        // OS specific settings
-#if defined TGT_OS_TYPE_VXWORKS || TGT_OS_TYPE_DARWIN
-        address.sin_len = static_cast<U8>(sizeof(struct sockaddr_in));
-#endif
-
-        // First IP address to socket sin_addr
-        if ((status = IpSocket::addressToIp4(m_hostname, &(address.sin_addr))) != SOCK_SUCCESS) {
-            ::close(socketFd);
-            return status;
-        };
-
-        // Now apply timeouts
-        if ((status = IpSocket::setupTimeouts(socketFd)) != SOCK_SUCCESS) {
-            ::close(socketFd);
-            return status;
-        }
-        FW_ASSERT(sizeof(this->m_state->m_addr_send) == sizeof(address), sizeof(this->m_state->m_addr_send),
-                  sizeof(address));
-        memcpy(&this->m_state->m_addr_send, &address, sizeof(this->m_state->m_addr_send));
-    }
-
-    // Receive port set up only done when configure receive was called
-    U16 recv_port = this->m_recv_port;
-    if (recv_port != 0) {
-        status = this->bind(socketFd);
-        // When we are setting up for receiving as well, then we must bind to a port
+    // Bind if receive port is configured
+    if (this->m_recv_port != 0) {
+        SocketIpStatus status = this->bind(socketFd);
         if (status != SOCK_SUCCESS) {
-            (void) ::close(socketFd); // Closing FD as a retry will reopen send side
+            ::close(socketFd);
             return status;
         }
     }
 
-    // Log message for UDP
-    if ((port == 0) && (recv_port > 0)) {
-        Fw::Logger::log("Setup to only receive udp at %s:%hu\n", m_recv_hostname,
-                           recv_port);
-    } else if ((port > 0) && (recv_port == 0))  {
-        Fw::Logger::log("Setup to only send udp at %s:%hu\n", m_hostname,
-                           port);
-    } else if ((port > 0) && (recv_port > 0))  {
-        Fw::Logger::log("Setup to receive udp at %s:%hu and send to %s:%hu\n",
-                           m_recv_hostname,
-                           recv_port,
-                           m_hostname,
-                           port);
+    // Apply timeouts (RTEMS supports SO_SNDTIMEO)
+    if (IpSocket::setupTimeouts(socketFd) != SOCK_SUCCESS) {
+        ::close(socketFd);
+        Fw::Logger::log("[ERROR] Failed to set UDP socket timeouts\n");
+        return SOCK_FAILED_TO_SET_SOCKET_OPTIONS;
     }
-    // Neither configuration method was called
-    else {
-        FW_ASSERT(port > 0 || recv_port > 0, port, recv_port);
-    }
-    FW_ASSERT(status == SOCK_SUCCESS, status);
+
     socketDescriptor.fd = socketFd;
-    return status;
+    Fw::Logger::log("UDP socket opened%s%hu\n",
+                    (m_recv_port != 0) ? " for receiving on port " : "",
+                    m_recv_port);
+    return SOCK_SUCCESS;
 }
 
 I32 UdpSocket::sendProtocol(const SocketDescriptor& socketDescriptor, const U8* const data, const U32 size) {
-    FW_ASSERT(this->m_state->m_addr_send.sin_family != 0); // Make sure the address was previously setup
+    if (this->m_port == 0 || m_hostname[0] == '\0') {
+        return -1; // Send not configured
+    }
+
+    struct sockaddr_in sendAddr;
+    ::memset(&sendAddr, 0, sizeof(sendAddr));
+    sendAddr.sin_family = AF_INET;
+    sendAddr.sin_port = htons(this->m_port);
+
+#if defined TGT_OS_TYPE_VXWORKS || defined TGT_OS_TYPE_DARWIN
+    sendAddr.sin_len = static_cast<U8>(sizeof(struct sockaddr_in));
+#endif
+
+    if (IpSocket::addressToIp4(m_hostname, &(sendAddr.sin_addr)) != SOCK_SUCCESS) {
+        Fw::Logger::log("[ERROR] Invalid send hostname: %s\n", m_hostname);
+        return -1;
+    }
+
     return static_cast<I32>(::sendto(socketDescriptor.fd, data, size, SOCKET_IP_SEND_FLAGS,
-                    reinterpret_cast<struct sockaddr *>(&this->m_state->m_addr_send), sizeof(this->m_state->m_addr_send)));
+                                     reinterpret_cast<struct sockaddr*>(&sendAddr), sizeof(sendAddr)));
 }
 
 I32 UdpSocket::recvProtocol(const SocketDescriptor& socketDescriptor, U8* const data, const U32 size) {
-    FW_ASSERT(this->m_state->m_addr_recv.sin_family != 0); // Make sure the address was previously setup
-    return static_cast<I32>(::recvfrom(socketDescriptor.fd, data, size, SOCKET_IP_RECV_FLAGS, nullptr, nullptr));
+    struct sockaddr_in senderAddr;
+    socklen_t addrLen = sizeof(senderAddr);
+    return static_cast<I32>(::recvfrom(socketDescriptor.fd, data, size, SOCKET_IP_RECV_FLAGS,
+                                       reinterpret_cast<struct sockaddr*>(&senderAddr), &addrLen));
 }
 
-}  // namespace Drv
+U16 UdpSocket::getRecvPort() {
+    return m_recv_port;
+}
+
+} // namespace Drv

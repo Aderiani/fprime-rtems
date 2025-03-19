@@ -8,6 +8,7 @@
 // ALL RIGHTS RESERVED.
 //
 // ======================================================================
+#define IFNAMSIZ IF_NAMESIZE // For compatibility with older versions of RTEMS
 
 #include "Drv/RTEMS/GR740/Network/NetworkComponent.hpp"
 #include <Fw/Types/Assert.hpp>
@@ -21,6 +22,13 @@
 #include <net/if.h> // For IF_NAMESIZE
 
 namespace Drv {
+
+static int greth_attach_wrapper(struct rtems_bsdnet_ifconfig* conf, int attaching) {
+    greth_register_drv(); // Call the GRLIB function
+    return 0; // Success
+}
+
+
 
 GR740NetworkComponent::GR740NetworkComponent(const char* const compName)
     : GR740NetworkComponentComponentBase(compName),
@@ -65,7 +73,7 @@ void GR740NetworkComponent::START_NETWORK_cmdHandler(
     // Setup network interface configuration
     memset(&m_ifconfig, 0, sizeof(struct rtems_bsdnet_ifconfig));
     m_ifconfig.name = const_cast<char*>("gr0");
-    m_ifconfig.attach = greth_attach; // Must be provided by GRLIB GRETH driver
+    m_ifconfig.attach = greth_attach_wrapper; // Use the wrapper
     m_ifconfig.ip_address = useDhcp ? nullptr : const_cast<char*>(ipAddress.toChar());
     m_ifconfig.ip_netmask = useDhcp ? nullptr : const_cast<char*>(netmask.toChar());
     m_ifconfig.mtu = 0;

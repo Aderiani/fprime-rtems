@@ -1,42 +1,38 @@
 // ======================================================================
 // \title  UdpComponentImpl.cpp
-// \author mstarch
+// \author mstarch, [Your Name]
 // \brief  cpp file for UdpComponentImpl component implementation class
 //
 // \copyright
 // Copyright 2009-2020, by the California Institute of Technology.
-// ALL RIGHTS RESERVED.  United States Government Sponsorship
-// acknowledged.
-//
+// ALL RIGHTS RESERVED.  United States Government Sponsorship acknowledged.
+// Updates for RTEMS Copyright 2025, [Your Organization or Name].
 // ======================================================================
 
 #include <limits>
 #include <Drv/Udp/UdpComponentImpl.hpp>
 #include <IpCfg.hpp>
 #include <FpConfig.hpp>
-#include "Fw/Types/Assert.hpp"
-
+#include <Fw/Types/Assert.hpp>
+#include <Fw/Logger/Logger.hpp> // Optional, for logging
 
 namespace Drv {
 
-// ----------------------------------------------------------------------
-// Construction, initialization, and destruction
-// ----------------------------------------------------------------------
-
 UdpComponentImpl::UdpComponentImpl(const char* const compName)
-    : UdpComponentBase(compName) {}
+    : UdpComponentBase(compName), m_allocation_size(4096) {} // Default buffer size
 
 SocketIpStatus UdpComponentImpl::configureSend(const char* hostname,
-                                                 const U16 port,
-                                                 const U32 send_timeout_seconds,
-                                                 const U32 send_timeout_microseconds) {
+                                               const U16 port,
+                                               const U32 send_timeout_seconds,
+                                               const U32 send_timeout_microseconds) {
+    // RTEMS: hostname must be valid or resolvable via BSD networking
     return m_socket.configureSend(hostname, port, send_timeout_seconds, send_timeout_microseconds);
 }
 
 SocketIpStatus UdpComponentImpl::configureRecv(const char* hostname, const U16 port, FwSizeType buffer_size) {
     FW_ASSERT(buffer_size <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(buffer_size));
-    m_allocation_size = buffer_size; // Store the buffer size
-
+    m_allocation_size = buffer_size;
+    // RTEMS: hostname can be nullptr (bind to all interfaces) or specific IP
     return m_socket.configureRecv(hostname, port);
 }
 
@@ -46,10 +42,7 @@ U16 UdpComponentImpl::getRecvPort() {
     return this->m_socket.getRecvPort();
 }
 
-// ----------------------------------------------------------------------
-// Implementations for socket read task virtual methods
-// ----------------------------------------------------------------------
-
+// Socket read task virtual methods
 IpSocket& UdpComponentImpl::getSocketHandler() {
     return m_socket;
 }
@@ -59,16 +52,9 @@ Fw::Buffer UdpComponentImpl::getBuffer() {
 }
 
 void UdpComponentImpl::sendBuffer(Fw::Buffer buffer, SocketIpStatus status) {
-    Drv::RecvStatus recvStatus = RecvStatus::RECV_ERROR;
-    if (status == SOCK_SUCCESS) {
-        recvStatus = RecvStatus::RECV_OK;
-    }
-    else if (status == SOCK_NO_DATA_AVAILABLE) {
-        recvStatus = RecvStatus::RECV_NO_DATA;
-    }
-    else {
-        recvStatus = RecvStatus::RECV_ERROR;
-    }
+    Drv::RecvStatus recvStatus = (status == SOCK_SUCCESS) ? RecvStatus::RECV_OK :
+                                 (status == SOCK_NO_DATA_AVAILABLE) ? RecvStatus::RECV_NO_DATA :
+                                 RecvStatus::RECV_ERROR;
     this->recv_out(0, buffer, recvStatus);
 }
 
@@ -78,14 +64,10 @@ void UdpComponentImpl::connected() {
     }
 }
 
-// ----------------------------------------------------------------------
-// Handler implementations for user-defined typed input ports
-// ----------------------------------------------------------------------
-
+// Handler for send port
 Drv::SendStatus UdpComponentImpl::send_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer) {
     Drv::SocketIpStatus status = send(fwBuffer.getData(), fwBuffer.getSize());
-    // Always return the buffer
-    deallocate_out(0, fwBuffer);
+    deallocate_out(0, fwBuffer); // Always deallocate, UDP doesn’t retry like TCP
     if ((status == SOCK_DISCONNECTED) || (status == SOCK_INTERRUPTED_TRY_AGAIN)) {
         return SendStatus::SEND_RETRY;
     } else if (status != SOCK_SUCCESS) {
@@ -94,4 +76,4 @@ Drv::SendStatus UdpComponentImpl::send_handler(const FwIndexType portNum, Fw::Bu
     return SendStatus::SEND_OK;
 }
 
-}  // end namespace Drv
+} // end namespace Drv

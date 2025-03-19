@@ -5,7 +5,7 @@
 # MOD_DEPS: (optional) module dependencies
 #
 ####
-restrict_platforms(Posix SOCKETS)
+restrict_platforms(Posix SOCKETS RTEMS)
 
 set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/Udp.fpp"

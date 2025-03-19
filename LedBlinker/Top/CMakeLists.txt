@@ -22,6 +22,9 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
     Drv/RTEMS/GR740/UartDriver
     Drv/RTEMS/GR740/SpiDriver
     Drv/RTEMS/GR740/I2cDriver
+    Drv/TcpServer
+    Drv/TcpClient
+    Drv/Udp
 
   )
 else()

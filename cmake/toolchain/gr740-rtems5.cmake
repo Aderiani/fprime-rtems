@@ -71,6 +71,7 @@ set(RTEMS_BSP_PATH "${TOOLCHAIN_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}
 # Add BSP specific include paths
 include_directories(
     ${RTEMS_BSP_PATH}/lib/include
+    ${RTEMS_BSP_PATH}/lib/include/grlib
     ${TOOLCHAIN_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/include
 )
 
