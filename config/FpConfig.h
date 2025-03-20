@@ -200,19 +200,14 @@ typedef FwIndexType FwQueueSizeType;
 #endif
 
 
-// // This generates code to connect to serialized ports
-// #ifndef FW_PORT_SERIALIZATION
-#define FW_PORT_SERIALIZATION 1\
-//     1  //!< Indicates whether there is code in ports to serialize the call (more code, but ability to serialize calls
-//        //!< for multi-note systems)
-// #endif
-// Component Facilities
-
-// Serialization
-
-// Add a type id when serialization is done. More storage,
-// but better detection of errors
-// TODO: Not working yet
+// And modify it to conditionally enable serialization for components that need it:
+#ifdef TGT_OS_TYPE_RTEMS
+  // For RTEMS, generally disable serialization
+  #define FW_PORT_SERIALIZATION 1
+#else
+  // For other platforms, enable serialization by default
+  #define FW_PORT_SERIALIZATION 1
+#endif
 
 #ifndef FW_SERIALIZATION_TYPE_ID
 #define FW_SERIALIZATION_TYPE_ID \
@@ -472,7 +467,7 @@ typedef FwSizeStoreType FwBuffSizeType;
 
 #ifdef TGT_OS_TYPE_RTEMS
 #undef FW_PORT_SERIALIZATION
-#define FW_PORT_SERIALIZATION 0
+#define FW_PORT_SERIALIZATION 1
 #endif
 
 // If using file system, set appropriate macros for RTEMS

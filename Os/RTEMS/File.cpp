@@ -39,8 +39,8 @@ class RtemsFile : public FileInterface {
     }
 
     //! Open file with the specified mode
-    Status open(const char* filename, Mode mode) override {
-        FW_ASSERT(filename != nullptr);
+    Status open(const char* path, Mode mode, OverwriteType overwrite) override {
+        FW_ASSERT(path != nullptr);
         
         if (m_handle.fd != -1) {
             return Status::OP_OK;
@@ -66,8 +66,13 @@ class RtemsFile : public FileInterface {
             default:
                 return Status::INVALID_MODE;
         }
+        
+        // Apply overwrite flag
+        if (overwrite == OverwriteType::NO_OVERWRITE) {
+            flags |= O_EXCL;  // Fail if file exists
+        }
 
-        m_handle.fd = ::open(filename, flags, 0644);
+        m_handle.fd = ::open(path, flags, 0644);
         if (m_handle.fd == -1) {
             switch (errno) {
                 case ENOENT:
@@ -85,8 +90,110 @@ class RtemsFile : public FileInterface {
         return Status::OP_OK;
     }
 
+    //! Get file size
+    Status size(FwSignedSizeType& size_result) override {
+        if (m_handle.fd == -1) {
+            return Status::NOT_OPENED;
+        }
+        
+        struct stat st;
+        if (fstat(m_handle.fd, &st) != 0) {
+            return Status::OTHER_ERROR;
+        }
+        
+        size_result = static_cast<FwSignedSizeType>(st.st_size);
+        return Status::OP_OK;
+    }
+
+    //! Get current file position
+    Status position(FwSignedSizeType& position_result) override {
+        if (m_handle.fd == -1) {
+            return Status::NOT_OPENED;
+        }
+        
+        off_t pos = lseek(m_handle.fd, 0, SEEK_CUR);
+        if (pos == -1) {
+            return Status::OTHER_ERROR;
+        }
+        
+        position_result = static_cast<FwSignedSizeType>(pos);
+        return Status::OP_OK;
+    }
+
+    //! Preallocate space in the file
+    Status preallocate(FwSignedSizeType offset, FwSignedSizeType length) override {
+        if (m_handle.fd == -1) {
+            return Status::NOT_OPENED;
+        }
+        
+        // RTEMS might not support posix_fallocate, so we'll use a fallback approach
+        // by extending the file with lseek/write if needed
+        
+        FwSignedSizeType current_size;
+        Status status = this->size(current_size);
+        if (status != Status::OP_OK) {
+            return status;
+        }
+        
+        // If requested size is already allocated, we're done
+        if (offset + length <= current_size) {
+            return Status::OP_OK;
+        }
+        
+        // Otherwise, extend the file by seeking to the end position and writing a byte
+        off_t current_pos = lseek(m_handle.fd, 0, SEEK_CUR); // Save current position
+        if (current_pos == -1) {
+            return Status::OTHER_ERROR;
+        }
+        
+        // Seek to the end position
+        if (lseek(m_handle.fd, offset + length - 1, SEEK_SET) == -1) {
+            return Status::OTHER_ERROR;
+        }
+        
+        // Write a byte to extend the file - use system call directly
+        char zero = 0;
+        if (::write(m_handle.fd, &zero, 1) != 1) {
+            // Restore original position on error
+            lseek(m_handle.fd, current_pos, SEEK_SET);
+            return Status::OTHER_ERROR;
+        }
+        
+        // Restore original position
+        if (lseek(m_handle.fd, current_pos, SEEK_SET) == -1) {
+            return Status::OTHER_ERROR;
+        }
+        
+        return Status::OP_OK;
+    }
+
+    //! Seek to position in file
+    Status seek(FwSignedSizeType offset, SeekType seekType) override {
+        if (m_handle.fd == -1) {
+            return Status::NOT_OPENED;
+        }
+
+        int whence;
+        switch (seekType) {
+            case SeekType::ABSOLUTE:
+                whence = SEEK_SET;
+                break;
+            case SeekType::RELATIVE:
+                whence = SEEK_CUR;
+                break;
+            default:
+                return Status::INVALID_ARGUMENT;
+        }
+
+        if (::lseek(m_handle.fd, static_cast<off_t>(offset), whence) == -1) {
+            return Status::OTHER_ERROR;
+        }
+        
+        return Status::OP_OK;
+    }
+
     //! Read from file into buffer
-    Status read(U8* buffer, PlatformSizeType& size, WaitType wait) override {
+    Status read(U8* buffer, FwSignedSizeType& size, WaitType wait) override {
         FW_ASSERT(buffer != nullptr);
         
         if (m_handle.fd == -1) {
@@ -102,21 +209,21 @@ class RtemsFile : public FileInterface {
             return Status::OTHER_ERROR;
         }
         
-        size = static_cast<PlatformSizeType>(read_size);
+        size = static_cast<FwSignedSizeType>(read_size);
         return Status::OP_OK;
     }
 
-    //! Read line from file
-    Status readline(U8* buffer, PlatformSizeType& size, WaitType wait) override {
+    //! Read line from file - implementation for convenience but not part of interface
+    Status readline(U8* buffer, FwSignedSizeType& size, WaitType wait) {
         FW_ASSERT(buffer != nullptr);
         
         if (m_handle.fd == -1) {
             return Status::NOT_OPENED;
         }
 
-        PlatformSizeType offset = 0;
+        FwSignedSizeType offset = 0;
         U8 byte;
-        PlatformSizeType byte_size = 1;
+        FwSignedSizeType byte_size = 1;
 
         while (offset < size - 1) {  // Leave room for null terminator
             Status read_status = this->read(&byte, byte_size, wait);
@@ -145,7 +252,7 @@ class RtemsFile : public FileInterface {
     }
 
     //! Write to file
-    Status write(const U8* buffer, PlatformSizeType& size) override {
+    Status write(const U8* buffer, FwSignedSizeType& size, WaitType wait) override {
         FW_ASSERT(buffer != nullptr);
         
         if (m_handle.fd == -1) {
@@ -157,35 +264,14 @@ class RtemsFile : public FileInterface {
             if (errno == ENOSPC) {
                 return Status::NO_SPACE;
             }
+            if (errno == EAGAIN && wait == WaitType::NO_WAIT) {
+                size = 0;
+                return Status::OP_OK;
+            }
             return Status::OTHER_ERROR;
         }
         
-        size = static_cast<PlatformSizeType>(write_size);
-        return Status::OP_OK;
-    }
-
-    //! Seek to position in file
-    Status seek(PlatformSizeType offset, SeekType seekType) override {
-        if (m_handle.fd == -1) {
-            return Status::NOT_OPENED;
-        }
-
-        int whence;
-        switch (seekType) {
-            case SeekType::ABSOLUTE:
-                whence = SEEK_SET;
-                break;
-            case SeekType::RELATIVE:
-                whence = SEEK_CUR;
-                break;
-            default:
-                return Status::INVALID_ARGUMENT;
-        }
-
-        if (::lseek(m_handle.fd, static_cast<off_t>(offset), whence) == -1) {
-            return Status::OTHER_ERROR;
-        }
-        
+        size = static_cast<FwSignedSizeType>(write_size);
         return Status::OP_OK;
     }
 
@@ -225,11 +311,11 @@ class RtemsFile : public FileInterface {
 
 namespace Os {
 FileInterface* FileInterface::getDelegate(FileHandleStorage& aligned_new_memory, const FileInterface* to_copy) {
-    FW_ASSERT(aligned_new_memory != nullptr);
+    // References cannot be null, so we can safely remove this assert
     static_assert(sizeof(Os::RTEMS::File::RtemsFile) <= sizeof(FileHandleStorage),
                   "RTEMS file implementation too large");
     static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::File::RtemsFile)) == 0,
                   "Bad alignment for RTEMS file implementation");
     return new (aligned_new_memory) Os::RTEMS::File::RtemsFile();
 }
-}
+} // namespace Os   

@@ -1,6 +1,6 @@
 // ======================================================================
 // \title Os/RTEMS/FileSystem.hpp
-// \brief RTEMS implementation for Os::FileSystem
+// \brief RTEMS implementation for Os::FileSystem, header file
 // ======================================================================
 #ifndef OS_RTEMS_FILESYSTEM_HPP
 #define OS_RTEMS_FILESYSTEM_HPP
@@ -16,22 +16,24 @@ struct RtemsFileSystemHandle : public FileSystemHandle {
 
 class RtemsFileSystem : public FileSystemInterface {
   public:
-    RtemsFileSystem() = default;
-    ~RtemsFileSystem() override = default;
+    RtemsFileSystem();
+    ~RtemsFileSystem() override;
 
-    Status createDirectory(const char* path) override;
-    Status removeDirectory(const char* path) override;
-    Status removeFile(const char* path) override;
-    Status moveFile(const char* file1, const char* file2) override;
-    Status copyFile(const char* file1, const char* file2) override;
-    Status getFileSize(const char* path, PlatformSizeType& size) override;
-    Status changeWorkingDirectory(const char* path) override;
-    Status getWorkingDirectory(char* path, PlatformSizeType pathSize) override;
-    Status exists(const char* path, bool& doesExist) override;
-    Status getInfo(const char* path, Info* info) override;
-    Status appendPath(const char* basePath, const char* subsPath, char* fullPath, PlatformSizeType fullPathSize) override;
-    Status getFileCount(const char* path, PlatformSizeType& fileCount) override;
-    Status getFreeSpace(const char* path, PlatformSizeType& freeSpace, PlatformSizeType& totalSpace) override;
+    // Override required pure virtual methods from FileSystemInterface
+    Status _createDirectory(const char* path) override;
+    Status _removeDirectory(const char* path) override;
+    Status _removeFile(const char* path) override;
+    Status _rename(const char* sourcePath, const char* destPath) override;
+    Status _moveFile(const char* sourcePath, const char* destPath) override;
+    Status _copyFile(const char* sourcePath, const char* destPath) override;
+    Status _getFreeSpace(const char* path, FwSizeType& totalBytes, FwSizeType& freeBytes) override;
+    Status _getWorkingDirectory(char* path, FwSizeType bufferSize) override;
+    Status _changeWorkingDirectory(const char* path) override;
+    Status _fileExists(const char* path, bool& exists) override;
+    Status _getFileSize(const char* path, FwSizeType& size) override;
+    Status _getFileStats(const char* path, const FileSystem::Stats* stats) override;
+    Status _appendPath(const char* basePath, const char* appendPath, char* destPath, FwSizeType& destPathSize) override;
+    Status _getPlatformID(PlatformID& id) override;
 
     FileSystemHandle* getHandle() override;
 
