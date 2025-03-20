@@ -7,13 +7,13 @@
 #include <Fw/Types/Assert.hpp>
 
 #include <rtems.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <errno.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 
 namespace Os {
 namespace RTEMS {
@@ -203,17 +203,11 @@ class RtemsFile : public FileInterface {
     }
 
     //! Close file
-    Status close() override {
-        if (m_handle.fd == -1) {
-            return Status::NOT_OPENED;
+    void close() override {
+        if (m_handle.fd != -1) {
+            ::close(m_handle.fd);
+            m_handle.fd = -1;
         }
-
-        if (::close(m_handle.fd) == -1) {
-            return Status::OTHER_ERROR;
-        }
-        
-        m_handle.fd = -1;
-        return Status::OP_OK;
     }
 
     //! Get file handle
@@ -230,12 +224,12 @@ class RtemsFile : public FileInterface {
 } // namespace Os
 
 namespace Os {
-FileInterface* FileInterface::getDelegate(FileHandleStorage& aligned_new_memory) {
+FileInterface* FileInterface::getDelegate(FileHandleStorage& aligned_new_memory, const FileInterface* to_copy) {
     FW_ASSERT(aligned_new_memory != nullptr);
     static_assert(sizeof(Os::RTEMS::File::RtemsFile) <= sizeof(FileHandleStorage),
                   "RTEMS file implementation too large");
     static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::File::RtemsFile)) == 0,
                   "Bad alignment for RTEMS file implementation");
-    return new (aligned_new_memory) Os::RTEMS::File::RtemsFile;
+    return new (aligned_new_memory) Os::RTEMS::File::RtemsFile();
 }
 }
