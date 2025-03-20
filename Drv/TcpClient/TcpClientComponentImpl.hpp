@@ -63,20 +63,21 @@ class TcpClientComponentImpl final : public TcpClientComponentBase, public Socke
                              const U32 send_timeout_microseconds = SOCKET_SEND_TIMEOUT_MICROSECONDS,
                              FwSizeType buffer_size = 1024);
 
-  PROTECTED:
-    // ----------------------------------------------------------------------
-    // Implementations for socket read task virtual methods
-    // ----------------------------------------------------------------------
+    PROTECTED :
+        // ----------------------------------------------------------------------
+        // Implementations for socket read task virtual methods
+        // ----------------------------------------------------------------------
 
-    /**
-     * \brief returns a reference to the socket handler
-     *
-     * Gets a reference to the current socket handler in order to operate generically on the IpSocket instance. Used for
-     * receive, and open calls. This socket handler will be a TcpClient.
-     *
-     * \return IpSocket reference
-     */
-    IpSocket& getSocketHandler();
+        /**
+         * \brief returns a reference to the socket handler
+         *
+         * Gets a reference to the current socket handler in order to operate generically on the IpSocket instance. Used
+         * for receive, and open calls. This socket handler will be a TcpClient.
+         *
+         * \return IpSocket reference
+         */
+        IpSocket&
+        getSocketHandler();
 
     /**
      * \brief returns a buffer to fill with data
@@ -100,39 +101,52 @@ class TcpClientComponentImpl final : public TcpClientComponentBase, public Socke
 
     /**
      * \brief called when the IPv4 system has been connected
-    */
+     */
     void connected();
 
+    PRIVATE :
 
-  PRIVATE:
+        // ----------------------------------------------------------------------
+        // Handler implementations for user-defined typed input ports
+        // ----------------------------------------------------------------------
 
-    // ----------------------------------------------------------------------
-    // Handler implementations for user-defined typed input ports
-    // ----------------------------------------------------------------------
+        /**
+         * \brief Send data out of the TcpClient
+         *
+         * Passing data to this port will send data from the TcpClient to whatever TCP server this component has
+         * connected to. Should the socket not be opened or was disconnected, then this port call will return SEND_RETRY
+         * and critical transmissions should be retried. SEND_ERROR indicates an unresolvable error. SEND_OK is returned
+         * when the data has been sent.
+         *
+         * Note: this component delegates the reopening of the socket to the read thread and thus the caller should
+         * retry after the read thread has attempted to reopen the port but does not need to reopen the port manually.
+         *
+         * \param portNum: fprime port number of the incoming port call
+         * \param fwBuffer: buffer containing data to be sent
+         * \return SEND_OK on success, SEND_RETRY when critical data should be retried and SEND_ERROR upon error
+         */
+        Drv::SendStatus
+        send_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer);
 
-    /**
-     * \brief Send data out of the TcpClient
-     *
-     * Passing data to this port will send data from the TcpClient to whatever TCP server this component has connected
-     * to. Should the socket not be opened or was disconnected, then this port call will return SEND_RETRY and critical
-     * transmissions should be retried. SEND_ERROR indicates an unresolvable error. SEND_OK is returned when the data
-     * has been sent.
-     *
-     * Note: this component delegates the reopening of the socket to the read thread and thus the caller should retry
-     * after the read thread has attempted to reopen the port but does not need to reopen the port manually.
-     *
-     * \param portNum: fprime port number of the incoming port call
-     * \param fwBuffer: buffer containing data to be sent
-     * \return SEND_OK on success, SEND_RETRY when critical data should be retried and SEND_ERROR upon error
-     */
-    Drv::SendStatus send_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer);
+    // Add these to the private section of TcpClientComponentImpl class
+  private:
 
-    Drv::TcpClientSocket m_socket; //!< Socket implementation
+  TcpClientSocket m_socket;       // The socket implementation
+  FwSizeType m_allocation_size;   // Size of buffer allocation
+  Fw::String m_hostname_str;      // Store hostname as string
+  U16 m_port = 0;                 // Port number
+  bool m_socketStarted = false; 
 
-    // Member variable to store the buffer size
-    FwSizeType m_allocation_size;
+    // Declarations of the methods
+  public:
+    bool isStarted();
+    SocketIpStatus startup();
+    void terminate();
+
+  protected:
+    void readLoop() override;
 };
 
 }  // end namespace Drv
 
-#endif // end TcpClientComponentImpl
+#endif  // end TcpClientComponentImpl

@@ -1,4 +1,4 @@
-#include <Drv/RTEMS/GR740/GpioDriver/GpioDriver.hpp>
+#include <Drv/RTEMS/GR740/GpioDriver/GR740GpioDriver.hpp>
 #include <FpConfig.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <Fw/Logger/Logger.hpp>

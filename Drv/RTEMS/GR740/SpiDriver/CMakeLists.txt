@@ -12,8 +12,8 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
 endif()
 
 set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/SpiDriver.fpp"
-  "${CMAKE_CURRENT_LIST_DIR}/SpiDriver.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/GR740SpiDriver.fpp"
+  "${CMAKE_CURRENT_LIST_DIR}/GR740SpiDriver.cpp"
 )
 
 # Dependencies

@@ -3,7 +3,7 @@ module Drv {
 
   @ A driver component for GR740 GPIO controller
   passive component GR740GpioDriver {
-    # include "../../../Ports/GpioDriverPorts.fpp"
+    # include "../../../Ports/GR740GpioDriverPorts.fpp"
     include "../../../Interfaces/GpioInterface.fppi"
   
 

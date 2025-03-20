@@ -12,12 +12,12 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
 endif()
 
 set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/GpioDriver.fpp"
-  "${CMAKE_CURRENT_LIST_DIR}/GpioDriver.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/GR740GpioDriver.fpp"
+  "${CMAKE_CURRENT_LIST_DIR}/GR740GpioDriver.cpp"
 )
 
 set_source_files_properties(
-    GpioDriver.cpp
+    GR740GpioDriver.cpp
     PROPERTIES
     COMPILE_FLAGS "-Wno-pedantic -Wno-error=pedantic -fpermissive"
 )

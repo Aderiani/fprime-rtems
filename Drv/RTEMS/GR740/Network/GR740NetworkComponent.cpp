@@ -10,7 +10,7 @@
 // ======================================================================
 #define IFNAMSIZ IF_NAMESIZE // For compatibility with older versions of RTEMS
 
-#include "Drv/RTEMS/GR740/Network/NetworkComponent.hpp"
+#include "Drv/RTEMS/GR740/Network/GR740NetworkComponent.hpp"
 #include <Fw/Types/Assert.hpp>
 #include <cstring> // For memset
 #include <rtems.h>

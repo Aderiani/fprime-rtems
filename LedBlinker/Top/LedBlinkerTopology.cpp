@@ -6,22 +6,26 @@
 // Copyright 2009-2025, by the California Institute of Technology.
 // ALL RIGHTS RESERVED.  United States Government Sponsorship acknowledged.
 // ======================================================================
+// Include generated topology headers (assumed from topology.fpp)
+#include "LedBlinker/Top/LedBlinkerTopologyAc.hpp"
 
 #include "LedBlinkerTopology.hpp"
 #include <Fw/Types/Assert.hpp>
 #include <Fw/Logger/Logger.hpp>
 #include <Os/Task.hpp>
 
-// Include generated topology headers (assumed from topology.fpp)
-#include "LedBlinker/Top/LedBlinkerTopologyAc.hpp"
+using namespace LedBlinker;
 
-// Define instances from topology.fpp (adjust names as per your file)
-namespace LedBlinker {
-    extern Drv::Network network;    // GR740 network component
-    extern Drv::TcpServer tcpServer;             // TCP server component
-    extern Drv::TcpClient tcpClient;             // TCP client component
-    extern Drv::Udp udp;                         // UDP component
-}
+// // Define instances from topology.fpp (adjust names as per your file)
+// namespace LedBlinker {
+//     extern Drv::GR740NetworkComponent network;    // GR740 network component
+//     extern Drv::TcpServer tcpServer;             // TCP server component
+//     extern Drv::TcpClient tcpClient;             // TCP client component
+//     extern Drv::Udp udp;
+//     extern Drv::GR740GpioDriver gpioDriver                        // UDP component
+//     extern Drv::GR740UartDriver uartDriver;                        // UDP component
+//     extern Drv::GR740SpiDriver spiDriver;                        // UDP component
+// }
 
 namespace LedBlinker {
 

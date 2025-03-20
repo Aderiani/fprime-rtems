@@ -106,7 +106,6 @@ module LedBlinker {
   # Passive component instances
   # ----------------------------------------------------------------------
 
-  # @ Communications driver. May be swapped with other com drivers like UART or TCP
   instance network: Drv.GR740NetworkComponent base id 0x1000
   
   instance tcpServer: Drv.TcpServer base id 0x3000

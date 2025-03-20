@@ -9,7 +9,7 @@
 //
 // ======================================================================
 
-#include <Drv/RTEMS/GR740/I2cDriver/I2cDriver.hpp>
+#include <Drv/RTEMS/GR740/I2cDriver/GR740I2cDriver.hpp>
 #include <FpConfig.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <Fw/Logger/Logger.hpp>

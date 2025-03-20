@@ -1,7 +1,7 @@
 // ======================================================================
-// \title  SpiDriver.hpp
+// \title  GR740SpiDriver.hpp
 // \author [Your Name]
-// \brief  hpp file for SpiDriver component implementation class for GR740 (RTEMS)
+// \brief  hpp file for GR740SpiDriver component implementation class for GR740 (RTEMS)
 //
 // \copyright
 // Copyright 2025, [Your Organization or Name].
@@ -18,7 +18,7 @@
 
 namespace Drv {
 
-class SpiDriver final : public GR740SpiDriverComponentBase {
+class GR740SpiDriver final : public GR740SpiDriverComponentBase {
   public:
     // SPI clock frequency type (in Hz)
     typedef U32 SpiFrequency;
@@ -35,8 +35,8 @@ class SpiDriver final : public GR740SpiDriverComponentBase {
     // Construction, initialization, and destruction
     // ----------------------------------------------------------------------
 
-    //! Construct object SpiDriver
-    SpiDriver(const char* const compName);
+    //! Construct object GR740SpiDriver
+    GR740SpiDriver(const char* const compName);
 
     //! Initialize the SPI driver
     void init(const NATIVE_INT_TYPE instance);
@@ -44,8 +44,8 @@ class SpiDriver final : public GR740SpiDriverComponentBase {
     //! Open and configure the SPI hardware
     bool open(NATIVE_INT_TYPE select, SpiFrequency clock, SpiMode spiMode);
 
-    //! Destroy object SpiDriver
-    ~SpiDriver();
+    //! Destroy object GR740SpiDriver
+    ~GR740SpiDriver();
 
   PRIVATE:
     // ----------------------------------------------------------------------

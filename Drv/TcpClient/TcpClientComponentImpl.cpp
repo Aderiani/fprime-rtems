@@ -11,9 +11,9 @@
 
 #include <Drv/TcpClient/TcpClientComponentImpl.hpp>
 #include <FpConfig.hpp>
-#include <limits>
+#include <Fw/Logger/Logger.hpp>  // Optional, for logging
 #include <Fw/Types/Assert.hpp>
-#include <Fw/Logger/Logger.hpp> // Optional, for logging
+#include <limits>
 
 namespace Drv {
 
@@ -22,18 +22,25 @@ namespace Drv {
 // ----------------------------------------------------------------------
 
 TcpClientComponentImpl::TcpClientComponentImpl(const char* const compName)
-    : TcpClientComponentBase(compName), m_allocation_size(4096) {} // Default buffer size
+    : TcpClientComponentBase(compName), m_allocation_size(4096) {}  // Default buffer size
 
-SocketIpStatus TcpClientComponentImpl::configure(const char* hostname,
-                                                 const U16 port,
-                                                 const U32 send_timeout_seconds,
-                                                 const U32 send_timeout_microseconds,
-                                                 FwSizeType buffer_size) {
-    FW_ASSERT(buffer_size <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(buffer_size));
-    m_allocation_size = buffer_size;
-    // RTEMS: hostname must be a valid IP or resolvable hostname; network must be initialized
-    return m_socket.configure(hostname, port, send_timeout_seconds, send_timeout_microseconds);
-}
+    SocketIpStatus TcpClientComponentImpl::configure(
+        const char* hostname, 
+        const U16 port,
+        const U32 send_timeout_seconds,
+        const U32 send_timeout_microseconds,
+        const FwSizeType buffer_size) {
+        
+        // Store hostname and port for logging
+        m_hostname_str = hostname;
+        m_port = port;
+        
+        // Existing code
+        FW_ASSERT(buffer_size <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(buffer_size));
+        m_allocation_size = buffer_size; // Store the buffer size
+        
+        return m_socket.configure(hostname, port, send_timeout_seconds, send_timeout_microseconds);
+    }
 
 TcpClientComponentImpl::~TcpClientComponentImpl() {}
 
@@ -50,9 +57,9 @@ Fw::Buffer TcpClientComponentImpl::getBuffer() {
 }
 
 void TcpClientComponentImpl::sendBuffer(Fw::Buffer buffer, SocketIpStatus status) {
-    Drv::RecvStatus recvStatus = (status == SOCK_SUCCESS) ? RecvStatus::RECV_OK :
-                                 (status == SOCK_NO_DATA_AVAILABLE) ? RecvStatus::RECV_NO_DATA :
-                                 RecvStatus::RECV_ERROR;
+    Drv::RecvStatus recvStatus = (status == SOCK_SUCCESS)             ? RecvStatus::RECV_OK
+                                 : (status == SOCK_NO_DATA_AVAILABLE) ? RecvStatus::RECV_NO_DATA
+                                                                      : RecvStatus::RECV_ERROR;
     this->recv_out(0, buffer, recvStatus);
 }
 
@@ -61,50 +68,55 @@ void TcpClientComponentImpl::connected() {
         this->ready_out(0);
     }
 }
-
 bool TcpClientComponentImpl::isStarted() {
-    Os::ScopeLock scopedLock(this->m_lock);
-    return this->m_socket.isOpened(); // Check if socket is open
+    // Use our local tracking variable
+    return m_socketStarted;
 }
 
 SocketIpStatus TcpClientComponentImpl::startup() {
-    Os::ScopeLock scopedLock(this->m_lock);
-    Drv::SocketIpStatus status = SOCK_SUCCESS;
-    if (!this->m_socket.isOpened()) {
-        SocketDescriptor descriptor;
-        status = this->m_socket.open(descriptor);
-        if (status != SOCK_SUCCESS) {
-            Fw::Logger::log("[WARNING] Failed to connect to server on port %hu with status %d\n",
-                            this->m_socket.getPort(), status);
+    // Check our local state
+    if (!m_socketStarted) {
+        SocketIpStatus status = this->open();
+        if (status == SOCK_SUCCESS) {
+            m_socketStarted = true;
+            // Port was already set in configure()
+            
+            // Log connection - using proper logging method
+            Fw::Logger::log(m_hostname_str.toChar(), m_port);
         }
+        return status;
     }
-    return status;
+    return SOCK_SUCCESS;
 }
 
 void TcpClientComponentImpl::terminate() {
-    Os::ScopeLock scopedLock(this->m_lock);
-    SocketDescriptor descriptor;
-    this->m_socket.close(descriptor);
+    this->close(); // Close the socket
+    m_socketStarted = false; // Update our tracking variable
 }
 
 void TcpClientComponentImpl::readLoop() {
-    Drv::SocketIpStatus status = Drv::SocketIpStatus::SOCK_NOT_STARTED;
+    SocketIpStatus status = SOCK_SUCCESS;
+    
+    // Keep trying to reconnect until the status is good, told to stop, or reconnection is turned off
     do {
         status = this->startup();
         if (status != SOCK_SUCCESS) {
-            Fw::Logger::log("[WARNING] Failed to connect to server on port %hu with status %d\n",
-                            this->m_socket.getPort(), status);
+            Fw::Logger::log(
+                "[WARNING] Failed to connect to %s:%d with status %d\n",
+                m_hostname_str.toChar(),
+                m_port,
+                status);
             (void)Os::Task::delay(SOCKET_RETRY_INTERVAL);
             continue;
         }
     } while (this->running() && status != SOCK_SUCCESS && this->m_reopen);
-
+    
+    // If start up was successful then perform normal operations
     if (this->running() && status == SOCK_SUCCESS) {
+        // Perform the nominal read loop
         SocketComponentHelper::readLoop();
     }
-    this->terminate();
 }
-
 // ----------------------------------------------------------------------
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
@@ -121,4 +133,4 @@ Drv::SendStatus TcpClientComponentImpl::send_handler(const FwIndexType portNum, 
     return SendStatus::SEND_OK;
 }
 
-} // end namespace Drv
+}  // end namespace Drv

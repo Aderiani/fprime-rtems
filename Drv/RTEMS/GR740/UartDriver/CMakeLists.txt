@@ -12,8 +12,8 @@ if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
 endif()
 
 set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/UartDriver.fpp"
-  "${CMAKE_CURRENT_LIST_DIR}/UartDriver.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/GR740UartDriver.fpp"
+  "${CMAKE_CURRENT_LIST_DIR}/GR740UartDriver.cpp"
 )
 
 # Dependencies

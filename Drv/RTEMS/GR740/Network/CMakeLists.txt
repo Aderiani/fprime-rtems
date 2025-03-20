@@ -13,8 +13,8 @@ endif()
 
 
 set(SOURCE_FILES
-"${CMAKE_CURRENT_LIST_DIR}/NetworkComponent.fpp"
-"${CMAKE_CURRENT_LIST_DIR}/NetworkComponent.cpp"
+"${CMAKE_CURRENT_LIST_DIR}/GR740NetworkComponent.fpp"
+"${CMAKE_CURRENT_LIST_DIR}/GR740NetworkComponent.cpp"
 )
 
 

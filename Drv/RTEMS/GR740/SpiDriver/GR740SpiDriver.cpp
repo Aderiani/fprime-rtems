@@ -1,7 +1,7 @@
 // ======================================================================
-// \title  SpiDriver.cpp
+// \title  GR740SpiDriver.cpp
 // \author [Your Name]
-// \brief  cpp file for SpiDriver component implementation class for GR740 (RTEMS)
+// \brief  cpp file for GR740SpiDriver component implementation class for GR740 (RTEMS)
 //
 // \copyright
 // Copyright 2025, [Your Organization or Name].
@@ -9,19 +9,19 @@
 //
 // ======================================================================
 
-#include <Drv/RTEMS/GR740/SpiDriver/SpiDriver.hpp>
+#include <Drv/RTEMS/GR740/SpiDriver/GR740SpiDriver.hpp>
 #include <Fw/Types/Assert.hpp>
 
 namespace Drv {
 
-SpiDriver::SpiDriver(const char* const compName)
+GR740SpiDriver::GR740SpiDriver(const char* const compName)
     : GR740SpiDriverComponentBase(compName), m_baseAddr(nullptr), m_select(-1), m_isOpen(false), m_bytes(0) {}
 
-void SpiDriver::init(const NATIVE_INT_TYPE instance) {
+void GR740SpiDriver::init(const NATIVE_INT_TYPE instance) {
     GR740SpiDriverComponentBase::init(instance);
 }
 
-bool SpiDriver::open(NATIVE_INT_TYPE select, SpiFrequency clock, SpiMode spiMode) {
+bool GR740SpiDriver::open(NATIVE_INT_TYPE select, SpiFrequency clock, SpiMode spiMode) {
     if (m_isOpen) {
         return true; // Already open
     }
@@ -68,7 +68,7 @@ bool SpiDriver::open(NATIVE_INT_TYPE select, SpiFrequency clock, SpiMode spiMode
     return true;
 }
 
-SpiDriver::~SpiDriver() {
+GR740SpiDriver::~GR740SpiDriver() {
     if (m_baseAddr && m_isOpen) {
         m_baseAddr[SPI_CTRL] = 0; // Disable SPI core
     }
@@ -78,7 +78,7 @@ SpiDriver::~SpiDriver() {
 // Handler implementations
 // ----------------------------------------------------------------------
 
-void SpiDriver::SpiReadWrite_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& writeBuffer, Fw::Buffer& readBuffer) {
+void GR740SpiDriver::SpiReadWrite_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& writeBuffer, Fw::Buffer& readBuffer) {
     if (!m_isOpen) {
         this->log_WARNING_HI_SPI_OpenError(m_select, -1); // Not opened
         return;
@@ -125,7 +125,7 @@ void SpiDriver::SpiReadWrite_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& 
 // Private helper functions
 // ----------------------------------------------------------------------
 
-bool SpiDriver::waitForComplete() {
+bool GR740SpiDriver::waitForComplete() {
     U32 timeout = 10000; // Adjust timeout as needed
     while (timeout--) {
         U32 status = m_baseAddr[SPI_STAT];

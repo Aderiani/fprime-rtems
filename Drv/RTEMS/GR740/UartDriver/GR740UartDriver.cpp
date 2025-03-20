@@ -9,23 +9,23 @@
 //
 // ======================================================================
 
-#include <Drv/RTEMS/GR740/UartDriver/UartDriver.hpp>
+#include <Drv/RTEMS/GR740/UartDriver/GR740UartDriver.hpp>
 #include <Fw/Types/Assert.hpp>
 #include "Fw/Types/BasicTypes.hpp"
 namespace Drv {
 
-UartDriver::UartDriver(const char* const compName)
+GR740UartDriver::GR740UartDriver(const char* const compName)
     : GR740UartDriverComponentBase(compName),
       m_baseAddr(nullptr),
       m_device("NOT_EXIST"),
       m_allocationSize(0),
       m_quitReadThread(false) {}
 
-void UartDriver::init(const NATIVE_INT_TYPE instance) {
+void GR740UartDriver::init(const NATIVE_INT_TYPE instance) {
     GR740UartDriverComponentBase::init(instance);
 }
 
-bool UartDriver::open(const char* const device, UartBaudRate baud, UartFlowControl fc, UartParity parity, U32 allocationSize) {
+bool GR740UartDriver::open(const char* const device, UartBaudRate baud, UartFlowControl fc, UartParity parity, U32 allocationSize) {
     FW_ASSERT(device != nullptr);
     m_allocationSize = allocationSize;
     m_device = device;
@@ -90,7 +90,7 @@ bool UartDriver::open(const char* const device, UartBaudRate baud, UartFlowContr
     return true;
 }
 
-UartDriver::~UartDriver() {
+GR740UartDriver::~GR740UartDriver() {
     if (m_baseAddr) {
         m_baseAddr[UART_CTRL] = 0; // Disable UART
     }
@@ -100,7 +100,7 @@ UartDriver::~UartDriver() {
 // Handler implementations
 // ----------------------------------------------------------------------
 
-Drv::SendStatus UartDriver::send_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& serBuffer) {
+Drv::SendStatus GR740UartDriver::send_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& serBuffer) {
     Drv::SendStatus status = Drv::SendStatus::SEND_OK;
     if (!m_baseAddr || serBuffer.getData() == nullptr || serBuffer.getSize() == 0) {
         status = Drv::SendStatus::SEND_ERROR;
@@ -135,9 +135,9 @@ Drv::SendStatus UartDriver::send_handler(const NATIVE_INT_TYPE portNum, Fw::Buff
 // Private methods
 // ----------------------------------------------------------------------
 
-void UartDriver::serialReadTaskEntry(void* ptr) {
+void GR740UartDriver::serialReadTaskEntry(void* ptr) {
     FW_ASSERT(ptr != nullptr);
-    UartDriver* comp = reinterpret_cast<UartDriver*>(ptr);
+    GR740UartDriver* comp = reinterpret_cast<GR740UartDriver*>(ptr);
 
     while (!comp->m_quitReadThread) {
         Fw::Buffer buff = comp->allocate_out(0, comp->m_allocationSize);
@@ -175,18 +175,18 @@ void UartDriver::serialReadTaskEntry(void* ptr) {
     }
 }
 
-void UartDriver::start(Os::Task::ParamType priority, Os::Task::ParamType stackSize, Os::Task::ParamType cpuAffinity) {
+void GR740UartDriver::start(Os::Task::ParamType priority, Os::Task::ParamType stackSize, Os::Task::ParamType cpuAffinity) {
     Os::TaskString task("UartReader");
     Os::Task::Arguments arguments(task, serialReadTaskEntry, this, priority, stackSize, cpuAffinity);
     Os::Task::Status stat = this->m_readTask.start(arguments);
     FW_ASSERT(stat == Os::Task::OP_OK, stat);
 }
 
-void UartDriver::quitReadThread() {
+void GR740UartDriver::quitReadThread() {
     this->m_quitReadThread = true;
 }
 
-Os::Task::Status UartDriver::join() {
+Os::Task::Status GR740UartDriver::join() {
     return m_readTask.join();
 }
 

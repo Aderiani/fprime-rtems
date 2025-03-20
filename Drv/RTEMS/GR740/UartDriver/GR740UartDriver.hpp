@@ -19,7 +19,7 @@
 
 namespace Drv {
 
-class UartDriver final : public GR740UartDriverComponentBase {
+class GR740UartDriver final : public GR740UartDriverComponentBase {
   public:
     // UART configuration enums 
     enum UartBaudRate {
@@ -56,8 +56,8 @@ class UartDriver final : public GR740UartDriverComponentBase {
     // Construction, initialization, and destruction
     // ----------------------------------------------------------------------
 
-    //! Construct object UartDriver
-    UartDriver(const char* const compName);
+    //! Construct object GR740UartDriver
+    GR740UartDriver(const char* const compName);
 
     //! Initialize the UART driver
     void init(const NATIVE_INT_TYPE instance);
@@ -65,8 +65,8 @@ class UartDriver final : public GR740UartDriverComponentBase {
     //! Open and configure the UART hardware
     bool open(const char* const device, UartBaudRate baud, UartFlowControl fc, UartParity parity, U32 allocationSize);
 
-    //! Destroy object UartDriver
-    ~UartDriver();
+    //! Destroy object GR740UartDriver
+    ~GR740UartDriver();
 
     //! Start the read task
     void start(Os::Task::ParamType priority, Os::Task::ParamType stackSize, Os::Task::ParamType cpuAffinity);
