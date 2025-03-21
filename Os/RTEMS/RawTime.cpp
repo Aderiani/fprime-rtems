@@ -40,22 +40,31 @@ class RtemsRawTime : public RawTimeInterface {
 
     //! Calculate time interval between this and another raw time
     Status getTimeInterval(const Os::RawTime& other, Fw::TimeInterval& interval) const override {
-        // Cast to base type and check implementation
-        const RawTimeInterface* otherInterface = 
-            static_cast<const RawTimeInterface*>(&other);
+        // We'll use a conservative approach that assumes basic serialization
+        U32 otherSec = 0, otherNsec = 0;
         
-        // Check if the time comes from this implementation
-        if (otherInterface == nullptr) {
-            return Status::INVALID_PARAMS;
+        // Attempt to serialize the other time object
+        Fw::SerializeBufferBase* serBuffer = nullptr;
+        Fw::SerializeStatus serStatus = other.serialize(*serBuffer);
+        
+        if (serStatus != Fw::FW_SERIALIZE_OK) {
+            return Status::OTHER_ERROR;
         }
         
-        // Assuming the other time is also a RtemsRawTime
-        const RtemsRawTimeHandle* otherHandle = 
-            reinterpret_cast<const RtemsRawTimeHandle*>(otherInterface->getHandle());
-        
+        // Deserialize seconds and nanoseconds
+        serStatus = serBuffer->deserialize(otherSec);
+        if (serStatus != Fw::FW_SERIALIZE_OK) {
+            return Status::OTHER_ERROR;
+        }
+
+        serStatus = serBuffer->deserialize(otherNsec);
+        if (serStatus != Fw::FW_SERIALIZE_OK) {
+            return Status::OTHER_ERROR;
+        }
+
         // Calculate difference in seconds and nanoseconds
-        time_t sec_diff = m_handle.time.tv_sec - otherHandle->time.tv_sec;
-        long nsec_diff = m_handle.time.tv_nsec - otherHandle->time.tv_nsec;
+        time_t sec_diff = m_handle.time.tv_sec - static_cast<time_t>(otherSec);
+        long nsec_diff = m_handle.time.tv_nsec - static_cast<long>(otherNsec);
         
         // Adjust for negative nanoseconds
         if (nsec_diff < 0) {
