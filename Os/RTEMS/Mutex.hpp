@@ -27,7 +27,7 @@ class RTEMSMutex : public MutexInterface {
     RTEMSMutex(const RTEMSMutex& other) = delete;
 
     //! \brief assignment operator is forbidden
-    MutexInterface& operator=(const MutexInterface& other) override = delete;
+    MutexInterface& operator=(const MutexInterface& other) = delete;
 
     //! \brief destructor
     ~RTEMSMutex() override;

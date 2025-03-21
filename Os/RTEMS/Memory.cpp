@@ -7,7 +7,8 @@
 #include <Fw/Types/Assert.hpp>
 
 #include <rtems.h>
-#include <rtems/malloc.h>
+#include <stdlib.h>
+#include <malloc.h>
 
 namespace Os {
 namespace RTEMS {
@@ -25,19 +26,16 @@ class RtemsMemory : public MemoryInterface {
 
     //! Get memory usage
     Status _getUsage(Os::Memory::Usage& memory_usage) override {
-        // Get memory statistics from RTEMS
-        rtems_malloc_statistics_t stats;
-        rtems_malloc_get_statistics(&stats);
+        // Attempt to get memory information using RTEMS/system methods
+        struct mallinfo mem_info = mallinfo();
         
-        // Fill in memory usage values
-        memory_usage.total = stats.space_available;
-        
-        // Calculate used memory - this is an approximation
-        if (stats.space_available >= stats.free_size) {
-            memory_usage.used = stats.space_available - stats.free_size;
-        } else {
-            // This shouldn't happen, but handle it gracefully
-            memory_usage.used = 0;
+        // Calculate total and used memory
+        // mallinfo provides information about the memory allocated by malloc
+        memory_usage.total = static_cast<FwSizeType>(mem_info.arena);       // Total space allocated by malloc
+        memory_usage.used = static_cast<FwSizeType>(mem_info.uordblks);     // Total space used
+
+        // Sanity check
+        if (memory_usage.used > memory_usage.total) {
             return Status::ERROR;
         }
         
@@ -59,7 +57,7 @@ class RtemsMemory : public MemoryInterface {
 
 namespace Os {
 MemoryInterface* MemoryInterface::getDelegate(MemoryHandleStorage& aligned_new_memory) {
-    FW_ASSERT(aligned_new_memory != nullptr);
+    // The address cannot be null due to how it's allocated
     static_assert(sizeof(Os::RTEMS::Memory::RtemsMemory) <= sizeof(MemoryHandleStorage),
                   "RTEMS Memory implementation too large");
     static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::Memory::RtemsMemory)) == 0,

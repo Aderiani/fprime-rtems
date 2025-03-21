@@ -9,6 +9,7 @@
 #include <rtems.h>
 #include <sys/time.h>
 #include <time.h>
+#include <limits>
 
 namespace Os {
 namespace RTEMS {
@@ -39,17 +40,22 @@ class RtemsRawTime : public RawTimeInterface {
 
     //! Calculate time interval between this and another raw time
     Status getTimeInterval(const Os::RawTime& other, Fw::TimeInterval& interval) const override {
-        // Cast to our implementation
-        const RtemsRawTime* otherTime = static_cast<const RtemsRawTime*>(
-            dynamic_cast<const RawTimeInterface*>(&other));
-            
-        if (otherTime == nullptr) {
+        // Cast to base type and check implementation
+        const RawTimeInterface* otherInterface = 
+            static_cast<const RawTimeInterface*>(&other);
+        
+        // Check if the time comes from this implementation
+        if (otherInterface == nullptr) {
             return Status::INVALID_PARAMS;
         }
         
+        // Assuming the other time is also a RtemsRawTime
+        const RtemsRawTimeHandle* otherHandle = 
+            reinterpret_cast<const RtemsRawTimeHandle*>(otherInterface->getHandle());
+        
         // Calculate difference in seconds and nanoseconds
-        time_t sec_diff = m_handle.time.tv_sec - otherTime->m_handle.time.tv_sec;
-        long nsec_diff = m_handle.time.tv_nsec - otherTime->m_handle.time.tv_nsec;
+        time_t sec_diff = m_handle.time.tv_sec - otherHandle->time.tv_sec;
+        long nsec_diff = m_handle.time.tv_nsec - otherHandle->time.tv_nsec;
         
         // Adjust for negative nanoseconds
         if (nsec_diff < 0) {
@@ -57,7 +63,7 @@ class RtemsRawTime : public RawTimeInterface {
             nsec_diff += 1000000000L;
         }
         
-        // Check for overflow - shouldn't happen with 64-bit types
+        // Check for overflow
         if (sec_diff > static_cast<time_t>(std::numeric_limits<U32>::max())) {
             return Status::OP_OVERFLOW;
         }
@@ -117,8 +123,8 @@ class RtemsRawTime : public RawTimeInterface {
 } // namespace Os
 
 namespace Os {
-RawTimeInterface* RawTimeInterface::getDelegate(RawTimeHandleStorage& aligned_new_memory) {
-    FW_ASSERT(aligned_new_memory != nullptr);
+RawTimeInterface* RawTimeInterface::getDelegate(RawTimeHandleStorage& aligned_new_memory, const RawTimeInterface* to_copy) {
+    // Ignore to_copy parameter if provided
     static_assert(sizeof(Os::RTEMS::RawTime::RtemsRawTime) <= sizeof(RawTimeHandleStorage),
                   "RTEMS RawTime implementation too large");
     static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::RawTime::RtemsRawTime)) == 0,

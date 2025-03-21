@@ -6,6 +6,8 @@
 #include <Fw/Types/StringBase.hpp>
 
 namespace Os {
+namespace RTEMS{
+namespace Queue {
 
     class Queue {
         public:
@@ -45,5 +47,6 @@ namespace Os {
             NATIVE_INT_TYPE m_msgSize; //!< Message size
     };
 }
-
+}
+}
 #endif // _Os_RTEMS_Queue_hpp_

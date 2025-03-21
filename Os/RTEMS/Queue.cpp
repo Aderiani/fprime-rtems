@@ -1,9 +1,13 @@
 #include <Os/Queue.hpp>
+#include <Os/RTEMS/Queue.hpp>   
 #include <rtems.h>
 #include <Fw/Types/Assert.hpp>
 #include <cstring>
 
 namespace Os {
+
+namespace RTEMS{
+namespace Queue {
 
     Queue::Queue() : m_handle(0), m_depth(0), m_msgSize(0) {
         // Initialize the queue name
@@ -76,9 +80,7 @@ namespace Os {
         if (size > this->m_msgSize) {
             return SIZE_MISMATCH;
         }
-        
-        rtems_option wait_option = (block == BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
-        
+                
         rtems_status_code status = rtems_message_queue_send(
             static_cast<rtems_id>(this->m_handle),
             buffer,
@@ -146,4 +148,6 @@ namespace Os {
     NATIVE_INT_TYPE Queue::getMsgSize() const {
         return this->m_msgSize;
     }
+}
+}
 }

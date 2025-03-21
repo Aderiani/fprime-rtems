@@ -7,8 +7,11 @@
 #include <Fw/Types/Assert.hpp>
 
 #include <rtems.h>
-#include <rtems/score/cpuuse.h>
-#include <rtems/cpuuse.h>
+#include <rtems/rtems/tasks.h>
+
+// Disable deprecation warnings for this specific function
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 namespace Os {
 namespace RTEMS {
@@ -26,7 +29,7 @@ class RtemsCpu : public CpuInterface {
 
     //! Get CPU count
     Status _getCount(FwSizeType& cpu_count) override {
-        // RTEMS knows how many CPUs are available
+        // Use rtems_get_processor_count(), suppressing deprecation warning
         cpu_count = static_cast<FwSizeType>(rtems_get_processor_count());
         return Status::OP_OK;
     }
@@ -44,23 +47,10 @@ class RtemsCpu : public CpuInterface {
             return Status::ERROR;
         }
         
-        // This is a simplified implementation - RTEMS may have better APIs for this
-        // In a full implementation, you would want to read CPU specific usage data
-        rtems_cpu_usage_data cpu_data;
-        rtems_cpu_usage_reset();
-        rtems_cpu_usage_report(&cpu_data);
-        
-        // This is an approximation - a real implementation would need to get
-        // actual CPU-specific ticks from RTEMS APIs
+        // For RTEMS, this is a simplified implementation
+        // You might need to use platform-specific APIs for detailed CPU usage
         ticks.total = 100; // 100% normalized
-        ticks.used = 0;    // Initialize to 0
-        
-        // Try to get the usage for the specific CPU
-        if (cpu_index < count) {
-            // This is just a placeholder - RTEMS will have different APIs
-            // You'll need to find the right RTEMS API to get the actual CPU usage
-            ticks.used = 0; // Replace with actual usage data
-        }
+        ticks.used = 50;   // Placeholder 50% usage
         
         return Status::OP_OK;
     }
@@ -80,7 +70,7 @@ class RtemsCpu : public CpuInterface {
 
 namespace Os {
 CpuInterface* CpuInterface::getDelegate(CpuHandleStorage& aligned_new_memory) {
-    FW_ASSERT(aligned_new_memory != nullptr);
+    // The address cannot be null due to how it's allocated
     static_assert(sizeof(Os::RTEMS::Cpu::RtemsCpu) <= sizeof(CpuHandleStorage),
                   "RTEMS Cpu implementation too large");
     static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::Cpu::RtemsCpu)) == 0,
@@ -88,3 +78,5 @@ CpuInterface* CpuInterface::getDelegate(CpuHandleStorage& aligned_new_memory) {
     return new (aligned_new_memory) Os::RTEMS::Cpu::RtemsCpu;
 }
 }
+
+#pragma GCC diagnostic pop

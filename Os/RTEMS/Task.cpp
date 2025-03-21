@@ -4,7 +4,6 @@
 // ======================================================================
 #include <Os/RTEMS/Task.hpp>
 #include <Fw/Types/Assert.hpp>
-
 #include <rtems.h>
 #include <cstring>
 
@@ -32,14 +31,19 @@ static rtems_task task_wrapper(rtems_task_argument arg) {
 
 void RTEMSTask::onStart() {}
 
-Status RTEMSTask::start(const Arguments& arguments) {
+TaskInterface::Status RTEMSTask::start(const Arguments& arguments) {
     FW_ASSERT(arguments.m_routine != nullptr);
 
     // We need to pass both the routine and argument to the wrapper
-    auto* params = new struct {
+
+    // Define the structure type before using it in new
+    struct TaskParams {
         TaskInterface::taskRoutine routine;
         void* arg;
     };
+    
+    // Create the parameters structure
+    TaskParams* params = new TaskParams;
     params->routine = arguments.m_routine;
     params->arg = arguments.m_routine_argument;
 
@@ -53,7 +57,6 @@ Status RTEMSTask::start(const Arguments& arguments) {
         name_str[2] ? name_str[2] : ' ',
         name_str[3] ? name_str[3] : ' '
     );
-
     // Set up task priority - convert from F' to RTEMS (higher values are higher priority in RTEMS)
     rtems_task_priority priority;
     if (arguments.m_priority == TASK_DEFAULT) {
@@ -80,7 +83,7 @@ Status RTEMSTask::start(const Arguments& arguments) {
 
     if (status != RTEMS_SUCCESSFUL) {
         delete params;  // Clean up if task creation fails
-        return Status::ERROR_RESOURCES;
+        return TaskInterface::Status::ERROR_RESOURCES;
     }
 
     // Start the task
@@ -93,19 +96,19 @@ Status RTEMSTask::start(const Arguments& arguments) {
     if (status != RTEMS_SUCCESSFUL) {
         rtems_task_delete(this->m_handle.task_id);
         delete params;  // Clean up if task start fails
-        return Status::UNKNOWN_ERROR;
+        return TaskInterface::Status::UNKNOWN_ERROR;
     }
 
-    return Status::OP_OK;
+    return TaskInterface::Status::OP_OK;
 }
 
-Status RTEMSTask::join() {
+TaskInterface::Status RTEMSTask::join() {
     // RTEMS doesn't have a direct equivalent to join, but we can check if the task exists
     rtems_status_code status = rtems_task_is_suspended(this->m_handle.task_id);
     if (status != RTEMS_SUCCESSFUL) {
-        return Status::JOIN_ERROR;
+        return TaskInterface::Status::JOIN_ERROR;
     }
-    return Status::OP_OK;
+    return TaskInterface::Status::OP_OK;
 }
 
 TaskHandle* RTEMSTask::getHandle() {
@@ -122,22 +125,21 @@ void RTEMSTask::resume() {
     FW_ASSERT(status == RTEMS_SUCCESSFUL, static_cast<FwAssertArgType>(status));
 }
 
-Status RTEMSTask::_delay(Fw::TimeInterval interval) {
-    uint32_t ticks;
-    
-    // Convert time interval to RTEMS ticks
-    // This assumes the clock tick rate is set to a known value
-    // You may need to adjust this calculation based on your RTEMS configuration
+TaskInterface::Status RTEMSTask::_delay(Fw::TimeInterval interval) {
     uint32_t microseconds = interval.getUSeconds() + interval.getSeconds() * 1000000;
-    rtems_clock_get_ticks_per_second(&ticks);
-    uint32_t rtems_ticks = (microseconds * ticks) / 1000000;
     
-    rtems_status_code status = rtems_task_wake_after(rtems_ticks);
+    // Get ticks per second using the RTEMS macro (which returns a value)
+    uint32_t ticks_per_second = rtems_clock_get_ticks_per_second();
+    
+    // Calculate ticks to delay
+    uint32_t ticks = (microseconds * ticks_per_second) / 1000000;
+    
+    rtems_status_code status = rtems_task_wake_after(ticks);
     if (status != RTEMS_SUCCESSFUL) {
-        return Status::DELAY_ERROR;
+        return TaskInterface::Status::DELAY_ERROR;
     }
     
-    return Status::OP_OK;
+    return TaskInterface::Status::OP_OK;
 }
 
 }  // namespace Task

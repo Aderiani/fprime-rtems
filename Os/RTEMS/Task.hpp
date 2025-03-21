@@ -27,7 +27,7 @@ class RTEMSTask : public TaskInterface {
     RTEMSTask(const RTEMSTask& other) = delete;
 
     //! \brief assignment operator is forbidden
-    TaskInterface& operator=(const TaskInterface& other) override = delete;
+    TaskInterface& operator=(const TaskInterface& other) = delete; 
 
     //! \brief destructor
     ~RTEMSTask() override = default;

@@ -1,48 +1,45 @@
-#ifndef _Os_RTEMS_Directory_hpp_
-#define _Os_RTEMS_Directory_hpp_
+// ======================================================================
+// \title Os/RTEMS/Directory.hpp
+// \brief RTEMS implementation for Os::Directory, header file
+// ======================================================================
+#ifndef OS_RTEMS_DIRECTORY_HPP
+#define OS_RTEMS_DIRECTORY_HPP
 
-#include <FpConfig.hpp>
-#include <Fw/Types/BasicTypes.hpp>
-#include <Fw/Types/StringBase.hpp>
+#include <Os/Directory.hpp>
+#include <dirent.h>
 
 namespace Os {
+namespace RTEMS {
+namespace Directory {
 
-    class Directory {
-        public:
-            enum Status {
-                OP_OK,              //!< Operation successful
-                DOESNT_EXIST,       //!< Directory doesn't exist
-                NO_PERMISSION,      //!< No permission
-                NOT_OPENED,         //!< Directory not opened
-                NOT_DIR,            //!< Not a directory
-                NO_MORE_FILES,      //!< No more files in directory
-                FILE_LIMIT,         //!< Too many files opened
-                BAD_DESCRIPTOR,     //!< Bad file descriptor
-                ALREADY_EXISTS,     //!< File already exists
-                NOT_SUPPORTED,      //!< Operation not supported
-                OTHER_ERROR         //!< Other error
-            };
+//! DirectoryHandle class definition for RTEMS implementations
+struct RtemsDirectoryHandle : public DirectoryHandle {
+    DIR* dir;  // Directory stream pointer
+    RtemsDirectoryHandle() : dir(nullptr) {}
+};
 
-            enum OpenMode {
-                READ,               //!< Open for reading
-                CREATE_IF_MISSING,  //!< Create directory if missing
-                CREATE_EXCLUSIVE,   //!< Create only if does not exist
-                MAX_OPEN_MODE       //!< Maximum value
-            };
+//! \brief RTEMS implementation of Os::DirectoryInterface
+class RtemsDirectory : public DirectoryInterface {
+  public:
+    //! Constructor
+    RtemsDirectory();
 
-            Directory();
-            virtual ~Directory();
-            
-            Status createDirectory(const Fw::StringBase& path);
-            Status removeDirectory(const Fw::StringBase& path);
-            Status readDirectory(const Fw::StringBase& path, Fw::String& entry);
-            Status openDirectory(const Fw::StringBase& path, OpenMode mode = READ);
-            Status closeDirectory();
-            
-        private:
-            POINTER_CAST m_handle; //!< Handle to OS directory
-            bool m_opened; //!< Whether directory is opened
-    };
-}
+    //! Destructor
+    ~RtemsDirectory() override;
 
-#endif // _Os_RTEMS_Directory_hpp_
+    // Override required pure virtual methods from DirectoryInterface
+    Status open(const char* path, OpenMode mode) override;
+    Status read(char* buffer, PlatformSizeType maxSize) override;
+    Status rewind() override;
+    void close() override;
+    DirectoryHandle* getHandle() override;
+
+  private:
+    RtemsDirectoryHandle m_handle;
+};
+
+} // namespace Directory
+} // namespace RTEMS
+} // namespace Os
+
+#endif // OS_RTEMS_DIRECTORY_HPP
