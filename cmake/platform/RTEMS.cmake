@@ -49,14 +49,7 @@ configure_file(
 include_directories(${CMAKE_BINARY_DIR})
 include_directories(SYSTEM "${CMAKE_CURRENT_LIST_DIR}/types")
 
-# Optional: Indicate RTEMS-specific features
-set(FPRIME_USE_POSIX OFF)  # RTEMS isn’t POSIX-compliant by default
+# RTEMS-specific features
+ # Add to the COMPAT_FLAGS line:
+set(COMPAT_FLAGS "-Wno-pedantic -Wno-error=ignored-qualifiers -Wno-error=old-style-cast -Wno-error=sign-compare -Wno-old-style-cast -Wno-error=unused-variable -Wno-sign-compare")
 
-# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_SUPPORTED_Drv_Ip RTEMS)
-# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_SUPPORTED_Drv_TcpServer RTEMS)
-# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_SUPPORTED_Drv_TcpClient RTEMS)
-# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_SUPPORTED_Drv_Udp RTEMS)
-
-# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_RESTRICTIONS_Drv_Udp)
-# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_RESTRICTIONS_Drv_TcpServer)
-# set_property(GLOBAL PROPERTY FPRIME_PLATFORM_RESTRICTIONS_Drv_TcpClient)

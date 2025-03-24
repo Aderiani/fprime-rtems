@@ -396,7 +396,7 @@ typedef FwIndexType FwQueueSizeType;
 #endif
 
 #ifndef FW_MUTEX_HANDLE_MAX_SIZE
-#define FW_MUTEX_HANDLE_MAX_SIZE 72  //!< Maximum size of a handle for OS queues
+#define FW_MUTEX_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_QUEUE_HANDLE_MAX_SIZE

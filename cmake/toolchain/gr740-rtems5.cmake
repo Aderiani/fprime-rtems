@@ -58,7 +58,7 @@ set(CXX_FLAGS "-fno-exceptions -fno-rtti")
 
 # Error-suppressing flags for RTEMS compatibility
 set(COMPAT_FLAGS "-Wno-pedantic -Wno-error=ignored-qualifiers -Wno-error=old-style-cast -Wno-error=sign-compare")
-add_compile_options(-Wno-shadow -Wno-error=shadow)
+add_compile_options(-Wno-shadow -Wno-error=shadow -fno-common)
 # Set the flags for each language
 set(CMAKE_C_FLAGS           "${COMMON_FLAGS} ${C_CXX_FLAGS} ${C_FLAGS} ${DEF_FLAGS} ${COMPAT_FLAGS}" CACHE STRING "CFLAGS" FORCE)
 set(CMAKE_CXX_FLAGS         "${COMMON_FLAGS} ${C_CXX_FLAGS} ${CXX_FLAGS} ${DEF_FLAGS} ${COMPAT_FLAGS}" CACHE STRING "CXXFLAGS" FORCE)

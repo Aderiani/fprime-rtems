@@ -1,52 +1,41 @@
 #ifndef _Os_RTEMS_Queue_hpp_
 #define _Os_RTEMS_Queue_hpp_
 
+#include <Os/Queue.hpp>
 #include <FpConfig.hpp>
 #include <Fw/Types/BasicTypes.hpp>
 #include <Fw/Types/StringBase.hpp>
+#include <rtems.h>
 
 namespace Os {
-namespace RTEMS{
+namespace RTEMS {
 namespace Queue {
 
-    class Queue {
-        public:
-            enum Status {
-                OP_OK,               //!< Operation successful
-                ALREADY_CREATED,     //!< Queue already created
-                EMPTY,               //!< Queue is empty
-                UNINITIALIZED,       //!< Queue not initialized
-                SIZE_MISMATCH,       //!< Size mismatch
-                SEND_ERROR,          //!< Error sending
-                RECEIVE_ERROR,       //!< Error receiving
-                INVALID_PRIORITY,    //!< Invalid priority
-                FULL,                //!< Queue is full
-                UNKNOWN_ERROR        //!< Unknown error
-            };
+struct RTEMSQueueHandle : public QueueHandle {
+    rtems_id queue_id;
+    char name[80];
+    NATIVE_INT_TYPE depth;
+    NATIVE_INT_TYPE msgSize;
+};
 
-            enum BlockingType {
-                BLOCKING,            //!< Queue will block task waiting for message
-                NONBLOCKING,         //!< Queue won't block waiting for message
-            };
+class RTEMSQueue : public QueueInterface {
+  public:
+    RTEMSQueue();
+    ~RTEMSQueue() override;
 
-            Queue();
-            virtual ~Queue();
+    Status create(const Fw::StringBase &name, FwSizeType depth, FwSizeType msgSize) override;
+    Status send(const U8* buffer, FwSizeType size, FwQueuePriorityType priority, BlockingType block) override;
+    Status receive(U8* destination, FwSizeType capacity, BlockingType block, FwSizeType& actualSize, FwQueuePriorityType& priority) override;
+    FwSizeType getMessagesAvailable() const override;
+    FwSizeType getMessageHighWaterMark() const override;
+    QueueHandle* getHandle() override;
 
-            Status create(const Fw::StringBase &name, NATIVE_INT_TYPE depth, NATIVE_INT_TYPE msgSize);
-            Status send(const U8* buffer, NATIVE_INT_TYPE size, NATIVE_INT_TYPE priority = 0, BlockingType block = NONBLOCKING);
-            Status receive(U8* buffer, NATIVE_INT_TYPE& size, NATIVE_INT_TYPE capacity, NATIVE_INT_TYPE& priority, BlockingType block = NONBLOCKING);
-            
-            NATIVE_INT_TYPE getNumMsgs() const;
-            NATIVE_INT_TYPE getMaxMsgs() const;
-            NATIVE_INT_TYPE getMsgSize() const;
+  private:
+    RTEMSQueueHandle m_handle;
+};
 
-        private:
-            POINTER_CAST m_handle; //!< Queue handle
-            char m_name[80]; //!< Queue name
-            NATIVE_INT_TYPE m_depth; //!< Queue depth
-            NATIVE_INT_TYPE m_msgSize; //!< Message size
-    };
-}
-}
-}
+} // namespace Queue
+} // namespace RTEMS
+} // namespace Os
+
 #endif // _Os_RTEMS_Queue_hpp_
