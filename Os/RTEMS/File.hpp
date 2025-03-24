@@ -26,14 +26,19 @@ class RtemsFile : public FileInterface {
     //! Destructor
     ~RtemsFile() override;
 
-    Status open(const char* filename, Mode mode) override;
-    Status read(U8* buffer, PlatformSizeType& size, WaitType wait) override;
-    Status readline(U8* buffer, PlatformSizeType& size, WaitType wait) override;
-    Status write(const U8* buffer, PlatformSizeType& size) override;
-    Status seek(PlatformSizeType offset, SeekType seekType) override;
+    Status open(const char* path, Mode mode, OverwriteType overwrite = OverwriteType::OVERWRITE) override;
+    Status read(U8* buffer, FwSignedSizeType& size, WaitType wait = WaitType::WAIT) override;
+    Status write(const U8* buffer, FwSignedSizeType& size, WaitType wait = WaitType::WAIT) override;
+    Status seek(FwSignedSizeType offset, SeekType seekType) override;
+    Status size(FwSignedSizeType& size_result) override;
+    Status position(FwSignedSizeType& position_result) override;
+    Status preallocate(FwSignedSizeType offset, FwSignedSizeType length) override;
     Status flush() override;
     void close() override;
     FileHandle* getHandle() override;
+    
+    // Custom method - not overriding anything from parent
+    Status readline(U8* buffer, FwSignedSizeType& size, WaitType wait = WaitType::WAIT);
     
   private:
     RtemsFileHandle m_handle;

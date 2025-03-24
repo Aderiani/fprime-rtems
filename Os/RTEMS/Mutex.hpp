@@ -4,6 +4,7 @@
 // ======================================================================
 #include <Os/Mutex.hpp>
 #include <rtems.h>
+#include <pthread.h> // Add pthread.h for POSIX mutex
 
 #ifndef OS_RTEMS_MUTEX_HPP
 #define OS_RTEMS_MUTEX_HPP
@@ -14,7 +15,8 @@ namespace Mutex {
 
 //! MutexHandle class definition for RTEMS implementations.
 struct RTEMSMutexHandle : public MutexHandle {
-    rtems_id mutex_id;  // RTEMS mutex identifier
+    rtems_id mutex_id;       // RTEMS mutex identifier
+    pthread_mutex_t posix_mutex; // POSIX mutex for use with condition variables
 };
 
 //! \brief RTEMS implementation of Os::MutexInterface

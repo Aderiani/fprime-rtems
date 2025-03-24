@@ -7,7 +7,8 @@
 #include "Os/Delegate.hpp"
 
 namespace Os {
-ConsoleInterface* ConsoleInterface::getDelegate(ConsoleHandleStorage& aligned_new_memory) {
+ConsoleInterface* ConsoleInterface::getDelegate(ConsoleHandleStorage& aligned_new_memory, const ConsoleInterface* to_copy) {
+    // Ignore to_copy parameter if provided
     return Os::Delegate::makeDelegate<ConsoleInterface, Os::RTEMS::Console::RtemsConsole>(aligned_new_memory);
 }
 }

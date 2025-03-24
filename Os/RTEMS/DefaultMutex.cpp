@@ -7,7 +7,7 @@
 #include "Os/Delegate.hpp"
 
 namespace Os {
-MutexInterface* MutexInterface::getDelegate(MutexHandleStorage& aligned_new_memory) {
+MutexInterface* MutexInterface::getDelegate(MutexHandleStorage& aligned_new_memory, const MutexInterface* to_copy) {
     return Os::Delegate::makeDelegate<MutexInterface, Os::RTEMS::Mutex::RTEMSMutex>(aligned_new_memory);
 }
 }

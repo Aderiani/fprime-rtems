@@ -11,9 +11,29 @@ namespace Os {
 namespace RTEMS {
 namespace Console {
 
-// Forward declarations
-struct RtemsConsoleHandle;
-class RtemsConsole;
+//! ConsoleHandle class definition for RTEMS implementations
+struct RtemsConsoleHandle : public ConsoleHandle {
+    // No additional members needed for RTEMS console
+};
+
+//! \brief RTEMS implementation of Os::ConsoleInterface
+class RtemsConsole : public ConsoleInterface {
+  public:
+    //! Constructor
+    RtemsConsole();
+
+    //! Destructor
+    ~RtemsConsole() override;
+
+    //! Implementation of required writeMessage function
+    void writeMessage(const CHAR* message, const FwSizeType size) override;
+
+    //! Get console handle
+    ConsoleHandle* getHandle() override;
+
+  private:
+    RtemsConsoleHandle m_handle;
+};
 
 } // namespace Console
 } // namespace RTEMS

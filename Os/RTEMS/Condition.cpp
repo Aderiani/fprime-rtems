@@ -28,8 +28,8 @@ ConditionVariableInterface::Status RtemsConditionVariable::pend(Os::Mutex& mutex
     // Cast to RTEMS mutex handle
     auto* rtems_mutex_handle = static_cast<Os::RTEMS::Mutex::RTEMSMutexHandle*>(mutex_handle);
     
-    // Wait on condition
-    int status = pthread_cond_wait(&m_handle.condition, &rtems_mutex_handle->mutex_id);
+    // Wait on condition with the POSIX mutex
+    int status = pthread_cond_wait(&m_handle.condition, &rtems_mutex_handle->posix_mutex);
     
     if (status == 0) {
         return Status::OP_OK;
