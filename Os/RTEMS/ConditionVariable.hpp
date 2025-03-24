@@ -1,24 +1,21 @@
-// ======================================================================
-// \title Os/RTEMS/ConditionVariable.hpp
-// \brief RTEMS implementation for Os::ConditionVariable
-// ======================================================================
-#ifndef OS_RTEMS_CONDITIONVARIABLE_HPP
-#define OS_RTEMS_CONDITIONVARIABLE_HPP
+// Os/RTEMS/ConditionVariable.hpp
+#ifndef OS_RTEMS_CONDITION_VARIABLE_HPP
+#define OS_RTEMS_CONDITION_VARIABLE_HPP
 
 #include <Os/Condition.hpp>
 #include <rtems.h>
+#include <pthread.h>  // For POSIX condition variables
 
 namespace Os {
 namespace RTEMS {
 namespace ConditionVariable {
 
-//! ConditionVariableHandle class definition for RTEMS implementations
+//! \brief RTEMS-specific condition variable handle
 struct RtemsConditionVariableHandle : public ConditionVariableHandle {
-    rtems_id condition_id;  // RTEMS condition variable identifier
-    RtemsConditionVariableHandle() : condition_id(0) {}
+    pthread_cond_t condition;  //!< POSIX condition variable (RTEMS implements this)
 };
 
-//! \brief RTEMS implementation of Os::ConditionVariableInterface
+//! \brief RTEMS implementation of ConditionVariableInterface
 class RtemsConditionVariable : public ConditionVariableInterface {
   public:
     //! Constructor
@@ -28,23 +25,23 @@ class RtemsConditionVariable : public ConditionVariableInterface {
     ~RtemsConditionVariable() override;
 
     //! Wait on condition variable
-    Status pend(Mutex& mutex) override;
+    Status pend(Os::Mutex& mutex) override;
 
-    //! Notify one thread waiting on condition variable
+    //! Signal one thread
     void notify() override;
 
-    //! Notify all threads waiting on condition variable
+    //! Broadcast to all threads
     void notifyAll() override;
 
     //! Get handle to condition variable
     ConditionVariableHandle* getHandle() override;
-    
+
   private:
-    RtemsConditionVariableHandle m_handle;
+    RtemsConditionVariableHandle m_handle;  //!< Internal handle storage
 };
 
 } // namespace ConditionVariable
 } // namespace RTEMS
 } // namespace Os
 
-#endif // OS_RTEMS_CONDITIONVARIABLE_HPP
+#endif // OS_RTEMS_CONDITION_VARIABLE_HPP

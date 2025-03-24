@@ -1,55 +1,55 @@
-// ======================================================================
-// \title Os/RTEMS/ConditionVariable.cpp
-// \brief RTEMS implementation for Os::ConditionVariable using POSIX API
-// ======================================================================
+// Os/RTEMS/Condition.cpp
 #include "Os/RTEMS/ConditionVariable.hpp"
 #include "Os/Delegate.hpp"
+#include "Os/RTEMS/Mutex.hpp"
 #include <Fw/Types/Assert.hpp>
-#include <pthread.h>
+
 namespace Os {
 namespace RTEMS {
 namespace ConditionVariable {
 
 // Constructor
 RtemsConditionVariable::RtemsConditionVariable() {
-    int status = pthread_cond_init(&m_handle.condition_id, NULL);
+    int status = pthread_cond_init(&m_handle.condition, nullptr);
     FW_ASSERT(status == 0, static_cast<FwAssertArgType>(status));
 }
 
 // Destructor
 RtemsConditionVariable::~RtemsConditionVariable() {
-    int status = pthread_cond_destroy(&m_handle.condition_id);
+    int status = pthread_cond_destroy(&m_handle.condition);
     FW_ASSERT(status == 0, static_cast<FwAssertArgType>(status));
 }
 
-// Wait on condition_id variable
+// Wait on condition variable
 ConditionVariableInterface::Status RtemsConditionVariable::pend(Os::Mutex& mutex) {
-    // Assuming Os::Mutex delegates to an Os::MutexInterface implementation
-    Os::MutexInterface* mutex_if = mutex.m_delegate;  // Adjusted based on F´ pattern
-    Os::RTEMS::Mutex::RTEMSMutex::MutexHandle* rtems_mutex_handle =
-        static_cast<Os::RTEMS::Mutex::RTEMSMutex::MutexHandle*>(mutex_if->getHandle());
-
-    int status = pthread_cond_wait(&m_handle.condition_id, &rtems_mutex_handle->mutex);
+    // Get the mutex handle
+    Os::MutexHandle* mutex_handle = mutex.getHandle();
+    
+    // Cast to RTEMS mutex handle
+    auto* rtems_mutex_handle = static_cast<Os::RTEMS::Mutex::RTEMSMutexHandle*>(mutex_handle);
+    
+    // Wait on condition
+    int status = pthread_cond_wait(&m_handle.condition, &rtems_mutex_handle->mutex_id);
+    
     if (status == 0) {
         return Status::OP_OK;
-    } else {
-        return Status::ERROR_OTHER;
     }
+    return Status::ERROR_OTHER;
 }
 
 // Signal one thread
 void RtemsConditionVariable::notify() {
-    int status = pthread_cond_signal(&m_handle.condition_id);
+    int status = pthread_cond_signal(&m_handle.condition);
     FW_ASSERT(status == 0, static_cast<FwAssertArgType>(status));
 }
 
 // Broadcast to all threads
 void RtemsConditionVariable::notifyAll() {
-    int status = pthread_cond_broadcast(&m_handle.condition_id);
+    int status = pthread_cond_broadcast(&m_handle.condition);
     FW_ASSERT(status == 0, static_cast<FwAssertArgType>(status));
 }
 
-// Get handle to condition_id variable
+// Get handle to condition variable
 ConditionVariableHandle* RtemsConditionVariable::getHandle() {
     return &m_handle;
 }
