@@ -73,6 +73,8 @@ if (BUILD_TESTING AND NOT VALGRIND)
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/FPrime-Code.cmake")
-add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/RTEMSInit")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Components/Led/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/LedBlinker/")
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/RTEMSInit")
+
+

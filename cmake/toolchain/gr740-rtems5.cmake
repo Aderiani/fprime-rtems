@@ -9,6 +9,7 @@ set(CMAKE_SYSTEM_VERSION      5)
 set(CMAKE_SYSTEM_PROCESSOR    sparc)
 set(FPRIME_PLATFORM           RTEMS)
 
+
 # Define RTEMS as the target OS type
 add_definitions(-DCMAKE_SYSTEM_NAME_RTEMS=1)
 add_definitions(-DTGT_OS_TYPE_RTEMS=1)
@@ -32,6 +33,8 @@ message(STATUS "Using RTEMS BSP: ${RTEMS_BSP}")
 set(CROSS_PREFIX "sparc-gaisler-rtems5")
 set(CROSS_SUFFIX "")
 
+set(RTEMS_PREFIX "${RTEMS_PATH}/${CROSS_PREFIX}/${RTEMS_BSP}")
+
 # Specify the cross toolchain executables
 set(CMAKE_ASM_COMPILER "${RTEMS_PATH}/bin/${CROSS_PREFIX}-gcc${CROSS_SUFFIX}"     CACHE PATH "assembler"  FORCE)
 set(CMAKE_C_COMPILER   "${RTEMS_PATH}/bin/${CROSS_PREFIX}-gcc${CROSS_SUFFIX}"     CACHE PATH "gcc"        FORCE)
@@ -44,6 +47,10 @@ set(CMAKE_OBJDUMP      "${RTEMS_PATH}/bin/${CROSS_PREFIX}-objdump${CROSS_SUFFIX}
 set(CMAKE_STRIP        "${RTEMS_PATH}/bin/${CROSS_PREFIX}-strip${CROSS_SUFFIX}"   CACHE PATH "strip"      FORCE)
 set(CMAKE_SIZE         "${RTEMS_PATH}/bin/${CROSS_PREFIX}-size${CROSS_SUFFIX}"    CACHE PATH "size"       FORCE)
 set(CMAKE_RANLIB       "${RTEMS_PATH}/bin/${CROSS_PREFIX}-ranlib${CROSS_SUFFIX}"  CACHE PATH "ranlib"     FORCE)
+
+set(CMAKE_INCLUDE_PATH ${RTEMS_PREFIX}/lib/include)
+set(CMAKE_LIBRARY_PATH ${RTEMS_PREFIX}/lib)
+
 
 # GR740-specific flags
 set(ISA_FLAG "-mcpu=leon3")
@@ -70,7 +77,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit")
 
 # Linker flags - these are critical for RTEMS
 set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,-znorelro -Wl,--wrap=printf -Wl,--wrap=putchar")
+
+
+set(CMAKE_EXE_LINKER_FLAGS "-T ${RTEMS_PREFIX}/lib/linkcmds.gr740_smp")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
+
 set(CMAKE_EXECUTABLE_SUFFIX ".exe" CACHE STRING "Executable suffix" FORCE)
 
 # Link RTEMS libraries

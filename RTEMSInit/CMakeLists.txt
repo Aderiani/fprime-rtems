@@ -1,29 +1,25 @@
+# RTEMSInit/CMakeLists.txt
+set(RTEMS_PREFIX "/opt/rtems/rcc-1.3.2-gcc/sparc-gaisler-rtems5/gr740_smp")
 
-# Only build for RTEMS platform
-if (NOT ${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
-    return()
-endif()
-
-set(SOURCE_FILES
-    "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
-    "${CMAKE_CURRENT_LIST_DIR}/network_init.c"
-    "${CMAKE_CURRENT_LIST_DIR}/rtems_cxx_support.cpp"
+add_library(RTEMSInit
+    rtems_init.c
+    network_init.c
+    bsp_init.c
+    stubs.c
 )
 
-# Dependencies
-set(MOD_DEPS
-    Fw/Logger
-    Os
+target_include_directories(RTEMSInit PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${RTEMS_PREFIX}/lib/include
 )
 
-
-set_source_files_properties(rtems_init.c PROPERTIES COMPILE_FLAGS "-Wall -Wextra")
-
-# Add include directories for RTEMS specific headers
-include_directories(SYSTEM 
-    ${RTEMS_BSP_PATH}/lib/include
-    ${RTEMS_BSP_PATH}/lib/include/grlib
+target_link_directories(RTEMSInit PUBLIC
+    ${RTEMS_PREFIX}/lib
 )
 
-# Register as a module
-register_fprime_module()
+target_link_libraries(RTEMSInit PUBLIC
+    ${RTEMS_PREFIX}/lib/start.o  # Startup code
+    rtemsbsp                     # BSP library
+    rtemscpu                     # CPU library (contains sparc_syscall_exit)
+    c                            # Standard C library
+)
