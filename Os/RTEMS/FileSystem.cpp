@@ -170,16 +170,3 @@ Os::FileSystemHandle* RtemsFileSystem::getHandle() {
 } // namespace FileSystem
 } // namespace RTEMS
 } // namespace Os
-
-namespace Os {
-// ----------------------------------------------------------------------
-// getDelegate: Factory method to create the RTEMS filesystem delegate
-// ----------------------------------------------------------------------
-FileSystemInterface* FileSystemInterface::getDelegate(FileSystemHandleStorage& aligned_new_memory) {
-    static_assert(sizeof(Os::RTEMS::FileSystem::RtemsFileSystem) <= sizeof(FileSystemHandleStorage),
-                  "RTEMS FileSystem implementation too large");
-    static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::FileSystem::RtemsFileSystem)) == 0,
-                  "Bad alignment for RTEMS FileSystem implementation");
-    return new (aligned_new_memory) Os::RTEMS::FileSystem::RtemsFileSystem();
-}
-} // namespace Os

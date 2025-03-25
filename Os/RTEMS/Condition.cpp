@@ -57,10 +57,3 @@ ConditionVariableHandle* RtemsConditionVariable::getHandle() {
 } // namespace ConditionVariable
 } // namespace RTEMS
 } // namespace Os
-
-namespace Os {
-// Delegate factory function
-ConditionVariableInterface* ConditionVariableInterface::getDelegate(ConditionVariableHandleStorage& aligned_new_memory) {
-    return Os::Delegate::makeDelegate<ConditionVariableInterface, Os::RTEMS::ConditionVariable::RtemsConditionVariable>(aligned_new_memory);
-}
-} // namespace Os

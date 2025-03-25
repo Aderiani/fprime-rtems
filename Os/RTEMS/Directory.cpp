@@ -137,12 +137,3 @@ DirectoryHandle* RtemsDirectory::getHandle() {
 } // namespace RTEMS
 } // namespace Os
 
-namespace Os {
-DirectoryInterface* DirectoryInterface::getDelegate(DirectoryHandleStorage& aligned_new_memory) {
-    static_assert(sizeof(Os::RTEMS::Directory::RtemsDirectory) <= sizeof(DirectoryHandleStorage),
-                  "RTEMS directory implementation too large");
-    static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::Directory::RtemsDirectory)) == 0,
-                  "Bad alignment for RTEMS directory implementation");
-    return new (aligned_new_memory) Os::RTEMS::Directory::RtemsDirectory();
-}
-}

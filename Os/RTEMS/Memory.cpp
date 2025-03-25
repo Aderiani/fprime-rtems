@@ -37,14 +37,3 @@ MemoryHandle* RtemsMemory::getHandle() {
 } // namespace Memory
 } // namespace RTEMS
 } // namespace Os
-
-namespace Os {
-MemoryInterface* MemoryInterface::getDelegate(MemoryHandleStorage& aligned_new_memory) {
-    // The address cannot be null due to how it's allocated
-    static_assert(sizeof(Os::RTEMS::Memory::RtemsMemory) <= sizeof(MemoryHandleStorage),
-                  "RTEMS Memory implementation too large");
-    static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::Memory::RtemsMemory)) == 0,
-                  "Bad alignment for RTEMS Memory implementation");
-    return new (aligned_new_memory) Os::RTEMS::Memory::RtemsMemory;
-}
-}

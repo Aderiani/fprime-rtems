@@ -65,6 +65,12 @@ set(CMAKE_CXX_FLAGS         "${COMMON_FLAGS} ${C_CXX_FLAGS} ${CXX_FLAGS} ${DEF_F
 set(CMAKE_ASM_FLAGS         "${COMMON_FLAGS} ${ASM_FLAGS} ${DEF_FLAGS}" CACHE STRING "ASMFLAGS" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS  "${COMMON_FLAGS} ${LD_FLAGS}" CACHE STRING "LDFLAGS" FORCE)
 
+# Add RTEMS ptnhread support
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit")
+
+set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm -lgcc")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lrtems++ -lposix")
+
 # RTEMS BSP specific paths
 set(RTEMS_BSP_PATH "${TOOLCHAIN_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/${RTEMS_BSP}")
 
@@ -74,6 +80,22 @@ include_directories(
     ${RTEMS_BSP_PATH}/lib/include/grlib
     ${TOOLCHAIN_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/include
 )
+
+
+link_directories(
+    ${RTEMS_BSP_PATH}/lib
+    ${TOOLCHAIN_PATH}/sparc-gaisler-rtems5/lib
+)
+
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -B${RTEMS_BSP_PATH}/lib")
+
+set(RTEMS_LIBS 
+    ${RTEMS_BSP_PATH}/lib/librtemsbsp.a
+    ${RTEMS_BSP_PATH}/lib/librtemscpu.a
+)
+
+link_libraries(${RTEMS_LIBS})
+
 
 # Set search paths
 set(CMAKE_FIND_ROOT_PATH 

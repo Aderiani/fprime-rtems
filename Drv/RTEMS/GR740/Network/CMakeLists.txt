@@ -40,5 +40,5 @@ set_source_files_properties(
 
 register_fprime_module()
 
-target_link_libraries(Drv_RTEMS_GR740_Network PRIVATE grlib)
+# target_link_libraries(Drv_RTEMS_GR740_Network PRIVATE grlib)
 target_compile_options(Drv_RTEMS_GR740_Network PRIVATE -Wno-error=shadow)

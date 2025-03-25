@@ -285,14 +285,3 @@ FileHandle* RtemsFile::getHandle() {
 } // namespace File
 } // namespace RTEMS
 } // namespace Os
-
-namespace Os {
-FileInterface* FileInterface::getDelegate(FileHandleStorage& aligned_new_memory, const FileInterface* to_copy) {
-    // Don't need to use to_copy parameter
-    static_assert(sizeof(Os::RTEMS::File::RtemsFile) <= sizeof(FileHandleStorage),
-                  "RTEMS file implementation too large");
-    static_assert((FW_HANDLE_ALIGNMENT % alignof(Os::RTEMS::File::RtemsFile)) == 0,
-                  "Bad alignment for RTEMS file implementation");
-    return new (aligned_new_memory) Os::RTEMS::File::RtemsFile();
-}
-} // namespace Os
