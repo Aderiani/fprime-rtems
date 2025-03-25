@@ -1,93 +1,136 @@
 // ======================================================================
 // \title  Main.cpp
-// \brief main program for the F' application. Intended for CLI-based systems (Linux, macOS)
-//
+// \brief Main program for F' application
 // ======================================================================
-// Used to access topology functions
+
 #include <LedBlinker/Top/LedBlinkerTopology.hpp>
-// OSAL initialization
 #include <Os/Os.hpp>
-// Used for signal handling shutdown
-#include <signal.h>
-// Used for command line argument processing
-#include <getopt.h>
-// Used for printf functions
-#include <cstdlib>
+#include <Fw/Logger/Logger.hpp>
+#include <cstdlib>  // For atoi
+#include <cstring>  // For strcmp
 
-/**
- * \brief print command line help message
- *
- * This will print a command line help message including the available command line arguments.
- *
- * @param app: name of application
- */
-void print_usage(const char* app) {
-    (void)printf("Usage: ./%s [options]\n-a\thostname/IP address\n-p\tport_number\n", app);
+#ifdef __rtems__
+#include <rtems.h>
+#endif
+
+// External network initialization functions (optional, only for RTEMS)
+#ifdef __rtems__
+extern "C" {
+    typedef struct {
+        int use_dhcp;
+        const char* static_ip;
+        const char* netmask;
+        const char* gateway;
+    } NetworkConfig;
+
+    extern int initialize_network(NetworkConfig* config);
+    extern NetworkConfig* create_network_config(
+        int use_dhcp, 
+        const char* static_ip, 
+        const char* netmask, 
+        const char* gateway
+    );
+    extern void cleanup_network_config(NetworkConfig* config);
+}
+#endif
+
+// Logging wrapper to handle different Logger interfaces
+namespace {
+    void safeLogAdd(const char* message) {
+        Fw::Logger::log(Fw::Logger::LogSeverity::INFO_LOW, message);
+    }
 }
 
-/**
- * \brief shutdown topology cycling on signal
- *
- * The reference topology allows for a simulated cycling of the rate groups. This simulated cycling needs to be stopped
- * in order for the program to shutdown. This is done via handling signals such that it is performed via Ctrl-C
- *
- * @param signum
- */
-static void signalHandler(int signum) {
-    LedBlinker::stopSimulatedCycle();
-}
-
-/**
- * \brief execute the program
- *
- * This F´ program is designed to run in standard environments (e.g. Linux/macOs running on a laptop). Thus it uses
- * command line inputs to specify how to connect.
- *
- * @param argc: argument count supplied to program
- * @param argv: argument values supplied to program
- * @return: 0 on success, something else on failure
- */
-int main(int argc, char* argv[]) {
-    I32 option = 0;
-    CHAR* hostname = nullptr;
-    U16 port_number = 0;
+// External function for setting up the topology
+extern "C" int fprime_main(int argc, char* argv[]) {
+    // Initialize OSAL
     Os::init();
 
-    // Loop while reading the getopt supplied options
-    while ((option = getopt(argc, argv, "hp:a:")) != -1) {
-        switch (option) {
-            // Handle the -a argument for address/hostname
-            case 'a':
-                hostname = optarg;
-                break;
-            // Handle the -p port number argument
-            case 'p':
-                port_number = static_cast<U16>(atoi(optarg));
-                break;
-            // Cascade intended: help output
-            case 'h':
-            // Cascade intended: help output
-            case '?':
-            // Default case: output help and exit
-            default:
-                print_usage(argv[0]);
-                return (option == 'h') ? 0 : 1;
+    // Default configuration
+    int use_dhcp = 1;
+    const char* static_ip = nullptr;
+    const char* netmask = nullptr;
+    const char* gateway = nullptr;
+    U16 port = 50000;  // Default port
+
+    // Parse command-line arguments
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--no-dhcp") == 0) {
+            use_dhcp = 0;
+        } else if (strcmp(argv[i], "--ip") == 0 && i + 1 < argc) {
+            static_ip = argv[++i];
+        } else if (strcmp(argv[i], "--netmask") == 0 && i + 1 < argc) {
+            netmask = argv[++i];
+        } else if (strcmp(argv[i], "--gateway") == 0 && i + 1 < argc) {
+            gateway = argv[++i];
+        } else if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
+            port = static_cast<U16>(std::atoi(argv[++i]));
         }
     }
-    // Object for communicating state to the reference topology
+
+    // Network initialization (RTEMS-specific)
+    #ifdef __rtems__
+    NetworkConfig* net_config = create_network_config(
+        use_dhcp, 
+        static_ip, 
+        netmask, 
+        gateway
+    );
+
+    if (!net_config) {
+        safeLogAdd("Failed to create network configuration");
+        return -1;
+    }
+
+    if (initialize_network(net_config) != 0) {
+        safeLogAdd("Network initialization failed");
+        cleanup_network_config(net_config);
+        return -1;
+    }
+
+    cleanup_network_config(net_config);
+    #endif
+
+    // Object for communicating state to the topology
     LedBlinker::TopologyState inputs;
-    inputs.hostname = hostname;
-    inputs.port = port_number;
+    inputs.hostname = static_ip ? static_ip : "0.0.0.0";
+    inputs.port = port;
 
-    // Setup program shutdown via Ctrl-C
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
-    (void)printf("Hit Ctrl-C to quit\n");
+    // Logging initialization
+    safeLogAdd("Starting F' Application");
 
-    // Setup, cycle, and teardown topology
+    // Setup topology
     LedBlinker::setupTopology(inputs);
-    LedBlinker::startSimulatedCycle(Fw::TimeInterval(1,0));  // Program loop cycling rate groups at 1Hz
+
+    // Start simulated cycle
+    LedBlinker::startSimulatedCycle(Fw::TimeInterval(1, 0));
+
+    // Platform-specific run mechanism
+    #ifdef __rtems__
+    // RTEMS-specific delay
+    rtems_task_wake_after(rtems_clock_get_ticks_per_second() * 60);
+    #else
+    // Generic time-based delay for non-RTEMS platforms
+    Os::Task::delay(Fw::TimeInterval(60, 0));
+    #endif
+
+    // Stop simulated cycle
+    LedBlinker::stopSimulatedCycle();
+
+    // Teardown topology
     LedBlinker::teardownTopology(inputs);
-    (void)printf("Exiting...\n");
+
     return 0;
 }
+
+// RTEMS requires a special main for C++ applications
+#ifdef __rtems__
+extern "C" int main(int argc, char* argv[]) {
+    return fprime_main(argc, argv);
+}
+#else
+// Standard main for non-RTEMS platforms
+int main(int argc, char* argv[]) {
+    return fprime_main(argc, argv);
+}
+#endif
