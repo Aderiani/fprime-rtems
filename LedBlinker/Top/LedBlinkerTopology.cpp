@@ -33,41 +33,33 @@ void cycleComponentsFunc(void*) {
     }
 }
 
-void initComponents(const TopologyState& state) {
-    // No initialization needed for network components
-    // The autocoder will initialize the other components
-}
 
-void configComponents(const TopologyState& state) {
-    // Configure the TCP server component
-    if (state.hostname != nullptr) {
-        tcpServer.configure(state.hostname, state.port, 0, 100, 4096);
-    } else {
-        tcpServer.configure("0.0.0.0", 50000, 0, 100, 4096); // Default values
-    }
-    
-    // Uncomment and modify if you have GPIO driver config needed
-    // if (gpioDriver.initialize()) {
-    //     gpioDriver.configurePin(0, Drv::GR740GpioDriver::GPIO_DIRECTION_OUTPUT, Fw::Logic::LOW);
-    // }
-}
 
 void configureHardwareTopology() {
     Fw::Logger::log("Hardware topology configured\n");
 }
 
 void setupTopology(const TopologyState& state) {
-    // Initialize all topology components
-    initComponents(state);
-    
     // Set up IDs - this call is generated automatically
+    initComponents(state);
     setBaseIds();
     
     // Connect components - this call is generated automatically
     connectComponents();
     
     // Configure components
-    configComponents(state);
+
+        // Configure the TCP server component
+        if (state.hostname != nullptr) {
+            tcpServer.configure(state.hostname, state.port, 0, 100, 4096);
+        } else {
+            tcpServer.configure("0.0.0.0", 50000, 0, 100, 4096); // Default values
+        }
+        
+        // Uncomment and modify if you have GPIO driver config needed
+        // if (gpioDriver.initialize()) {
+        //     gpioDriver.configurePin(0, Drv::GR740GpioDriver::GPIO_DIRECTION_OUTPUT, Fw::Logic::LOW);
+        // }
     
     // Configure hardware topology
     configureHardwareTopology();
