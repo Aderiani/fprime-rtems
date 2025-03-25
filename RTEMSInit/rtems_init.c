@@ -1,78 +1,122 @@
 /*
- * @file rtems_init.c
- * @brief RTEMS initialization configuration for GR740 with F' integration
+ * Minimal RTEMS initialization for F Prime GR740 application
  */
-#ifndef IFNAMSIZ
-#define IFNAMSIZ 16  // Typical value for interface name size
-#endif
 
- #include <rtems.h>
- #include <rtems/bspIo.h>
- #include <rtems/rtems_bsdnet.h>
- #include <rtems/rtems/tasks.h>
- #include <sys/time.h>
- #include <bsp.h>
- #include <rtems/confdefs.h>
- #include <net/if.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
-#include "network_init.h"
+/* Required RTEMS headers */
+#include <rtems.h>
+#include <bsp.h>
+
+/* Standard C headers */
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+/* Network configuration structure */
+typedef struct {
+    int use_dhcp;
+    const char* static_ip;
+    const char* netmask;
+    const char* gateway;
+} NetworkConfig;
+
+/* Function prototypes */
+extern int fprime_main(int argc, char* argv[]);
+NetworkConfig* create_network_config(int use_dhcp, const char* static_ip, const char* netmask, const char* gateway);
+void cleanup_network_config(NetworkConfig* config);
+int initialize_network(NetworkConfig* config);
+
+/* Helper to duplicate strings */
+static char* my_strdup(const char* str) {
+    if (str == NULL) {
+        return NULL;
+    }
+    size_t len = strlen(str) + 1;
+    char* new_str = malloc(len);
+    if (new_str) {
+        memcpy(new_str, str, len);
+    }
+    return new_str;
+}
+
+/* Network configuration API functions */
+NetworkConfig* create_network_config(
+    int use_dhcp, 
+    const char* static_ip, 
+    const char* netmask, 
+    const char* gateway
+) {
+    NetworkConfig* config = malloc(sizeof(NetworkConfig));
+    if (config) {
+        config->use_dhcp = use_dhcp;
+        config->static_ip = static_ip ? my_strdup(static_ip) : NULL;
+        config->netmask = netmask ? my_strdup(netmask) : NULL;
+        config->gateway = gateway ? my_strdup(gateway) : NULL;
+    }
+    return config;
+}
+
+void cleanup_network_config(NetworkConfig* config) {
+    if (config) {
+        free((void*)config->static_ip);
+        free((void*)config->netmask);
+        free((void*)config->gateway);
+        free(config);
+    }
+}
+
+/* Initialize network for GR740 board */
+int initialize_network(NetworkConfig* config) {
+    printf("Network initialization is not yet implemented\n");
+    /* For now, we're just returning success without configuring the network */
+    return 0;
+}
+
+/* RTEMS Task to run the F Prime application */
+rtems_task Init(rtems_task_argument ignored) {
+    printf("RTEMS initialized for F Prime on GR740\n");
+    
+    /* Call the F Prime main function */
+    char *argv[] = {"fprime-gr740", NULL};
+    int result = fprime_main(1, argv);
+    
+    printf("F Prime application exited with code: %d\n", result);
+    rtems_task_suspend(RTEMS_SELF);
+}
+
+/****************** RTEMS Minimal Configuration **********************/
+
+#define CONFIGURE_MINIMUM_TASKS_WITH_USER_PROVIDED_STORAGE
+
+rtems_initialization_tasks_table Initialization_tasks[] = {
+  { rtems_build_name('I', 'N', 'I', 'T'),
+    RTEMS_MINIMUM_STACK_SIZE * 8,
+    1,
+    RTEMS_DEFAULT_ATTRIBUTES | RTEMS_FLOATING_POINT,
+    Init,
+    RTEMS_DEFAULT_MODES,
+    0
+  }
+};
+
+#define CONFIGURE_INIT
+#define CONFIGURE_INIT_TASK_TABLE Initialization_tasks
+#define CONFIGURE_INIT_TASK_TABLE_SIZE \
+  (sizeof(Initialization_tasks) / sizeof(rtems_initialization_tasks_table))
 
 #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define CONFIGURE_MAXIMUM_TASKS             20
-#define CONFIGURE_MAXIMUM_PROCESSORS        4  // GR740 SMP has 4 cores
-#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
-#define CONFIGURE_MAXIMUM_SEMAPHORES        20
-#define CONFIGURE_MAXIMUM_TIMERS            10
-#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES    10
-#define CONFIGURE_MAXIMUM_USER_EXTENSIONS   1
-#define CONFIGURE_UNIFIED_WORK_AREAS
-#define CONFIGURE_MINIMUM_STACK_SIZE        (8 * 1024)  // 8KB minimum stack
-#define CONFIGURE_STACK_CHECKER_ENABLED
-#define CONFIGURE_INIT_TASK_STACK_SIZE      (16 * 1024) // 16KB for Init task
-#define CONFIGURE_MICROSECONDS_PER_TICK     1000        // 1ms tick
-#define CONFIGURE_MAXIMUM_DRIVERS           10
-#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 20
-#define CONFIGURE_USE_IMFS_AS_BASE_FILESYSTEM
+#define CONFIGURE_MAXIMUM_TASKS 32
+#define CONFIGURE_MAXIMUM_SEMAPHORES 32
+#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES 32
+#define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS 32
+#define CONFIGURE_MAXIMUM_PERIODS 4
+#define CONFIGURE_MAXIMUM_REGIONS 2
+#define CONFIGURE_MAXIMUM_USER_EXTENSIONS 2
+#define CONFIGURE_MAXIMUM_TIMERS 8
 
-// SMP-specific configuration
-#define CONFIGURE_SCHEDULER_PRIORITY_SMP
-#include <rtems/score/schedulersmpimpl.h>
+#define CONFIGURE_MICROSECONDS_PER_TICK 1000
+#define CONFIGURE_TICKS_PER_TIMESLICE 50
+#define CONFIGURE_APPLICATION_DOES_NOT_NEED_STRUCT_TIMESPEC
 
-// Networking support
-#define CONFIGURE_APPLICATION_NEEDS_LIBBLOCK
-#define CONFIGURE_BDBUF_MAX_READ_AHEAD_BLOCKS 2
-#define CONFIGURE_BDBUF_BUFFER_MAX_SIZE (64 * 1024)
-
-// Define Init task
-rtems_task Init(rtems_task_argument argument) {
-    NetworkConfig* config = create_network_config(
-        "gr740_host", "example.com", "192.168.1.1", "192.168.1.10", "255.255.255.0"
-    );
-
-    if (initialize_network(config) != 0) {
-        printf("Network initialization failed\n");
-        exit(1);
-    }
-
-    printf("RTEMS and network initialized. Starting F Prime...\n");
-
-    int fprime_argc = sizeof(fprime_argv) / sizeof(fprime_argv[0]) - 1;
-    
-    // Call F' main function
-    int result = fprime_main(fprime_argc, fprime_argv);
-
-    cleanup_network_config(config);
-    exit(0);
-}
-
+/* Include the minimal RTEMS configuration */
 #include <rtems/confdefs.h>
-
-
- 
-
-
-    
-

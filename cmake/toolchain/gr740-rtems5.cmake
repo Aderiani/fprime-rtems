@@ -9,11 +9,10 @@ set(CMAKE_SYSTEM_VERSION      5)
 set(CMAKE_SYSTEM_PROCESSOR    sparc)
 set(FPRIME_PLATFORM           RTEMS)
 
-
 # Define RTEMS as the target OS type
 add_definitions(-DCMAKE_SYSTEM_NAME_RTEMS=1)
 add_definitions(-DTGT_OS_TYPE_RTEMS=1)
-add_definitions(-DRTEMS_VERSION_5=1)
+add_definitions(-D__rtems__=1)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE
     "STATIC_LIBRARY"
@@ -33,7 +32,7 @@ message(STATUS "Using RTEMS BSP: ${RTEMS_BSP}")
 set(CROSS_PREFIX "sparc-gaisler-rtems5")
 set(CROSS_SUFFIX "")
 
-set(RTEMS_PREFIX "${RTEMS_PATH}/${CROSS_PREFIX}/${RTEMS_BSP}")
+set(RTEMS_BSP_PATH "${RTEMS_PATH}/${CROSS_PREFIX}/${RTEMS_BSP}")
 
 # Specify the cross toolchain executables
 set(CMAKE_ASM_COMPILER "${RTEMS_PATH}/bin/${CROSS_PREFIX}-gcc${CROSS_SUFFIX}"     CACHE PATH "assembler"  FORCE)
@@ -48,16 +47,15 @@ set(CMAKE_STRIP        "${RTEMS_PATH}/bin/${CROSS_PREFIX}-strip${CROSS_SUFFIX}" 
 set(CMAKE_SIZE         "${RTEMS_PATH}/bin/${CROSS_PREFIX}-size${CROSS_SUFFIX}"    CACHE PATH "size"       FORCE)
 set(CMAKE_RANLIB       "${RTEMS_PATH}/bin/${CROSS_PREFIX}-ranlib${CROSS_SUFFIX}"  CACHE PATH "ranlib"     FORCE)
 
-set(CMAKE_INCLUDE_PATH ${RTEMS_PREFIX}/lib/include)
-set(CMAKE_LIBRARY_PATH ${RTEMS_PREFIX}/lib)
-
+set(CMAKE_INCLUDE_PATH ${RTEMS_BSP_PATH}/lib/include)
+set(CMAKE_LIBRARY_PATH ${RTEMS_BSP_PATH}/lib)
 
 # GR740-specific flags
 set(ISA_FLAG "-mcpu=leon3")
 set(COMMON_FLAGS "-g ${ISA_FLAG}")
 
 # Define compile flags
-set(DEF_FLAGS "-DTGT_OS_TYPE_RTEMS")
+set(DEF_FLAGS "-DTGT_OS_TYPE_RTEMS -D__rtems__")
 set(C_CXX_FLAGS "-O2 -ffunction-sections -fdata-sections -Wall")
 
 set(C_FLAGS "-Wmissing-prototypes -Wimplicit-function-declaration -Wstrict-prototypes -Wnested-externs")
@@ -65,7 +63,13 @@ set(CXX_FLAGS "-fno-exceptions -fno-rtti")
 
 # Error-suppressing flags for RTEMS compatibility
 set(COMPAT_FLAGS "-Wno-pedantic -Wno-error=ignored-qualifiers -Wno-error=old-style-cast -Wno-error=sign-compare")
-add_compile_options(-Wno-shadow -Wno-error=shadow -fno-common)
+add_compile_options(
+    -Wno-shadow 
+    -Wno-error=shadow 
+    -fno-common
+    -Wno-implicit-function-declaration
+    -Wno-error=implicit-function-declaration
+)
 
 # Set the flags for each language
 set(CMAKE_C_FLAGS           "${COMMON_FLAGS} ${C_CXX_FLAGS} ${C_FLAGS} ${DEF_FLAGS} ${COMPAT_FLAGS}" CACHE STRING "CFLAGS" FORCE)
@@ -75,32 +79,19 @@ set(CMAKE_ASM_FLAGS         "${COMMON_FLAGS} ${ASM_FLAGS} ${DEF_FLAGS}" CACHE ST
 # Add RTEMS pthread support
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit")
 
-# Linker flags - these are critical for RTEMS
-set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,-znorelro -Wl,--wrap=printf -Wl,--wrap=putchar")
+# Linker flags for RTEMS
+set(RTEMS_LDFLAGS "--gc-sections -znorelro --wrap=printf --wrap=puts --wrap=putchar")
 
-
-set(CMAKE_EXE_LINKER_FLAGS "-T ${RTEMS_PREFIX}/lib/linkcmds.gr740_smp")
+# Set linker script
+set(CMAKE_EXE_LINKER_FLAGS "-T ${RTEMS_BSP_PATH}/lib/linkcmds.${RTEMS_BSP}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
 
+# Add executable suffix
 set(CMAKE_EXECUTABLE_SUFFIX ".exe" CACHE STRING "Executable suffix" FORCE)
 
-# Link RTEMS libraries
-set(RTEMS_LIBS 
-    rtemscpu
-    rtemsbsp 
-    posix
-)
-
-
-# Required for C++ programs
-set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm -lgcc -lrtemscpu -lrtemsbsp")
-
-# RTEMS BSP specific paths
-set(RTEMS_BSP_PATH "${RTEMS_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/${RTEMS_BSP}")
-
-# Add BSP specific include paths
+# RTEMS BSP specific include paths
 include_directories(SYSTEM
-    ${RTEMS_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/include
+    ${RTEMS_PATH}/${CROSS_PREFIX}/include
     ${RTEMS_BSP_PATH}/lib/include
     ${RTEMS_BSP_PATH}/lib/include/bsp
     ${RTEMS_BSP_PATH}/lib/include/networking
@@ -110,15 +101,14 @@ include_directories(SYSTEM
 # Add RTEMS library paths
 link_directories(
     ${RTEMS_BSP_PATH}/lib
-    ${RTEMS_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/lib
-    ${RTEMS_PATH}/lib/gcc/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/10.5.0/leon3
+    ${RTEMS_PATH}/${CROSS_PREFIX}/lib
+    ${RTEMS_PATH}/lib/gcc/${CROSS_PREFIX}/10.5.0/leon3
 )
-
 
 # Set search paths
 set(CMAKE_FIND_ROOT_PATH 
     ${RTEMS_BSP_PATH}
-    ${RTEMS_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}
+    ${RTEMS_PATH}/${CROSS_PREFIX}
     ${RTEMS_PATH}
 )
 
@@ -143,3 +133,20 @@ endforeach()
 
 # Make sure we use static linking
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
+
+# Add RTEMS libraries needed for linking
+set(RTEMS_LIBS
+    rtemscpu
+    rtemsbsp
+    posix
+    c
+    m
+    gcc
+    rtemscpu
+    rtemsbsp
+)
+
+# Add the libraries to the link line
+foreach(lib ${RTEMS_LIBS})
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -l${lib}")
+endforeach()

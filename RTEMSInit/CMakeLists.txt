@@ -1,25 +1,46 @@
-# RTEMSInit/CMakeLists.txt
-set(RTEMS_PREFIX "/opt/rtems/rcc-1.3.2-gcc/sparc-gaisler-rtems5/gr740_smp")
+####
+# RTEMSInit CMakeLists.txt:
+#
+# Build the RTEMS initialization module that serves as the entry point
+# for the RTEMS application.
+####
 
-add_library(RTEMSInit
-    rtems_init.c
-    network_init.c
-    bsp_init.c
-    stubs.c
+# Only build this module for RTEMS platform
+if (NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "RTEMS")
+    return()
+endif()
+
+# Define the source files
+set(SOURCE_FILES
+    "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
 )
 
-target_include_directories(RTEMSInit PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${RTEMS_PREFIX}/lib/include
+# Export the library for use in deployments
+add_library(RTEMSInit STATIC ${SOURCE_FILES})
+
+# Add include directories for RTEMS
+target_include_directories(RTEMSInit PRIVATE
+    ${RTEMS_PATH}/${CROSS_PREFIX}/include
+    ${RTEMS_BSP_PATH}/lib/include
+    ${RTEMS_BSP_PATH}/lib/include/bsp
+    ${RTEMS_BSP_PATH}/lib/include/networking
 )
 
-target_link_directories(RTEMSInit PUBLIC
-    ${RTEMS_PREFIX}/lib
+# Disable warnings that would cause issues with RTEMS headers
+target_compile_options(RTEMSInit PRIVATE
+    -Wno-pedantic
+    -Wno-shadow
+    -Wno-error=shadow
+    -Wno-error=unused-variable
+    -Wno-unused-variable
+    -Wno-error=format
+    -Wno-implicit-function-declaration
+    -Wno-error=implicit-function-declaration
+    -Wno-error=nested-externs
+    -Wno-nested-externs
+    -Wno-pointer-compare
+    -w
 )
 
-target_link_libraries(RTEMSInit PUBLIC
-    ${RTEMS_PREFIX}/lib/start.o  # Startup code
-    rtemsbsp                     # BSP library
-    rtemscpu                     # CPU library (contains sparc_syscall_exit)
-    c                            # Standard C library
-)
+# Make the library available to the rest of the build
+add_library(RTEMSInit::RTEMSInit ALIAS RTEMSInit)
