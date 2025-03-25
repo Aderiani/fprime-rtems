@@ -69,12 +69,20 @@ set(CMAKE_ASM_FLAGS         "${COMMON_FLAGS} ${ASM_FLAGS} ${DEF_FLAGS}" CACHE ST
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit")
 
 # Linker flags - these are critical for RTEMS
-set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,-znorelro -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar")
+set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,-znorelro -Wl,--wrap=printf -Wl,--wrap=putchar")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
 set(CMAKE_EXECUTABLE_SUFFIX ".exe" CACHE STRING "Executable suffix" FORCE)
 
+# Link RTEMS libraries
+set(RTEMS_LIBS 
+    rtemscpu
+    rtemsbsp 
+    posix
+)
+
+
 # Required for C++ programs
-set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm -lgcc -lrtemscpu -lrtemsbsp -lposix")
+set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm -lgcc -lrtemscpu -lrtemsbsp")
 
 # RTEMS BSP specific paths
 set(RTEMS_BSP_PATH "${RTEMS_PATH}/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/${RTEMS_BSP}")
@@ -95,12 +103,6 @@ link_directories(
     ${RTEMS_PATH}/lib/gcc/sparc-gaisler-rtems${CMAKE_SYSTEM_VERSION}/10.5.0/leon3
 )
 
-# Link RTEMS libraries
-set(RTEMS_LIBS 
-    rtemscpu
-    rtemsbsp 
-    posix
-)
 
 # Set search paths
 set(CMAKE_FIND_ROOT_PATH 

@@ -16,6 +16,9 @@ set(MOD_DEPS
     Os
 )
 
+
+set_source_files_properties(rtems_init.c PROPERTIES COMPILE_FLAGS "-Wall -Wextra")
+
 # Add include directories for RTEMS specific headers
 include_directories(SYSTEM 
     ${RTEMS_BSP_PATH}/lib/include

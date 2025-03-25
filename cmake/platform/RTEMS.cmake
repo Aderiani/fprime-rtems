@@ -52,12 +52,3 @@ add_compile_options(
     -Wno-shadow
 )
 
-# Add RTEMS initialization file to compilation if needed
-set(RTEMS_INIT_FILE "${CMAKE_SOURCE_DIR}/rtems_init.c" CACHE FILEPATH "RTEMS initialization file")
-if(EXISTS "${RTEMS_INIT_FILE}")
-    message(STATUS "Using RTEMS initialization file: ${RTEMS_INIT_FILE}")
-    add_compile_definitions(RTEMS_INIT_FILE_EXISTS=1)
-else()
-    message(WARNING "RTEMS initialization file not found at: ${RTEMS_INIT_FILE}")
-    message(WARNING "You need to create this file with RTEMS configuration")
-endif()

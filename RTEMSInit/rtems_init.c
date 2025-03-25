@@ -2,11 +2,17 @@
  * @file rtems_init.c
  * @brief RTEMS initialization configuration for GR740 with F' integration
  */
+#ifndef IFNAMSIZ
+#define IFNAMSIZ 16  // Typical value for interface name size
+#endif
 
  #include <rtems.h>
  #include <rtems/bspIo.h>
  #include <rtems/rtems_bsdnet.h>
  #include <rtems/rtems/tasks.h>
+ #include <sys/time.h>
+ #include <bsp.h>
+ #include <rtems/confdefs.h>
  #include <net/if.h>
  #include <stdio.h>
  #include <stdlib.h>
@@ -64,9 +70,16 @@
  // Configuration starts here
  #define CONFIGURE_INIT
  #define CONFIGURE_APPLICATION_DOES_NOT_NEED_CLOCK_DRIVER
+ #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
  #define CONFIGURE_APPLICATION_NEEDS_TIMER_DRIVER
  #define CONFIGURE_APPLICATION_NEEDS_NETWORKING
  
+
+ #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
+ #undef CONFIGURE_APPLICATION_DOES_NOT_NEED_CLOCK_DRIVER
+ #undef CONFIGURE_APPLICATION_NEEDS_TIMER_DRIVER
+
+
  // Resource Limits
  #define CONFIGURE_MAXIMUM_PROCESSORS 4
  #define CONFIGURE_MAXIMUM_TASKS 64
@@ -86,12 +99,15 @@
  
  // Task Stack Configuration
  #define CONFIGURE_MINIMUM_TASK_STACK_SIZE (16 * 1024)
- #define CONFIGURE_IDLE_TASK_INITIALIZES_APPLICATION
+//  #define CONFIGURE_IDLE_TASK_INITIALIZES_APPLICATION
  
  // Driver Configuration
  #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRETH
  #define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
  #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
+
+
+
  
  // Include RTEMS configuration
  #include <rtems/confdefs.h>

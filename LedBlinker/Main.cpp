@@ -37,7 +37,7 @@ extern "C" {
 // Logging wrapper to handle different Logger interfaces
 namespace {
     void safeLogAdd(const char* message) {
-        Fw::Logger::log(Fw::Logger::LogSeverity::INFO_LOW, message);
+        Fw::Logger::log( message);
     }
 }
 
