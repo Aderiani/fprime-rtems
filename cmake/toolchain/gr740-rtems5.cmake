@@ -50,9 +50,9 @@ set(CMAKE_RANLIB       "${RTEMS_PATH}/bin/${CROSS_PREFIX}-ranlib${CROSS_SUFFIX}"
 set(CMAKE_INCLUDE_PATH ${RTEMS_BSP_PATH}/lib/include)
 set(CMAKE_LIBRARY_PATH ${RTEMS_BSP_PATH}/lib)
 
-# GR740-specific flags
-set(ISA_FLAG "-mcpu=leon3")
-set(COMMON_FLAGS "-g ${ISA_FLAG}")
+# # GR740-specific flags
+# set(ISA_FLAG "-mcpu=leon3")
+# set(COMMON_FLAGS "-g ${ISA_FLAG}")
 
 # Define compile flags
 set(DEF_FLAGS "-DTGT_OS_TYPE_RTEMS -D__rtems__")
@@ -78,10 +78,11 @@ set(CMAKE_ASM_FLAGS         "${COMMON_FLAGS} ${ASM_FLAGS} ${DEF_FLAGS}" CACHE ST
 
 # Add RTEMS pthread support
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -qbsp=gr740_smp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qbsp=gr740_smp")
 
 # Linker flags for RTEMS
-set(RTEMS_LDFLAGS "--gc-sections -znorelro --wrap=printf --wrap=puts --wrap=putchar")
-
+set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar")
 # Set linker script
 set(CMAKE_EXE_LINKER_FLAGS "-T ${RTEMS_BSP_PATH}/lib/linkcmds.${RTEMS_BSP}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
@@ -138,12 +139,11 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 set(RTEMS_LIBS
     rtemscpu
     rtemsbsp
-    posix
+    rtemssmp
+    rtems
     c
     m
     gcc
-    rtemscpu
-    rtemsbsp
 )
 
 # Add the libraries to the link line

@@ -19,5 +19,9 @@
 			"path": ".."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"cstdlib": "c"
+		}
+	}
 }

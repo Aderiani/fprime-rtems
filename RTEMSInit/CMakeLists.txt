@@ -13,11 +13,16 @@ endif()
 # Define the source files
 set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
+    "${CMAKE_CURRENT_LIST_DIR}/rtems_cxx_support.cpp"
 )
 
 # Export the library for use in deployments
 add_library(RTEMSInit STATIC ${SOURCE_FILES})
-
+set_source_files_properties(
+    "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
+    PROPERTIES 
+    COMPILE_FLAGS "-Wno-pedantic -Wno-error=unused-variable"
+)
 # Add include directories for RTEMS
 target_include_directories(RTEMSInit PRIVATE
     ${RTEMS_PATH}/${CROSS_PREFIX}/include
