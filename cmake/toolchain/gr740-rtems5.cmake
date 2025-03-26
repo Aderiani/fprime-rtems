@@ -83,9 +83,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qbsp=gr740_smp")
 
 # Linker flags for RTEMS
 set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar")
-# In cmake/toolchain/gr740-rtems5.cmake
+
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-T${RTEMS_BSP_PATH}/lib/linkcmds")
 set(CMAKE_EXE_LINKER_FLAGS "${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-T${RTEMS_BSP_PATH}/lib/linkcmds")
 
 # Add executable suffix
 set(CMAKE_EXECUTABLE_SUFFIX ".exe" CACHE STRING "Executable suffix" FORCE)

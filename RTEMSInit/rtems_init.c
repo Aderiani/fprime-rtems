@@ -79,9 +79,9 @@ rtems_task Init(rtems_task_argument ignored) {
     printf("RTEMS initialized for F Prime on GR740\n");
     
     /* Call the F Prime main function */
-    char *argv[] = {"fprime-gr740", NULL};
-    int result = fprime_main(1, argv);
+    // char *argv[] = {"fprime-gr740", NULL};
+    // int result = fprime_main(1, argv);
     
-    printf("F Prime application exited with code: %d\n", result);
+    // printf("F Prime application exited with code: %d\n", result);
     rtems_task_suspend(RTEMS_SELF);
 }
