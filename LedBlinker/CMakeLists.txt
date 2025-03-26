@@ -35,12 +35,13 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
     # Get the target name now that it exists
     get_property(TARGET_NAME TARGET ${FPRIME_CURRENT_MODULE} PROPERTY NAME)
     
+    target_link_options(${TARGET_NAME} PRIVATE -Wl,-e,Init)
     # Ensure the -qbsp flag is used for the final linking
     target_link_options(${TARGET_NAME} PRIVATE -qbsp=gr740_smp)
     
     # Set the output executable name to include .exe extension
-    set_target_properties(${TARGET_NAME} PROPERTIES
-        OUTPUT_NAME "${TARGET_NAME}.exe"
+    set_target_properties(${TARGET_NAME} PROPERTIES 
+        OUTPUT_NAME "${TARGET_NAME}"
     )
     
     # Ensure RTEMSInit object files are included
