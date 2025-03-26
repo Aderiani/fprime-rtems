@@ -62,3 +62,21 @@ void printk(const char* fmt, ...) {
 
 // C++ runtime
 void* __dso_handle = (void*)&__dso_handle;
+
+
+// Override printf, puts, putchar with our implementations
+int printf(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    int ret = vprintf(fmt, args);
+    va_end(args);
+    return ret;
+}
+
+int puts(const char* s) {
+    return fputs(s, stdout) + putchar('\n');
+}
+
+int putchar(int c) {
+    return fputc(c, stdout);
+}

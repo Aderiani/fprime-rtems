@@ -38,12 +38,11 @@ endif()
 
 register_fprime_deployment()
 
-# For RTEMS, we need to add special link flags to ensure all symbols are resolved
 if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
     # Get the target name
     get_property(TARGET_NAME TARGET ${FPRIME_CURRENT_MODULE} PROPERTY NAME)
     
-    # Add custom link flags for the RTEMS target
+    # Add custom link flags for the RTEMS target with correct -Wl, prefix
     target_link_options(${TARGET_NAME} PRIVATE
         -Wl,--gc-sections 
         -Wl,--wrap=printf 
