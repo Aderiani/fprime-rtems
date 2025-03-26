@@ -83,9 +83,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qbsp=gr740_smp")
 
 # Linker flags for RTEMS
 set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar")
-# Set linker script
-set(CMAKE_EXE_LINKER_FLAGS "-T ${RTEMS_BSP_PATH}/lib/linkcmds.${RTEMS_BSP}")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
+
+set(CMAKE_EXE_LINKER_FLAGS "${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
+
 
 # Add executable suffix
 set(CMAKE_EXECUTABLE_SUFFIX ".exe" CACHE STRING "Executable suffix" FORCE)
@@ -139,8 +139,6 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 set(RTEMS_LIBS
     rtemscpu
     rtemsbsp
-    rtemssmp
-    rtems
     c
     m
     gcc

@@ -14,15 +14,18 @@ endif()
 set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
     "${CMAKE_CURRENT_LIST_DIR}/rtems_cxx_support.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/stubs.c"
 )
 
 # Export the library for use in deployments
 add_library(RTEMSInit STATIC ${SOURCE_FILES})
-set_source_files_properties(
-    "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
+set_source_files_properties(rtems_init.c
     PROPERTIES 
-    COMPILE_FLAGS "-Wno-pedantic -Wno-error=unused-variable"
+    COMPILE_FLAGS "-Wno-error=unused-variable"
 )
+
+
+
 # Add include directories for RTEMS
 target_include_directories(RTEMSInit PRIVATE
     ${RTEMS_PATH}/${CROSS_PREFIX}/include
@@ -41,8 +44,6 @@ target_compile_options(RTEMSInit PRIVATE
     -Wno-error=format
     -Wno-implicit-function-declaration
     -Wno-error=implicit-function-declaration
-    -Wno-error=nested-externs
-    -Wno-nested-externs
     -Wno-pointer-compare
     -w
 )

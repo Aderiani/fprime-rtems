@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <rtems.h>
-
+#include <stdarg.h>
+#include <malloc.h>
 // Wrapped functions
 int __wrap_puts(const char* s) {
     return puts(s);
@@ -44,14 +45,19 @@ int pthread_setspecific(void* key, const void* value) {
     return 0;  // Stub
 }
 
-// RTEMS-specific stubs
-void* rtems_malloc(size_t size) {
-    return malloc(size);
+struct mallinfo mallinfo(void) {
+    struct mallinfo info = {0};  // Return zeros
+    return info;
 }
 
-void* rtems_calloc(size_t nmemb, size_t size) {
-    return calloc(nmemb, size);
-}
+// // RTEMS-specific stubs
+// void* rtems_malloc(size_t size) {
+//     return malloc(size);
+// }
+
+// void* rtems_calloc(size_t nmemb, size_t size) {
+//     return calloc(nmemb, size);
+// }
 
 void printk(const char* fmt, ...) {
     va_list args;
@@ -60,8 +66,8 @@ void printk(const char* fmt, ...) {
     va_end(args);
 }
 
-// C++ runtime
-void* __dso_handle = (void*)&__dso_handle;
+// // C++ runtime
+// void* __dso_handle = (void*)&__dso_handle;
 
 
 // Override printf, puts, putchar with our implementations

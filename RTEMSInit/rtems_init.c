@@ -5,11 +5,15 @@
 /* Required RTEMS headers */
 #include <rtems.h>
 #include <bsp.h>
+#include <sys/time.h>
 
 /* Standard C headers */
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+/* Include RTEMS configuration */
+#include "rtems_config.h"
 
 /* Network configuration structure */
 typedef struct {
@@ -67,11 +71,10 @@ void cleanup_network_config(NetworkConfig* config) {
 /* Initialize network for GR740 board */
 int initialize_network(NetworkConfig* config) {
     printf("Network initialization is not yet implemented\n");
-    /* For now, we're just returning success without configuring the network */
     return 0;
 }
 
-/* RTEMS Task to run the F Prime application */
+/* RTEMS Initial Task */
 rtems_task Init(rtems_task_argument ignored) {
     printf("RTEMS initialized for F Prime on GR740\n");
     
@@ -82,41 +85,3 @@ rtems_task Init(rtems_task_argument ignored) {
     printf("F Prime application exited with code: %d\n", result);
     rtems_task_suspend(RTEMS_SELF);
 }
-
-/****************** RTEMS Minimal Configuration **********************/
-
-#define CONFIGURE_MINIMUM_TASKS_WITH_USER_PROVIDED_STORAGE
-
-rtems_initialization_tasks_table Initialization_tasks[] = {
-  { rtems_build_name('I', 'N', 'I', 'T'),
-    RTEMS_MINIMUM_STACK_SIZE * 8,
-    1,
-    RTEMS_DEFAULT_ATTRIBUTES | RTEMS_FLOATING_POINT,
-    Init,
-    RTEMS_DEFAULT_MODES,
-    0
-  }
-};
-
-#define CONFIGURE_INIT
-#define CONFIGURE_INIT_TASK_TABLE Initialization_tasks
-#define CONFIGURE_INIT_TASK_TABLE_SIZE \
-  (sizeof(Initialization_tasks) / sizeof(rtems_initialization_tasks_table))
-
-#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define CONFIGURE_MAXIMUM_TASKS 32
-#define CONFIGURE_MAXIMUM_SEMAPHORES 32
-#define CONFIGURE_MAXIMUM_MESSAGE_QUEUES 32
-#define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS 32
-#define CONFIGURE_MAXIMUM_PERIODS 4
-#define CONFIGURE_MAXIMUM_REGIONS 2
-#define CONFIGURE_MAXIMUM_USER_EXTENSIONS 2
-#define CONFIGURE_MAXIMUM_TIMERS 8
-
-#define CONFIGURE_MICROSECONDS_PER_TICK 1000
-#define CONFIGURE_TICKS_PER_TIMESLICE 50
-#define CONFIGURE_APPLICATION_DOES_NOT_NEED_STRUCT_TIMESPEC
-
-/* Include the minimal RTEMS configuration */
-#include <rtems/confdefs.h>
