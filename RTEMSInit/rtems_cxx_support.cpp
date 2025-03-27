@@ -1,4 +1,4 @@
-void* __dso_handle = nullptr;
+// void* __dso_handle = nullptr;
 
 // Define RTEMS_NO_TIMEOUT if needed
 #ifndef RTEMS_NO_TIMEOUT

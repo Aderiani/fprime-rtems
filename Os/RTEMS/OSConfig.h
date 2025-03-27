@@ -6,7 +6,7 @@
 #define OS_MAX_QUEUES         16
 #define OS_MAX_SEMAPHORES     16
 #define OS_MAX_MUTEXES        16
-#define OS_STACK_SIZE_MIN     (4 * 1024)  // Minimum stack size in bytes
+#define OS_STACK_SIZE_MIN     (16 * 1024)  // Minimum stack size in bytes
 #define OS_SYSTEM_TIMER_TICKS_PER_SECOND  100  // System tick frequency
 
 // Priority definitions

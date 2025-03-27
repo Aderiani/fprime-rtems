@@ -17,3 +17,8 @@ cd ../../
 cd LedBlinker
 
 fprime-util build
+
+cd ..
+
+fprime-util build
+

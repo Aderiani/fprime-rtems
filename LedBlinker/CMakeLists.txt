@@ -30,20 +30,22 @@ register_fprime_deployment()
 
 
 
-# RTEMS-specific target modifications - MUST COME AFTER register_fprime_deployment()
+# RTEMS-specific target modifications
 if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
-    # Get the target name now that it exists
+    # Get the target name
     get_property(TARGET_NAME TARGET ${FPRIME_CURRENT_MODULE} PROPERTY NAME)
-    
-    target_link_options(${TARGET_NAME} PRIVATE -Wl,-e,Init)
-    # Ensure the -qbsp flag is used for the final linking
-    target_link_options(${TARGET_NAME} PRIVATE -qbsp=gr740_smp)
-    
-    # Set the output executable name to include .exe extension
+        
+    # Set the output executable name
     set_target_properties(${TARGET_NAME} PROPERTIES 
         OUTPUT_NAME "${TARGET_NAME}"
     )
     
-    # Ensure RTEMSInit object files are included
+    # Link with RTEMSInit library
     target_link_libraries(${TARGET_NAME} PRIVATE RTEMSInit)
+    
+    # Link with required RTEMS libraries
+    target_link_libraries(${TARGET_NAME} PRIVATE
+        rtemscpu
+        rtemsbsp
+    )
 endif()

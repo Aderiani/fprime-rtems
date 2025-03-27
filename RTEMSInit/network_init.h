@@ -17,6 +17,8 @@ typedef struct {
     const char* static_ip;
     const char* netmask;
     const char* gateway;
+    const char* hostname;    // Added hostname field
+    const char* domainname;  // Added domainname field
 } NetworkConfig;
 
 /**

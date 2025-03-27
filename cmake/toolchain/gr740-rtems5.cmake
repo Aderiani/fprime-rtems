@@ -86,7 +86,7 @@ set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wra
 
 # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-T${RTEMS_BSP_PATH}/lib/linkcmds")
 set(CMAKE_EXE_LINKER_FLAGS "${COMMON_FLAGS} ${RTEMS_LDFLAGS}" CACHE STRING "LDFLAGS" FORCE)
-
+# set(CMAKE_EXE_LINKER_FLAGS "-T /opt/fprime/ledtest/config/gr740_linkcmds.ld" CACHE STRING "Linker flags for GR740")
 # Add executable suffix
 set(CMAKE_EXECUTABLE_SUFFIX ".exe" CACHE STRING "Executable suffix" FORCE)
 

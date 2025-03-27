@@ -1,33 +1,33 @@
 #ifndef RTEMS_CONFIG_H
 #define RTEMS_CONFIG_H
 
+// Required drivers
 #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 
-/* Use RTEMS Classic API initialization table */
+// Init task table required
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 
-/* Define maximum resources */
+// System resources
 #define CONFIGURE_MAXIMUM_TASKS 32
 #define CONFIGURE_MAXIMUM_SEMAPHORES 32
 #define CONFIGURE_MAXIMUM_MESSAGE_QUEUES 32
 #define CONFIGURE_MAXIMUM_FILE_DESCRIPTORS 32
-#define CONFIGURE_MAXIMUM_PERIODS 4
-#define CONFIGURE_MAXIMUM_REGIONS 2
-#define CONFIGURE_MAXIMUM_USER_EXTENSIONS 2
-#define CONFIGURE_MAXIMUM_TIMERS 8
+#define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 32
 
-/* Timing configuration */
-#define CONFIGURE_MICROSECONDS_PER_TICK 1000
-#define CONFIGURE_TICKS_PER_TIMESLICE 50
+// Required for networking
+#define CONFIGURE_MAXIMUM_DRIVERS 32
 
-/* Filesystem workaround */
+// Use unlimited objects where possible
+#define CONFIGURE_UNLIMITED_OBJECTS
+#define CONFIGURE_UNIFIED_WORK_AREAS
+
+// Include IMFS filesystem
 #define CONFIGURE_FILESYSTEM_IMFS
-#define CONFIGURE_IMFS_DISABLE_CHOWN
-#define CONFIGURE_IMFS_DISABLE_CHMOD
-#define CONFIGURE_IMFS_DISABLE_UTIME
 
-/* Define struct bintime if missing */
+// Define struct bintime if missing (add this part)
+#include <stdint.h>
+#include <time.h>
 #ifndef _STRUCT_BINTIME
 #define _STRUCT_BINTIME
 struct bintime {
@@ -36,9 +36,10 @@ struct bintime {
 };
 #endif
 
-/* Mark as initialization config */
+// Initialization
 #define CONFIGURE_INIT
 
+// Include the actual configuration
 #include <rtems/confdefs.h>
 
-#endif
+#endif // RTEMS_CONFIG_H

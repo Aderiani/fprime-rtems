@@ -15,6 +15,7 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
     "${CMAKE_CURRENT_LIST_DIR}/rtems_cxx_support.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/stubs.c"
+    "${CMAKE_CURRENT_LIST_DIR}/network_init.c"
 )
 
 # Export the library for use in deployments
@@ -42,7 +43,6 @@ target_compile_options(RTEMSInit PRIVATE
     -Wno-error=unused-variable
     -Wno-unused-variable
     -Wno-error=format
-    -Wno-implicit-function-declaration
     -Wno-error=implicit-function-declaration
     -Wno-pointer-compare
     -w
