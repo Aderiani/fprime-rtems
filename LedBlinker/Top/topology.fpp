@@ -40,7 +40,7 @@ module LedBlinker {
     instance rateGroup3
     instance rateGroupDriver
     instance textLogger
-    instance systemResources
+    # instance systemResources
     instance led
     instance gpioDriver
     instance uartDriver
@@ -107,7 +107,8 @@ module LedBlinker {
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
       rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1.RateGroupMemberOut[1] -> fileDownlink.Run
-      rateGroup1.RateGroupMemberOut[2] -> systemResources.run
+     #TODO uncomment when systemResources is added
+     # rateGroup1.RateGroupMemberOut[2] -> systemResources.run
 
       # Rate group 2
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup2] -> rateGroup2.CycleIn

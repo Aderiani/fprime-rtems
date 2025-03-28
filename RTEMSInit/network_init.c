@@ -102,6 +102,24 @@ void cleanup_network_config(NetworkConfig* config) {
 
 /* Initialize the network with given configuration */
 int initialize_network(NetworkConfig* config) {
+    // Make sure clock gating is properly configured for GRETH
+    // The GR740 has clock gating that needs to be enabled
+    volatile uint32_t* unlock_reg = (volatile uint32_t*)0xFFA04000;
+    volatile uint32_t* enable_reg = (volatile uint32_t*)0xFFA04004;
+    volatile uint32_t* reset_reg = (volatile uint32_t*)0xFFA04008;
+    
+    // GRETH0 bit in clock gating unit (check your GR740 manual for specific bit)
+    uint32_t greth_bit = (1 << 7); // Example - adjust to actual bit
+    
+    // Unlock, reset, enable sequence as shown in bdinit.c
+    *unlock_reg = greth_bit;
+    *reset_reg = greth_bit;
+    *enable_reg = greth_bit;
+    *enable_reg = 0;
+    *reset_reg = 0;
+    *enable_reg = greth_bit;
+    *unlock_reg = 0;
+    
     /* Initialize the network stack */
     printf("Initializing RTEMS networking stack...\n");
     int status = rtems_bsdnet_initialize_network();

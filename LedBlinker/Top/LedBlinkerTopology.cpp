@@ -39,40 +39,32 @@ void configureHardwareTopology() {
     Fw::Logger::log("Hardware topology configured\n");
 }
 
+
 void setupTopology(const TopologyState& state) {
-    // Set up IDs - this call is generated automatically
+    // Initialize components one by one
     initComponents(state);
     setBaseIds();
-    
-    // Connect components - this call is generated automatically
     connectComponents();
     
-    // Configure components
-
-        // Configure the TCP server component
-        if (state.hostname != nullptr) {
-            tcpServer.configure(state.hostname, state.port, 0, 100, 4096);
-        } else {
-            tcpServer.configure("0.0.0.0", 50000, 0, 100, 4096); // Default values
-        }
-        
-        // Uncomment and modify if you have GPIO driver config needed
-        // if (gpioDriver.initialize()) {
-        //     gpioDriver.configurePin(0, Drv::GR740GpioDriver::GPIO_DIRECTION_OUTPUT, Fw::Logic::LOW);
-        // }
+    // Configure each component individually with error checking
+    if (state.hostname != nullptr) {
+        tcpServer.configure(state.hostname, state.port, 0, 100, 4096);
+    } else {
+        tcpServer.configure("0.0.0.0", 50000, 0, 100, 4096);
+    }
     
-    // Configure hardware topology
-    configureHardwareTopology();
-    
-    // Load parameters - this call is generated automatically
+    // Load parameters
     loadParameters();
     
-    // Start active component tasks - this call is generated automatically
+    // Start tasks sequentially with delays between each
     startTasks(state);
     
-    // Start the TCP server task for receiving data
+    // Delay before starting TCP server
+    Os::Task::delay(Fw::TimeInterval(0, 100000));  // 100ms delay
+    
+    // Start TCP server task
     Os::TaskString name("TcpServerRecv");
-    tcpServer.start(name, 100, 64 * 1024); // Default stack size from instances.fpp
+    tcpServer.start(name, 100, 64 * 1024);
 }
 
 void teardownTopology(const TopologyState& state) {

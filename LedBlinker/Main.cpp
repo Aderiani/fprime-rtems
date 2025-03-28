@@ -40,82 +40,50 @@ void safeLogAdd(const char* message) {
 }  // namespace
 
 // External function for setting up the topology
+
 extern "C" int fprime_main(int argc, char* argv[]) {
+    printf("F' main starting...\n");
+    
     // Initialize OSAL
+    printf("Initializing OS...\n");
     Os::init();
-
-    // Default configuration
-    int use_dhcp = 0;                        // Set to 0 to use static IP
-    const char* static_ip = "192.168.1.10";  // Network's static IP
-    const char* netmask = "255.255.255.0";
-    const char* gateway = "192.168.1.1";  
-    U16 port = 50000;                     // Default port
-
-    // Parse command-line arguments
-    for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--no-dhcp") == 0) {
-            use_dhcp = 0;
-        } else if (strcmp(argv[i], "--ip") == 0 && i + 1 < argc) {
-            static_ip = argv[++i];
-        } else if (strcmp(argv[i], "--netmask") == 0 && i + 1 < argc) {
-            netmask = argv[++i];
-        } else if (strcmp(argv[i], "--gateway") == 0 && i + 1 < argc) {
-            gateway = argv[++i];
-        } else if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
-            port = static_cast<U16>(std::atoi(argv[++i]));
-        }
-    }
-
-// Network initialization (RTEMS-specific)
-#ifdef __rtems__
-    NetworkConfig* net_config = create_network_config(use_dhcp, static_ip, netmask, gateway);
-
-    if (!net_config) {
-        safeLogAdd("Failed to create network configuration");
-        return -1;
-    }
-
-    if (initialize_network(net_config) != 0) {
-        safeLogAdd("Network initialization failed");
-        cleanup_network_config(net_config);
-        return -1;
-    }
-
-    cleanup_network_config(net_config);
-#endif
-
-    // Object for communicating state to the topology
-    LedBlinker::TopologyState inputs;
-    inputs.hostname = static_ip ? static_ip : "0.0.0.0";
-    inputs.port = port;
-
-    // Logging initialization
-    safeLogAdd("Starting F' Application");
-
+    printf("OS initialized successfully\n");
+    
     // Setup topology
-    LedBlinker::setupTopology(inputs);
-
-    // Start simulated cycle
-    LedBlinker::startSimulatedCycle(Fw::TimeInterval(1, 0));
-
-// Platform-specific run mechanism
-#ifdef __rtems__
-    // RTEMS-specific delay
-    rtems_task_wake_after(rtems_clock_get_ticks_per_second() * 60);
-#else
-    // Generic time-based delay for non-RTEMS platforms
-    Os::Task::delay(Fw::TimeInterval(60, 0));
-#endif
-
-    // Stop simulated cycle
-    LedBlinker::stopSimulatedCycle();
-
-    // Teardown topology
-    LedBlinker::teardownTopology(inputs);
-
-    return 0;
+    printf("Setting up topology...\n");
+    LedBlinker::TopologyState inputs;
+    inputs.hostname = "0.0.0.0";
+    inputs.port = 50000;
+    
+    try {
+        LedBlinker::setupTopology(inputs);
+        printf("Topology setup complete\n");
+        
+        printf("Starting simulated cycle...\n");
+        LedBlinker::startSimulatedCycle(Fw::TimeInterval(1, 0));
+        printf("Simulated cycle started\n");
+        
+        printf("Running for 10 seconds...\n");
+        rtems_task_wake_after(rtems_clock_get_ticks_per_second() * 10);
+        
+        printf("Stopping simulated cycle...\n");
+        LedBlinker::stopSimulatedCycle();
+        printf("Simulated cycle stopped\n");
+        
+        printf("Tearing down topology...\n");
+        LedBlinker::teardownTopology(inputs);
+        printf("Topology torn down\n");
+        
+        printf("F' application completed successfully\n");
+        return 0;
+    } catch (const std::exception& e) {
+        printf("Exception during F' execution: %s\n", e.what());
+        return -1;
+    } catch (...) {
+        printf("Unknown exception during F' execution\n");
+        return -1;
+    }
 }
-
 // RTEMS requires a special main for C++ applications
 #ifdef __rtems__
 extern "C" int main(int argc, char* argv[]) {

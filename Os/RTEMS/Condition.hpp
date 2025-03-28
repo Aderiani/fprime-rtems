@@ -14,11 +14,10 @@ namespace Os {
 namespace RTEMS {
 namespace ConditionVariable {
 
-//! \brief RTEMS-specific condition variable handle
+// In Os/RTEMS/Condition.hpp
 struct RtemsConditionVariableHandle : public ConditionVariableHandle {
-    pthread_cond_t condition;  //!< POSIX condition variable
+  pthread_cond_t condition;  // POSIX condition variable
 };
-
 //! \brief RTEMS implementation of ConditionVariableInterface
 class RtemsConditionVariable : public ConditionVariableInterface {
   public:
