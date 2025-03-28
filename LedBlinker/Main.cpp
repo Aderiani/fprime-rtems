@@ -3,9 +3,9 @@
 // \brief Main program for F' application
 // ======================================================================
 
+#include <Fw/Logger/Logger.hpp>
 #include <LedBlinker/Top/LedBlinkerTopology.hpp>
 #include <Os/Os.hpp>
-#include <Fw/Logger/Logger.hpp>
 #include <cstdlib>  // For atoi
 #include <cstring>  // For strcmp
 
@@ -16,30 +16,28 @@
 // External network initialization functions (optional, only for RTEMS)
 #ifdef __rtems__
 extern "C" {
-    typedef struct {
-        int use_dhcp;
-        const char* static_ip;
-        const char* netmask;
-        const char* gateway;
-    } NetworkConfig;
+typedef struct {
+    int use_dhcp;
+    const char* static_ip;
+    const char* netmask;
+    const char* gateway;
+} NetworkConfig;
 
-    extern int initialize_network(NetworkConfig* config);
-    extern NetworkConfig* create_network_config(
-        int use_dhcp, 
-        const char* static_ip, 
-        const char* netmask, 
-        const char* gateway
-    );
-    extern void cleanup_network_config(NetworkConfig* config);
+extern int initialize_network(NetworkConfig* config);
+extern NetworkConfig* create_network_config(int use_dhcp,
+                                            const char* static_ip,
+                                            const char* netmask,
+                                            const char* gateway);
+extern void cleanup_network_config(NetworkConfig* config);
 }
 #endif
 
 // Logging wrapper to handle different Logger interfaces
 namespace {
-    void safeLogAdd(const char* message) {
-        Fw::Logger::log( message);
-    }
+void safeLogAdd(const char* message) {
+    Fw::Logger::log(message);
 }
+}  // namespace
 
 // External function for setting up the topology
 extern "C" int fprime_main(int argc, char* argv[]) {
@@ -47,11 +45,11 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     Os::init();
 
     // Default configuration
-    int use_dhcp = 1;
-    const char* static_ip = nullptr;
-    const char* netmask = nullptr;
-    const char* gateway = nullptr;
-    U16 port = 50000;  // Default port
+    int use_dhcp = 0;                        // Set to 0 to use static IP
+    const char* static_ip = "192.168.1.10";  // Network's static IP
+    const char* netmask = "255.255.255.0";
+    const char* gateway = "192.168.1.1";  
+    U16 port = 50000;                     // Default port
 
     // Parse command-line arguments
     for (int i = 1; i < argc; ++i) {
@@ -68,14 +66,9 @@ extern "C" int fprime_main(int argc, char* argv[]) {
         }
     }
 
-    // Network initialization (RTEMS-specific)
-    #ifdef __rtems__
-    NetworkConfig* net_config = create_network_config(
-        use_dhcp, 
-        static_ip, 
-        netmask, 
-        gateway
-    );
+// Network initialization (RTEMS-specific)
+#ifdef __rtems__
+    NetworkConfig* net_config = create_network_config(use_dhcp, static_ip, netmask, gateway);
 
     if (!net_config) {
         safeLogAdd("Failed to create network configuration");
@@ -89,7 +82,7 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     }
 
     cleanup_network_config(net_config);
-    #endif
+#endif
 
     // Object for communicating state to the topology
     LedBlinker::TopologyState inputs;
@@ -105,14 +98,14 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // Start simulated cycle
     LedBlinker::startSimulatedCycle(Fw::TimeInterval(1, 0));
 
-    // Platform-specific run mechanism
-    #ifdef __rtems__
+// Platform-specific run mechanism
+#ifdef __rtems__
     // RTEMS-specific delay
     rtems_task_wake_after(rtems_clock_get_ticks_per_second() * 60);
-    #else
+#else
     // Generic time-based delay for non-RTEMS platforms
     Os::Task::delay(Fw::TimeInterval(60, 0));
-    #endif
+#endif
 
     // Stop simulated cycle
     LedBlinker::stopSimulatedCycle();
