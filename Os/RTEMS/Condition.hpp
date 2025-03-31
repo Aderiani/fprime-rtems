@@ -1,23 +1,20 @@
-// ======================================================================
-// \title Os/RTEMS/ConditionVariable.hpp
-// \brief RTEMS-specific declarations for Os::ConditionVariable
-// ======================================================================
+// Os/RTEMS/ConditionVariable.hpp
+#ifndef OS_RTEMS_CONDITION_VARIABLE_HPP
+#define OS_RTEMS_CONDITION_VARIABLE_HPP
 
-#ifndef OS_RTEMS_CONDITION_VARIABLE_HPP_
-#define OS_RTEMS_CONDITION_VARIABLE_HPP_
-
-#include "Os/Condition.hpp"
-#include "Os/RTEMS/Mutex.hpp"
+#include <Os/Condition.hpp>
+#include <rtems.h>
 #include <pthread.h>  // For POSIX condition variables
 
 namespace Os {
 namespace RTEMS {
 namespace ConditionVariable {
 
-// In Os/RTEMS/Condition.hpp
+//! \brief RTEMS-specific condition variable handle
 struct RtemsConditionVariableHandle : public ConditionVariableHandle {
-  pthread_cond_t condition;  // POSIX condition variable
+    pthread_cond_t condition;  //!< POSIX condition variable (RTEMS implements this)
 };
+
 //! \brief RTEMS implementation of ConditionVariableInterface
 class RtemsConditionVariable : public ConditionVariableInterface {
   public:
@@ -47,4 +44,4 @@ class RtemsConditionVariable : public ConditionVariableInterface {
 } // namespace RTEMS
 } // namespace Os
 
-#endif // OS_RTEMS_CONDITION_VARIABLE_HPP_
+#endif // OS_RTEMS_CONDITION_VARIABLE_HPP

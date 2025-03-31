@@ -19,23 +19,23 @@
 #endif
 
 // External network initialization functions (optional, only for RTEMS)
-#ifdef __rtems__
-extern "C" {
-typedef struct {
-    int use_dhcp;
-    const char* static_ip;
-    const char* netmask;
-    const char* gateway;
-} NetworkConfig;
+// #ifdef __rtems__
+// extern "C" {
+// typedef struct {
+//     int use_dhcp;
+//     const char* static_ip;
+//     const char* netmask;
+//     const char* gateway;
+// } NetworkConfig;
 
-extern int initialize_network(NetworkConfig* config);
-extern NetworkConfig* create_network_config(int use_dhcp,
-                                            const char* static_ip,
-                                            const char* netmask,
-                                            const char* gateway);
-extern void cleanup_network_config(NetworkConfig* config);
-}
-#endif
+// extern int initialize_network(NetworkConfig* config);
+// extern NetworkConfig* create_network_config(int use_dhcp,
+//                                             const char* static_ip,
+//                                             const char* netmask,
+//                                             const char* gateway);
+// extern void cleanup_network_config(NetworkConfig* config);
+// }
+// #endif
 
 // Logging wrapper to handle different Logger interfaces
 // namespace {
@@ -142,67 +142,35 @@ extern void cleanup_network_config(NetworkConfig* config);
 //     return 0;
 // }
 
-// RTEMS requires a special main for C++ applications
-// #ifdef __rtems__
-// extern "C" int main(int argc, char* argv[]) {
-//     printf("RTEMS main() starting...\n");
-//     int result = fprime_main(argc, argv);
-//     printf("RTEMS main() completed with result: %d\n", result);
-//     return result;
-// }
-// #else
-// // Standard main for non-RTEMS platforms
-// int main(int argc, char* argv[]) {
-//     return fprime_main(argc, argv);
-// }
-// #endif
-// RTEMS requires a special main for C++ applications
-// RTEMS requires a special main for C++ applications
-
-
-// Modify the fprime_main function to also not return normally
 extern "C" int fprime_main(int argc, char* argv[]) {
     printf("fprime_main started\n");
     
-    // Initialize OSAL - modified to do nothing for RTEMS
-    printf("Calling Os::init()\n");
+    // Initialize OSAL
+    printf("Before Os::init()\n");
+    fflush(stdout); // Ensure output is flushed
     Os::init();
-    printf("Os::init() completed\n");
+    printf("After Os::init()\n");
+    fflush(stdout); // Ensure output is flushed
     
-    // Add more F Prime operations here as needed
+    // Add a short delay to ensure all messages are output
+    #ifdef __rtems__
+    rtems_task_wake_after(100); // Small delay
+    #endif
     
-    printf("fprime_main operations completed\n");
+    printf("fprime_main completed successfully\n");
+    fflush(stdout); // Ensure output is flushed
     
-#ifdef __rtems__
-    // For RTEMS, don't return normally
-    printf("fprime_main returning control to main\n");
     return 0;
-#else
-    // For other platforms, return normally
-    return 0;
-#endif
 }
 
 
-
+// RTEMS requires a special main for C++ applications
 #ifdef __rtems__
 extern "C" int main(int argc, char* argv[]) {
     printf("RTEMS main() starting...\n");
-    
-    // Call fprime_main but don't use its return value
-    fprime_main(argc, argv);
-    
-    printf("RTEMS main() entering permanent idle state\n");
-    
-    // Force the application to remain running indefinitely
-    // This avoids destructors and C++ runtime cleanup that may be causing issues
-    for(;;) {
-        // Sleep for 1 second
-        rtems_task_wake_after(rtems_clock_get_ticks_per_second());
-    }
-    
-    // This line will never be reached
-    return 0;
+    int result = fprime_main(argc, argv);
+    printf("RTEMS main() completed with result: %d\n", result);
+    return result;
 }
 #else
 // Standard main for non-RTEMS platforms
@@ -210,4 +178,12 @@ int main(int argc, char* argv[]) {
     return fprime_main(argc, argv);
 }
 #endif
+// RTEMS requires a special main for C++ applications
+// RTEMS requires a special main for C++ applications
+
+
+
+
+
+
 

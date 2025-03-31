@@ -10,23 +10,28 @@
 #include "Os/Memory.hpp"
 #include "Os/Task.hpp"
 
-// For debugging during initialization
 #ifdef __rtems__
 #include <stdio.h>
-#define OS_INIT_DEBUG(msg) printf("OS Init: %s\n", msg)
+#define OS_INIT_DEBUG(msg) do { printf("OS Init: %s\n", msg); fflush(stdout); } while(0)
 #else
 #define OS_INIT_DEBUG(msg) /* empty in non-RTEMS builds */
 #endif
 namespace Os {
 
-void init() {
-
-    Os::Console::init();
-    OS_INIT_DEBUG("Console initialized");
-    Os::FileSystem::init();
-    Os::Cpu::init();
-    Os::Memory::init();
-    Os::Task::init();
-}
+    void init() {
+        // Absolute minimal initialization
+        printf("OS Init: Starting minimal initialization\n");
+        fflush(stdout);
+        
+        // Only initialize Console for now
+        printf("OS Init: Initializing Console\n");
+        fflush(stdout);
+        Os::Console::init();
+        printf("OS Init: Console initialized\n");
+        fflush(stdout);
+        
+        printf("OS Init: Minimal initialization complete\n");
+        fflush(stdout);
+    }
 
 }  // namespace Os
