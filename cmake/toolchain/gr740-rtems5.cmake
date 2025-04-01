@@ -20,7 +20,7 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE
 
 # Path to your RTEMS installation
 set(RTEMS_PATH "/opt/rtems/rcc-1.3.2-gcc" CACHE PATH "RTEMS installation path")
-set(RTEMS_BSP "gr740_smp" CACHE STRING "RTEMS BSP")
+set(RTEMS_BSP "gr740" CACHE STRING "RTEMS BSP")
 
 # Check toolchain directory exists
 if(NOT EXISTS "${RTEMS_PATH}")
@@ -71,15 +71,37 @@ add_compile_options(
     -Wno-error=implicit-function-declaration
 )
 
+#TODO: This is added just to avoid error in size casting for posix rtems. The error shall be addressed and this should be removed.
+# In cmake/platform/RTEMS.cmake, add these to your compiler flags:
+set(CMAKE_CXX_FLAGS
+  "${CMAKE_CXX_FLAGS} -Wno-error=pedantic -Wno-error=shadow -Wno-error=unused-variable -Wno-error=attributes -Wno-error=old-style-cast -Wno-error=conversion"
+)
+
+# And similarly for C:
+set(CMAKE_C_FLAGS
+  "${CMAKE_C_FLAGS} -Wno-error=pedantic -Wno-error=shadow -Wno-error=unused-variable -Wno-error=attributes -Wno-error=conversion"
+)
+
+# You can also add this directly to compile options:
+add_compile_options(
+    -Wno-error=conversion
+)
+
+
+
+
 # Set the flags for each language
 set(CMAKE_C_FLAGS           "${COMMON_FLAGS} ${C_CXX_FLAGS} ${C_FLAGS} ${DEF_FLAGS} ${COMPAT_FLAGS}" CACHE STRING "CFLAGS" FORCE)
 set(CMAKE_CXX_FLAGS         "${COMMON_FLAGS} ${C_CXX_FLAGS} ${CXX_FLAGS} ${DEF_FLAGS} ${COMPAT_FLAGS}" CACHE STRING "CXXFLAGS" FORCE)
 set(CMAKE_ASM_FLAGS         "${COMMON_FLAGS} ${ASM_FLAGS} ${DEF_FLAGS}" CACHE STRING "ASMFLAGS" FORCE)
 
+
+
+
 # Add RTEMS pthread support
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -qbsp=gr740_smp")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qbsp=gr740_smp")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -qbsp=gr740")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qbsp=gr740")
 
 # Linker flags for RTEMS
 set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar")

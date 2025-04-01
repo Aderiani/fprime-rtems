@@ -5,7 +5,7 @@
 # MOD_DEPS: (optional) module dependencies
 #
 ####
-restrict_platforms(Posix)
+restrict_platforms(Posix RTEMS)
 add_custom_target("${FPRIME_CURRENT_MODULE}")
 
 # -----------------------------------------

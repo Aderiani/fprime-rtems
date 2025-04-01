@@ -47,18 +47,21 @@
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 /* If --drvmgr was enabled during the configuration of the RTEMS kernel */
 #ifdef RTEMS_DRVMGR_STARTUP
-    #ifdef LEON3
+#ifdef LEON3
 /* Add Timer and UART Driver for this example */
-        #ifdef CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-            #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
-        #endif
-    #ifdef CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
-        #define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
-    #endif
-    #endif
-     #include <drvmgr/drvmgr_confdefs.h>
+#ifdef CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
+#endif
+#ifdef CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
+#endif
+#endif
+#include <drvmgr/drvmgr_confdefs.h>
 #endif
 
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
+ #include <drvmgr/drvmgr_confdefs.h>
 // #define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
 // #define CONFIGURE_SCHEDULER_ASSIGNMENTS
 // #define RTEMS_SCHEDULER_ASSIGN index attr
