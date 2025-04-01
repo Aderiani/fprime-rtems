@@ -20,17 +20,21 @@ endif()
 
 # Choose RTEMS-specific implementations for Os interfaces
 choose_fprime_implementation(Os/File Os_File_RTEMS)
-choose_fprime_implementation(Os/Console Os_Console_RTEMS)
-choose_fprime_implementation(Os/Task Os_Task_RTEMS)
-choose_fprime_implementation(Os/Mutex Os_Mutex_RTEMS)
+choose_fprime_implementation(Os/Console Os/Console/Posix)
+# choose_fprime_implementation(Os/Task Os_Task_RTEMS)
+choose_fprime_implementation(Os/Task Os/Task/Posix)
+# choose_fprime_implementation(Os/Mutex Os_Mutex_RTEMS)
+choose_fprime_implementation(Os/Mutex Os/Mutex/Posix)
 choose_fprime_implementation(Os/Queue Os_Queue_RTEMS)
-choose_fprime_implementation(Os/RawTime Os_RawTime_RTEMS)
+choose_fprime_implementation(Os/RawTime Os/RawTime/Posix)
 choose_fprime_implementation(Os/Cpu Os_Cpu_RTEMS)
 choose_fprime_implementation(Os/Memory Os_Memory_RTEMS)
 choose_fprime_implementation(Os/FileSystem Os_FileSystem_RTEMS)
 choose_fprime_implementation(Os/Directory Os_Directory_RTEMS)
-choose_fprime_implementation(Os/Condition Os_Condition_RTEMS)
 
+# choose_fprime_implementation(Os/Condition Os_Condition_RTEMS)
+# choose_fprime_implementation(Os/Condition Os/Condition/)
+set(FPRIME_USE_POSIX ON)
 # Configure the platform types header
 configure_file(
     "${CMAKE_CURRENT_LIST_DIR}/types/PlatformTypesRTEMS.h"

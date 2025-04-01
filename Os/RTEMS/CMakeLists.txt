@@ -9,4 +9,4 @@ register_os_implementation(Queue RTEMS)
 register_os_implementation(Cpu RTEMS)
 register_os_implementation(Memory RTEMS)
 register_os_implementation(RawTime RTEMS)
-register_os_implementation(Condition RTEMS)  # Register Condition separately
+# register_os_implementation(Condition RTEMS)  # Register Condition separately

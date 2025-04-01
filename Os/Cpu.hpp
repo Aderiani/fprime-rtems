@@ -149,4 +149,4 @@ class Cpu final : public CpuInterface {
     CpuInterface& m_delegate;                                       //!< Delegate for the real implementation
 };
 }
-#endif //OS_CONDITION_HPP_
+#endif 

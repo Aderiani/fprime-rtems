@@ -110,4 +110,4 @@ class Memory final : public MemoryInterface {
     MemoryInterface& m_delegate;                                       //!< Delegate for the real implementation
 };
 }
-#endif //OS_CONDITION_HPP_
+#endif 

@@ -23,8 +23,8 @@ typedef unsigned int PlatformUIntType;
 typedef PlatformIntType PlatformIndexType;
 #define PRI_PlatformIndexType PRI_PlatformIntType
 
-typedef int32_t PlatformSignedSizeType;
-#define PRI_PlatformSignedSizeType PRId32
+typedef uint64_t PlatformSignedSizeType;
+#define PRI_PlatformSignedSizeType PRId64
 
 typedef uint32_t PlatformSizeType; // Match size_t on 32-bit SPARC
 #define PRI_PlatformSizeType PRIu32
