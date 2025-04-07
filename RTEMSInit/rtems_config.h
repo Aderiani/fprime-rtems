@@ -13,6 +13,10 @@
 
 // Init task table required
 #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
+extern int fprime_main(int argc, char* argv[]); // Declare the LedBlinker entry point
+#define CONFIGURE_INIT_TASK_ENTRY_POINT   fprime_main  // F Prime’s entry point
+#define CONFIGURE_INIT_TASK_NAME          rtems_build_name('F', 'P', 'R', 'M')
+#define CONFIGURE_INIT_TASK_ATTRIBUTES    RTEMS_FLOATING_POINT
 
 // Required for networking
 #define CONFIGURE_MAXIMUM_DRIVERS 32

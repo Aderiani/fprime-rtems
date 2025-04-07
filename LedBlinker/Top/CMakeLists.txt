@@ -17,6 +17,7 @@ set(SOURCE_FILES
 if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
   set(MOD_DEPS
     Fw/Logger
+    RTEMSInit
     Os
     # These will use the RTEMS implementations when on RTEMS
     Drv/RTEMS/GR740/Network
