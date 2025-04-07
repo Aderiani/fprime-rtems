@@ -4,6 +4,8 @@
 // ======================================================================
 #include <Os/Task.hpp>
 #include <Fw/Types/Assert.hpp>
+#include <stdio.h>
+
 
 namespace Os {
 
@@ -198,8 +200,14 @@ void Task::init() {
 }
 
 Task& Task::getSingleton() {
-    static Task s_singleton;
-    return s_singleton;
+    static Task* s_singleton = nullptr;
+    if (!s_singleton) {
+        s_singleton = new Task();
+        printf("Task singleton created at %p\n", static_cast<void*>(s_singleton));
+        fflush(stdout);
+        // Add any initialization if needed, e.g., Fw::Logger::registerLogger(s_singleton);
+    }
+    return *s_singleton;
 }
 
 void Task::registerTaskRegistry(TaskRegistry* registry) {

@@ -130,8 +130,12 @@ FwSizeType Queue::getNumQueues() {
 }
 
 Os::Mutex& Queue::getStaticMutex() {
-    static Os::Mutex s_mutex;
-    return s_mutex;
+    static Os::Mutex* s_mutex = nullptr;
+    if (s_mutex == nullptr) {
+        s_mutex = new Os::Mutex();
+        FW_ASSERT(s_mutex != nullptr);
+    }
+    return *s_mutex;
 }
 
 }  // namespace Os

@@ -12,6 +12,8 @@ namespace Console {
 
 RtemsConsole::RtemsConsole() {
     // Default constructor implementation (if needed)
+    printf("RTEMS Console called\n");
+    fflush(stdout);
 }
 
 RtemsConsole::~RtemsConsole() {

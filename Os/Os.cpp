@@ -19,18 +19,15 @@
 namespace Os {
 
     void init() {
-        // Absolute minimal initialization
-        printf("OS Init: Starting minimal initialization\n");
-        fflush(stdout);
-        
-        // Only initialize Console for now
+
         printf("OS Init: Initializing Console\n");
         fflush(stdout);
         Os::Console::init();
-        printf("OS Init: Console initialized\n");
-        fflush(stdout);
-        
-        printf("OS Init: Minimal initialization complete\n");
+        Os::FileSystem::init();
+        Os::Cpu::init();
+        Os::Memory::init();
+        Os::Task::init();
+        printf("OS Init:initialization complete\n");
         fflush(stdout);
     }
 

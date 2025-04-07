@@ -4,6 +4,7 @@
 // ======================================================================
 #include "Os/Cpu.hpp"
 #include "Fw/Types/Assert.hpp"
+#include <stdio.h>
 
 namespace Os {
 
@@ -18,8 +19,14 @@ void Cpu::init() {
 }
 
 Cpu& Cpu::getSingleton() {
-    static Cpu _singleton;
-    return _singleton;
+    static Cpu* _singleton = nullptr;
+    if (!_singleton) {
+        _singleton = new Cpu();
+        printf("Cpu singleton created at %p\n", static_cast<void*>(_singleton));
+        fflush(stdout);
+    }
+    printf("Cpu singleton returning at %p\n", static_cast<void*>(_singleton));
+    return *_singleton;
 }
 
 Cpu::Status Cpu::_getCount(FwSizeType& cpu_count) {

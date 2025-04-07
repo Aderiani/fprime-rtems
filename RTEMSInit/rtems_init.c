@@ -18,8 +18,21 @@
 //     rtems_task_delete(RTEMS_SELF); // Clean up the task
 // }
 
-// Define the Init task configuration
-#define CONFIGURE_INIT_TASK_STACK_SIZE (32 * 1024)
-#define CONFIGURE_INIT_TASK_PRIORITY 10
-#define CONFIGURE_INIT_TASK_INITIAL_MODES (RTEMS_PREEMPT | RTEMS_TIMESLICE)
-#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+// Declare C++ runtime initialization (no extern "C" needed in C file)
+void __cxx_global_var_init(void);
+// Declare FPrime entry point as per rtems_config.h
+int fprime_main(int argc, char* argv[]);
+
+rtems_task Init(rtems_task_argument arg) {
+    // Initialize C++ runtime for static objects
+    __cxx_global_var_init();
+    
+    // Call FPrime main with dummy arguments
+    char* dummy_argv[] = { "fprime", NULL };
+    fprime_main(1, dummy_argv);
+    
+    rtems_task_delete(RTEMS_SELF);
+}
+
+// Include the actual configuration
+#include <rtems/confdefs.h>
