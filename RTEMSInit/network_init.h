@@ -1,59 +1,27 @@
-/**
- * @file network_init.h
- * @brief Network initialization API for F Prime on RTEMS
- */
-#ifndef NETWORK_INIT_H
-#define NETWORK_INIT_H
+// RTEMSInit/network_init.h
+#ifndef _FPRIME_NETWORKCONFIG_H_
+#define _FPRIME_NETWORKCONFIG_H_
+
+struct FPrimeNetworkConfig {
+    int use_dhcp;
+    const char* static_ip;
+    const char* netmask;
+    const char* gateway;
+    const char* hostname;
+};
+
+// Declare a default configuration
+extern const struct FPrimeNetworkConfig default_network_config;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * @brief Network configuration structure
- */
-typedef struct {
-    int use_dhcp;
-    const char* static_ip;
-    const char* netmask;
-    const char* gateway;
-    const char* hostname;    // Added hostname field
-    const char* domainname;  // Added domainname field
-} NetworkConfig;
-
-/**
- * @brief Initialize network with given configuration
- * 
- * @param config Network configuration
- * @return int 0 on success, non-zero on failure
- */
-int initialize_network(NetworkConfig* config);
-
-/**
- * @brief Create a network configuration object
- * 
- * @param use_dhcp Whether to use DHCP
- * @param static_ip Static IP address (if not using DHCP)
- * @param netmask Network mask (if not using DHCP)
- * @param gateway Gateway address (if not using DHCP)
- * @return NetworkConfig* Configuration object
- */
-NetworkConfig* create_network_config(
-    int use_dhcp, 
-    const char* static_ip, 
-    const char* netmask, 
-    const char* gateway
-);
-
-/**
- * @brief Clean up network configuration
- * 
- * @param config Configuration to clean up
- */
-void cleanup_network_config(NetworkConfig* config);
+// Network initialization function
+int initialize_fprime_network();
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* NETWORK_INIT_H */
+#endif

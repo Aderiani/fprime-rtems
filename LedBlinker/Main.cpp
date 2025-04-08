@@ -9,6 +9,7 @@
 #include <cstdlib>  // For atoi
 #include <cstring>  // For strcmp
 
+
 #ifdef __rtems__
 #include <rtems.h>
 // Add this for direct console output that doesn't rely on OS services
@@ -21,19 +22,8 @@
 // External network initialization functions (optional, only for RTEMS)
 #ifdef __rtems__
 extern "C" {
-typedef struct {
-    int use_dhcp;
-    const char* static_ip;
-    const char* netmask;
-    const char* gateway;
-} NetworkConfig;
+void system_init();
 
-extern int initialize_network(NetworkConfig* config);
-extern NetworkConfig* create_network_config(int use_dhcp,
-                                            const char* static_ip,
-                                            const char* netmask,
-                                            const char* gateway);
-extern void cleanup_network_config(NetworkConfig* config);
 }
 #endif
 
@@ -48,63 +38,44 @@ void safeLogAdd(const char* message) {
 #endif
 }
 }  // namespace
+extern "C" {
+    #include "RTEMSInit/network_init.h"
+}
 
-// External function for setting up the topology
 extern "C" int fprime_main(int argc, char* argv[]) {
-    DEBUG_PRINT("fprime_main started");
+    // Prepare network configuration
+    // struct FPrimeNetworkConfig network_config = default_network_config;
+
+    // // Parse command-line arguments
+    // for (int i = 1; i < argc; ++i) {
+    //     if (strcmp(argv[i], "--no-dhcp") == 0) {
+    //         network_config.use_dhcp = 0;
+    //     } else if (strcmp(argv[i], "--ip") == 0 && i + 1 < argc) {
+    //         network_config.use_dhcp = 0;
+    //         network_config.static_ip = argv[++i];
+    //     } else if (strcmp(argv[i], "--netmask") == 0 && i + 1 < argc) {
+    //         network_config.netmask = argv[++i];
+    //     } else if (strcmp(argv[i], "--gateway") == 0 && i + 1 < argc) {
+    //         network_config.gateway = argv[++i];
+    //     } else if (strcmp(argv[i], "--hostname") == 0 && i + 1 < argc) {
+    //         network_config.hostname = argv[++i];
+    //     }
+    // }
     
-    // Initialize OSAL - THIS IS WHERE IT'S HANGING
-    DEBUG_PRINT("Calling Os::init()");
+
+
+    // Existing F' initialization code...
     Os::init();
-    DEBUG_PRINT("Os::init() completed");
-
-    // Default configuration
-    int use_dhcp = 0;                        // Set to 0 to use static IP
-    const char* static_ip = "192.168.1.10";  // Network's static IP
-    const char* netmask = "255.255.255.0";
-    const char* gateway = "192.168.1.1";  
-    U16 port = 50000;                     // Default port
-
-    // Parse command-line arguments
-    for (int i = 1; i < argc; ++i) {
-        if (strcmp(argv[i], "--no-dhcp") == 0) {
-            use_dhcp = 0;
-        } else if (strcmp(argv[i], "--ip") == 0 && i + 1 < argc) {
-            static_ip = argv[++i];
-        } else if (strcmp(argv[i], "--netmask") == 0 && i + 1 < argc) {
-            netmask = argv[++i];
-        } else if (strcmp(argv[i], "--gateway") == 0 && i + 1 < argc) {
-            gateway = argv[++i];
-        } else if (strcmp(argv[i], "--port") == 0 && i + 1 < argc) {
-            port = static_cast<U16>(std::atoi(argv[++i]));
-        }
-    }
-
-// Network initialization (RTEMS-specific)
-#ifdef __rtems__
-    DEBUG_PRINT("Creating network config");
-    NetworkConfig* net_config = create_network_config(use_dhcp, static_ip, netmask, gateway);
-
-    if (!net_config) {
-        safeLogAdd("Failed to create network configuration");
+    
+    // Initialize network
+    if (initialize_fprime_network() != 0) {
+        printf("Failed to initialize network\n");
         return -1;
     }
 
-    DEBUG_PRINT("Initializing network");
-    if (initialize_network(net_config) != 0) {
-        safeLogAdd("Network initialization failed");
-        cleanup_network_config(net_config);
-        return -1;
-    }
-
-    cleanup_network_config(net_config);
-    DEBUG_PRINT("Network initialized");
-#endif
-
-    // Object for communicating state to the topology
     LedBlinker::TopologyState inputs;
-    inputs.hostname = static_ip ? static_ip : "0.0.0.0";
-    inputs.port = port;
+    inputs.hostname = "192.168.0.67";
+    inputs.port = 50000;  // Default port
 
     // Logging initialization
     safeLogAdd("Starting F' Application");

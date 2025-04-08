@@ -25,7 +25,8 @@
 	"settings": {
 		"files.associations": {
 			"cstdlib": "c",
-			"string.h": "c"
+			"string.h": "c",
+			"strings.h": "c"
 		}
 	}
 }

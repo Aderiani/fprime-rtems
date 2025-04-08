@@ -9,6 +9,7 @@ set(CMAKE_SYSTEM_VERSION      5)
 set(CMAKE_SYSTEM_PROCESSOR    sparc)
 set(FPRIME_PLATFORM           RTEMS)
 
+
 # Define RTEMS as the target OS type
 add_definitions(-DCMAKE_SYSTEM_NAME_RTEMS=1)
 add_definitions(-DTGT_OS_TYPE_RTEMS=1)
@@ -21,7 +22,6 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE
 # Path to your RTEMS installation
 set(RTEMS_PATH "/opt/rtems/rcc-1.3.2-gcc" CACHE PATH "RTEMS installation path")
 set(RTEMS_BSP "gr740" CACHE STRING "RTEMS BSP")
-
 # Check toolchain directory exists
 if(NOT EXISTS "${RTEMS_PATH}")
     message(FATAL_ERROR "RTEMS toolchain not found at ${RTEMS_PATH}.")
