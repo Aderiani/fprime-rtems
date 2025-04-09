@@ -5,6 +5,14 @@
 
 #define DRIVER_AMBAPP_GAISLER_GRSPW2_ID	DRIVER_AMBAPP_ID(VENDOR_GAISLER, GAISLER_SPW2)
 
+struct drvmgr_key grlib_drv_res_greth1[] =
+{
+    {"drvIndex", DRVMGR_KT_INT, {(unsigned int)1}}, // Use device index 1 (greth1)
+    {"defaultMac", DRVMGR_KT_INT, {(unsigned int)1}}, // Enable MAC
+    DRVMGR_KEY_EMPTY
+};
+
+
 /* B1553RT driver configuration (optional) */
 struct drvmgr_key grlib_drv_res_b1553rt0[] =
 {
@@ -129,12 +137,14 @@ struct drvmgr_bus_res grlib_drv_resources =
 	.resource = {
 	{DRIVER_AMBAPP_GAISLER_GRPCI2_ID, 0, &grlib_drv_res_grpci2_0[0]},
 	{DRIVER_AMBAPP_GAISLER_GRETH_ID, 0, NULL},
+	/* Enable greth1 with our configuration */
+	{DRIVER_AMBAPP_GAISLER_GRETH_ID, 1, &grlib_drv_res_greth1[0]},
+	{DRIVER_AMBAPP_GAISLER_GRGPIO_ID, 0, &grlib_drv_res_grgpio0[0]},
 /*
 	{DRIVER_AMBAPP_GAISLER_B1553RT_ID, 0, &grlib_drv_res_b1553rt0[0]},
 	{DRIVER_AMBAPP_GAISLER_GRPCI_ID, 0, &grlib_drv_res_grpci0[0]},
 	{DRIVER_AMBAPP_GAISLER_SPICTRL_ID, 0, &grlib_drv_res_spictrl0[0]},
 */
-	{DRIVER_AMBAPP_GAISLER_GRGPIO_ID, 0, &grlib_drv_res_grgpio0[0]},
 #ifdef TEST_NGMP
 	{DRIVER_AMBAPP_GAISLER_GRSPW2_ID, 0, &grlib_drv_res_grspwPkt0[0]},
 	{DRIVER_AMBAPP_GAISLER_GRSPW2_ID, 1, &grlib_drv_res_grspwPkt1[0]},
@@ -165,3 +175,4 @@ void system_init2(void)
 	ambapp_grlib_root_register(&grlib_bus_config);
 #endif
 }
+

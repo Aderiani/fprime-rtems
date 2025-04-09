@@ -9,8 +9,6 @@
 // acknowledged.
 //
 // ======================================================================
-
-// Add these includes at the top of TcpServerComponentImpl.cpp
 #ifdef TGT_OS_TYPE_VXWORKS
 #include <inetLib.h>
 #include <socket.h>
@@ -146,7 +144,7 @@ void TcpServerComponentImpl::readLoop() {
     if (this->running() && status == SOCK_SUCCESS) {
 // Perform the nominal read loop
 #ifdef __rtems__
-    SocketComponentHelper::readLoop();
+        SocketComponentHelper::readLoop();
 #endif
     }
 
@@ -181,20 +179,38 @@ Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, 
 }
 
 bool TcpServerComponentImpl::verifyNetworkReady() {
-    // More robust network check for RTEMS
+    // More basic network verification for RTEMS
     int max_retries = 3;
     for (int i = 0; i < max_retries; i++) {
+        // Test socket creation
         int test_socket = ::socket(AF_INET, SOCK_DGRAM, 0);
-        if (test_socket >= 0) {
+        if (test_socket < 0) {
+            Fw::Logger::log("[INFO] Waiting for network to be ready (attempt %d/%d)\n", i + 1, max_retries);
+            Os::Task::delay(Fw::TimeInterval(1, 0));  // 1 second delay
+            continue;
+        }
+
+        // Try to bind to any address on a test port
+        struct sockaddr_in addr;
+        ::memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = INADDR_ANY;  // No need for htonl with INADDR_ANY
+        addr.sin_port = 0;                  // Let system assign a port, no htons needed for 0
+
+        if (::bind(test_socket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == 0) {
+            // Success - network subsystem is ready
             ::close(test_socket);
             return true;
         }
 
-        // Network not ready yet, wait and retry
+        ::close(test_socket);
         Fw::Logger::log("[INFO] Waiting for network to be ready (attempt %d/%d)\n", i + 1, max_retries);
         Os::Task::delay(Fw::TimeInterval(1, 0));  // 1 second delay
     }
+
+    Fw::Logger::log("[WARNING] Network subsystem not fully initialized\n");
     return false;
 }
 
-}  // end namespace Drv
+}  // namespace Drv
+// End of file

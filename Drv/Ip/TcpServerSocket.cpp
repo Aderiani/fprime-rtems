@@ -56,39 +56,47 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
         return SOCK_FAILED_TO_GET_SOCKET;
     }
 
-    // RTEMS-compatible socket options
-    #ifndef __rtems__
-    // Enable address reuse to avoid "address already in use" errors
+    // Set socket options
     int opt = 1;
     if (::setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-        Fw::Logger::log("[ERROR] Failed to set SO_REUSEADDR: %d\n", errno);
-        ::close(serverFd);
-        return SOCK_FAILED_TO_SET_SOCKET_OPTIONS;
+        Fw::Logger::log("[WARNING] Failed to set SO_REUSEADDR: %d\n", errno);
+        // Continue anyway
     }
-    #endif
 
-    // Set up the address port and name
-    ::memset(&address, 0, sizeof(address)); // Clear structure for RTEMS compatibility
+    // Try to bind to specified address
+    ::memset(&address, 0, sizeof(address));
     address.sin_family = AF_INET;
     address.sin_port = htons(this->m_port);
 
-    #if defined TGT_OS_TYPE_VXWORKS || defined TGT_OS_TYPE_DARWIN
-    address.sin_len = static_cast<U8>(sizeof(struct sockaddr_in));
-    #endif
-
-    // Use INADDR_ANY if hostname is nullptr or invalid, otherwise convert hostname
-    if (m_hostname[0] == '\0' || IpSocket::addressToIp4(m_hostname, &(address.sin_addr)) != SOCK_SUCCESS) {
-        address.sin_addr.s_addr = INADDR_ANY; // Bind to all interfaces by default on RTEMS
+    // First try binding to specified address
+    if (m_hostname[0] != '\0' && IpSocket::addressToIp4(m_hostname, &(address.sin_addr)) == SOCK_SUCCESS) {
+        Fw::Logger::log("Attempting to bind to %s:%hu\n", m_hostname, m_port);
+    } else {
+        // If no specific address or invalid, try INADDR_ANY
+        address.sin_addr.s_addr = INADDR_ANY;
+        Fw::Logger::log("Attempting to bind to any interface on port %hu\n", m_port);
     }
 
-    // Bind to the address
+    // Attempt bind
     if (::bind(serverFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
-        Fw::Logger::log("[ERROR] Failed to bind to port %hu: %d\n", m_port, errno);
-        ::close(serverFd);
-        return SOCK_FAILED_TO_BIND;
+        // If bind fails, try loopback as a fallback
+        ::memset(&address, 0, sizeof(address));
+        address.sin_family = AF_INET;
+        address.sin_port = htons(this->m_port);
+        
+        // Use inet_addr to convert "127.0.0.1" to network byte order
+        address.sin_addr.s_addr = inet_addr("127.0.0.1");
+        
+        Fw::Logger::log("First bind attempt failed, trying loopback interface...\n");
+        
+        if (::bind(serverFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
+            Fw::Logger::log("[ERROR] Failed to bind to port %hu: %d\n", m_port, errno);
+            ::close(serverFd);
+            return SOCK_FAILED_TO_BIND;
+        }
     }
 
-    // Verify bound port (optional, but kept for consistency)
+    // Get the actual bound port (in case we used port 0)
     socklen_t size = sizeof(address);
     if (::getsockname(serverFd, reinterpret_cast<struct sockaddr*>(&address), &size) == -1) {
         Fw::Logger::log("[ERROR] Failed to read back port: %d\n", errno);
@@ -103,12 +111,17 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
         return SOCK_FAILED_TO_LISTEN;
     }
 
-    Fw::Logger::log("Listening for single client at port %hu\n", m_port);
+    char addrStr[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(address.sin_addr), addrStr, INET_ADDRSTRLEN);
+    Fw::Logger::log("Listening for single client at %s:%hu\n", addrStr, ntohs(address.sin_port));
+    
     FW_ASSERT(serverFd != -1);
     socketDescriptor.serverFd = serverFd;
     this->m_port = ntohs(address.sin_port); // Update port if dynamically assigned
     return SOCK_SUCCESS;
 }
+
+
 
 void TcpServerSocket::terminate(const SocketDescriptor& socketDescriptor) {
     if (socketDescriptor.serverFd != -1) {
