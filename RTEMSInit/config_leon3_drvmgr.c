@@ -128,6 +128,7 @@ struct drvmgr_bus_res grlib_drv_resources =
 	.next = NULL,
 	.resource = {
 	{DRIVER_AMBAPP_GAISLER_GRPCI2_ID, 0, &grlib_drv_res_grpci2_0[0]},
+	{DRIVER_AMBAPP_GAISLER_GRETH_ID, 0, NULL},
 /*
 	{DRIVER_AMBAPP_GAISLER_B1553RT_ID, 0, &grlib_drv_res_b1553rt0[0]},
 	{DRIVER_AMBAPP_GAISLER_GRPCI_ID, 0, &grlib_drv_res_grpci0[0]},

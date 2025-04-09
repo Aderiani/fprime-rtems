@@ -45,6 +45,7 @@ U16 TcpServerSocket::getListenPort() {
     return this->m_port;
 }
 
+
 SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
     PlatformIntType serverFd = -1;
     struct sockaddr_in address;
@@ -55,6 +56,8 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
         return SOCK_FAILED_TO_GET_SOCKET;
     }
 
+    // RTEMS-compatible socket options
+    #ifndef __rtems__
     // Enable address reuse to avoid "address already in use" errors
     int opt = 1;
     if (::setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
@@ -62,15 +65,16 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
         ::close(serverFd);
         return SOCK_FAILED_TO_SET_SOCKET_OPTIONS;
     }
+    #endif
 
     // Set up the address port and name
     ::memset(&address, 0, sizeof(address)); // Clear structure for RTEMS compatibility
     address.sin_family = AF_INET;
     address.sin_port = htons(this->m_port);
 
-#if defined TGT_OS_TYPE_VXWORKS || defined TGT_OS_TYPE_DARWIN
+    #if defined TGT_OS_TYPE_VXWORKS || defined TGT_OS_TYPE_DARWIN
     address.sin_len = static_cast<U8>(sizeof(struct sockaddr_in));
-#endif
+    #endif
 
     // Use INADDR_ANY if hostname is nullptr or invalid, otherwise convert hostname
     if (m_hostname[0] == '\0' || IpSocket::addressToIp4(m_hostname, &(address.sin_addr)) != SOCK_SUCCESS) {
@@ -79,7 +83,7 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
 
     // Bind to the address
     if (::bind(serverFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
-        Fw::Logger::log("[ERROR] Failed to bind to %s:%hu: %d\n", m_hostname, m_port, errno);
+        Fw::Logger::log("[ERROR] Failed to bind to port %hu: %d\n", m_port, errno);
         ::close(serverFd);
         return SOCK_FAILED_TO_BIND;
     }
@@ -94,12 +98,12 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
 
     // Listen with a backlog of 1 (single client)
     if (::listen(serverFd, 1) < 0) {
-        Fw::Logger::log("[ERROR] Failed to listen on %s:%hu: %d\n", m_hostname, m_port, errno);
+        Fw::Logger::log("[ERROR] Failed to listen on port %hu: %d\n", m_port, errno);
         ::close(serverFd);
         return SOCK_FAILED_TO_LISTEN;
     }
 
-    Fw::Logger::log("Listening for single client at %s:%hu\n", m_hostname, m_port);
+    Fw::Logger::log("Listening for single client at port %hu\n", m_port);
     FW_ASSERT(serverFd != -1);
     socketDescriptor.serverFd = serverFd;
     this->m_port = ntohs(address.sin_port); // Update port if dynamically assigned

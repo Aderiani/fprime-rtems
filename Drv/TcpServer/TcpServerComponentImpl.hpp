@@ -165,6 +165,7 @@ class TcpServerComponentImpl final : public TcpServerComponentBase, public Socke
     Drv::TcpServerSocket m_socket; //!< Socket implementation
 
     FwSizeType m_allocation_size; //!< Member variable to store the buffer size
+    bool verifyNetworkReady();
 };
 
 }  // end namespace Drv

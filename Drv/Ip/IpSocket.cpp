@@ -15,6 +15,7 @@
 #include <FpConfig.hpp>
 #include <Fw/Types/StringUtils.hpp>
 #include <sys/time.h>
+#include <Fw/Logger/Logger.hpp>
 
 #ifdef TGT_OS_TYPE_VXWORKS
 #include <socket.h>
@@ -60,19 +61,39 @@ bool IpSocket::isValidPort(U16 port) {
 }
 
 SocketIpStatus IpSocket::setupTimeouts(PlatformIntType socketFd) {
-#ifdef TGT_OS_TYPE_VXWORKS
-    // No timeouts set on VxWorks
-    return SOCK_SUCCESS;
-#else // Linux, Darwin, RTEMS
-    struct timeval timeout;
-    timeout.tv_sec = static_cast<time_t>(this->m_timeoutSeconds);
-    timeout.tv_usec = static_cast<suseconds_t>(this->m_timeoutMicroseconds);
-    if (setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout)) < 0) {
-        return SOCK_FAILED_TO_SET_SOCKET_OPTIONS;
+    #ifdef TGT_OS_TYPE_VXWORKS
+        // No timeouts set on VxWorks
+        return SOCK_SUCCESS;
+    #elif defined(__rtems__)
+        // RTEMS compatible timeout handling - simpler approach
+        if (this->m_timeoutSeconds == 0 && this->m_timeoutMicroseconds == 0) {
+            return SOCK_SUCCESS; // No timeout requested
+        }
+        
+        // Only set socket option if non-zero timeout is requested
+        // This avoids potential EOPNOTSUPP errors in RTEMS
+        #ifdef SO_SNDTIMEO
+        struct timeval timeout;
+        timeout.tv_sec = static_cast<time_t>(this->m_timeoutSeconds);
+        timeout.tv_usec = static_cast<suseconds_t>(this->m_timeoutMicroseconds);
+        
+        // Try to set timeout, but continue even if it fails
+        if (setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout)) < 0) {
+            Fw::Logger::log("[WARNING] Failed to set socket send timeout: %d\n", errno);
+            // Don't return error - just continue without timeout
+        }
+        #endif
+        return SOCK_SUCCESS;
+    #else // Linux, Darwin
+        struct timeval timeout;
+        timeout.tv_sec = static_cast<time_t>(this->m_timeoutSeconds);
+        timeout.tv_usec = static_cast<suseconds_t>(this->m_timeoutMicroseconds);
+        if (setsockopt(socketFd, SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char*>(&timeout), sizeof(timeout)) < 0) {
+            return SOCK_FAILED_TO_SET_SOCKET_OPTIONS;
+        }
+        return SOCK_SUCCESS;
+    #endif
     }
-    return SOCK_SUCCESS;
-#endif
-}
 
 SocketIpStatus IpSocket::addressToIp4(const char* address, void* ip4) {
     FW_ASSERT(address != nullptr);
