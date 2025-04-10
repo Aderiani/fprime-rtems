@@ -3,7 +3,7 @@
 
 
 
-
+#define CONFIGURE_EXECUTIVE_RAM_SIZE	(1024*1024)
 // System resources
 #define CONFIGURE_MAXIMUM_TASKS 32
 #define CONFIGURE_MAXIMUM_SEMAPHORES 32
@@ -28,8 +28,6 @@ extern int fprime_main(int argc, char* argv[]); // Declare the LedBlinker entry 
 // Network task configuration
 #define CONFIGURE_NETWORK_TASK_PRIORITY 64
 
-
-#define RTEMS_USE_LOOPBACK
 
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRGPIO 
 
