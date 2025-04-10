@@ -66,7 +66,7 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // Initialize network
     if (initialize_fprime_network() != 0) {
         printf("Failed to initialize network\n");
-        return -1;
+        // return -1;
     }
 
     LedBlinker::TopologyState inputs;

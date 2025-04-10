@@ -59,7 +59,7 @@ void setupTopology(const TopologyState& state) {
     if (state.hostname != nullptr) {
         tcpServer.configure(state.hostname, state.port, 0, 100, 4096);
     } else {
-        tcpServer.configure("0.0.0.0", 50000, 0, 100, 4096);
+        tcpServer.configure("192.168.0.67", 50000, 0, 100, 4096);
     }
     
     // Load parameters

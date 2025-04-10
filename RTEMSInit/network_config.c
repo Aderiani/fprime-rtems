@@ -14,7 +14,6 @@
 #include <grlib/ambapp_ids.h>
 #include <grlib/ambapp_bus.h>
 
-
 struct ethernet_config interface_configs[] = {
     // IP address 192.168.0.67 won't conflict with GRMON/EDCL (192.168.0.24)
     { "192.168.0.67", "255.255.255.0", {0x00, 0x80, 0x7F, 0x22, 0x61, 0x79}},
@@ -62,5 +61,4 @@ void system_init(void) {
     printf("\n\n");
     #endif
 }
-
 

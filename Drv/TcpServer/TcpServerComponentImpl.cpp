@@ -178,39 +178,38 @@ Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, 
     return SendStatus::SEND_OK;
 }
 
+// In TcpServerComponentImpl.cpp
 bool TcpServerComponentImpl::verifyNetworkReady() {
-    // More basic network verification for RTEMS
-    int max_retries = 3;
-    for (int i = 0; i < max_retries; i++) {
-        // Test socket creation
+    // Try up to 5 times with increasing delays
+    for (int attempt = 1; attempt <= 20; attempt++) {
+        Fw::Logger::log("[INFO] Checking network readiness (attempt %d/5)", attempt);
+        
+        // Create socket and try to bind
         int test_socket = ::socket(AF_INET, SOCK_DGRAM, 0);
         if (test_socket < 0) {
-            Fw::Logger::log("[INFO] Waiting for network to be ready (attempt %d/%d)\n", i + 1, max_retries);
-            Os::Task::delay(Fw::TimeInterval(1, 0));  // 1 second delay
+            Fw::Logger::log("[ERROR] Failed to create socket: errno=%d", errno);
+            Os::Task::delay(Fw::TimeInterval(attempt, 0));  // Increasing delay
             continue;
         }
-
-        // Try to bind to any address on a test port
+        
         struct sockaddr_in addr;
         ::memset(&addr, 0, sizeof(addr));
         addr.sin_family = AF_INET;
-        addr.sin_addr.s_addr = INADDR_ANY;  // No need for htonl with INADDR_ANY
-        addr.sin_port = 0;                  // Let system assign a port, no htons needed for 0
-
+        addr.sin_addr.s_addr = INADDR_ANY;
+        addr.sin_port = 0;
+        
         if (::bind(test_socket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == 0) {
-            // Success - network subsystem is ready
+            Fw::Logger::log("[INFO] Network is ready");
             ::close(test_socket);
             return true;
         }
-
+        
         ::close(test_socket);
-        Fw::Logger::log("[INFO] Waiting for network to be ready (attempt %d/%d)\n", i + 1, max_retries);
-        Os::Task::delay(Fw::TimeInterval(1, 0));  // 1 second delay
+        Fw::Logger::log("[INFO] Network not ready yet, waiting...");
+        Os::Task::delay(Fw::TimeInterval(attempt, 0));  // Increasing delay
     }
-
-    Fw::Logger::log("[WARNING] Network subsystem not fully initialized\n");
+    
+    Fw::Logger::log("[WARNING] Network not ready after multiple attempts");
     return false;
 }
-
-}  // namespace Drv
-// End of file
+}

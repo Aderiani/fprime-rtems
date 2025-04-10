@@ -12,14 +12,15 @@ endif()
 
 # Define the source files
 # Define the source files
+# RTEMSInit/CMakeLists.txt
 set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/rtems_init.c"
+    "${CMAKE_CURRENT_LIST_DIR}/board_init.c" 
     "${CMAKE_CURRENT_LIST_DIR}/rtems_cxx_support.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/stubs.c"
     "${CMAKE_CURRENT_LIST_DIR}/network_init.c"
     "${CMAKE_CURRENT_LIST_DIR}/network_config.c"
     "${CMAKE_CURRENT_LIST_DIR}/config_leon3_drvmgr.c"
-    "${CMAKE_CURRENT_LIST_DIR}/network_init.h"
 )
 
 # Export the library for use in deployments
