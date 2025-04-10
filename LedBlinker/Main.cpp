@@ -9,7 +9,6 @@
 #include <cstdlib>  // For atoi
 #include <cstring>  // For strcmp
 
-
 #ifdef __rtems__
 #include <rtems.h>
 // Add this for direct console output that doesn't rely on OS services
@@ -23,7 +22,6 @@
 #ifdef __rtems__
 extern "C" {
 void system_init();
-
 }
 #endif
 
@@ -39,7 +37,7 @@ void safeLogAdd(const char* message) {
 }
 }  // namespace
 extern "C" {
-    #include "RTEMSInit/network_init.h"
+#include "RTEMSInit/network_init.h"
 }
 
 extern "C" int fprime_main(int argc, char* argv[]) {
@@ -61,12 +59,10 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     //         network_config.hostname = argv[++i];
     //     }
     // }
-    
-
 
     // Existing F' initialization code...
     Os::init();
-    
+
     // Initialize network
     if (initialize_fprime_network() != 0) {
         printf("Failed to initialize network\n");
@@ -74,6 +70,7 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     }
 
     LedBlinker::TopologyState inputs;
+
     inputs.hostname = "192.168.0.67";
     inputs.port = 50000;  // Default port
 
@@ -112,13 +109,3 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     printf("Exiting fprime_main successfully\n");
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
