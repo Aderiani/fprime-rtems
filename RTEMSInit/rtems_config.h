@@ -2,6 +2,9 @@
     #define RTEMS_CONFIG_H
 
 
+#define LEON3  // Needed for some GRLIB configurations
+
+#define RTEMS_DRVMGR_STARTUP 1
 
 #define CONFIGURE_EXECUTIVE_RAM_SIZE	(1024*1024)
 // System resources
@@ -22,6 +25,7 @@ extern int fprime_main(int argc, char* argv[]); // Declare the LedBlinker entry 
 #define CONFIGURE_MAXIMUM_DRIVERS 32
 
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRETH
+// #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GRPCI2
 
 #define CONFIGURE_MAXIMUM_NETWORK_INTERFACES 2
 
@@ -65,7 +69,6 @@ extern int fprime_main(int argc, char* argv[]); // Declare the LedBlinker entry 
 
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
-#include <drvmgr/drvmgr_confdefs.h>
 // #define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
 // #define CONFIGURE_SCHEDULER_ASSIGNMENTS
 // #define RTEMS_SCHEDULER_ASSIGN index attr

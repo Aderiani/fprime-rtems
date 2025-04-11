@@ -4,12 +4,6 @@
 			"path": "../../../rtems"
 		},
 		{
-			"path": "../../fprime-rtems"
-		},
-		{
-			"path": "../../fprime-rtems-poc"
-		},
-		{
 			"path": "../../fprime-vxworks"
 		},
 		{

@@ -7,8 +7,7 @@
 extern "C" {
 #endif
 
-/* Define this to enable network initialization */
-#define ENABLE_NETWORK
+
 
 /* Network initialization function */
 int initialize_fprime_network(void);

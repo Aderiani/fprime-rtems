@@ -14,6 +14,10 @@ set(FPRIME_PLATFORM           RTEMS)
 add_definitions(-DCMAKE_SYSTEM_NAME_RTEMS=1)
 add_definitions(-DTGT_OS_TYPE_RTEMS=1)
 add_definitions(-D__rtems__=1)
+add_definitions(-DRTEMS_DRVMGR_STARTUP)
+
+
+
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE
     "STATIC_LIBRARY"

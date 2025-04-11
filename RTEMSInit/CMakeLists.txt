@@ -19,7 +19,6 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/rtems_cxx_support.cpp"
     "${CMAKE_CURRENT_LIST_DIR}/stubs.c"
     "${CMAKE_CURRENT_LIST_DIR}/network_init.c"
-    "${CMAKE_CURRENT_LIST_DIR}/network_config.c"
     "${CMAKE_CURRENT_LIST_DIR}/config_leon3_drvmgr.c"
 )
 
