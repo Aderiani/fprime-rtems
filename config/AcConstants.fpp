@@ -34,10 +34,10 @@ constant HealthPingPorts = 25
 constant FileDownCompletePorts = 1
 
 @ Used for number of Fw::Com type ports supported by Svc::ComQueue
-constant ComQueueComPorts = 2
+constant ComQueueComPorts = 10
 
 @ Used for number of Fw::Buffer type ports supported by Svc::ComQueue
-constant ComQueueBufferPorts = 1
+constant ComQueueBufferPorts = 5
 
 @ Used for maximum number of connected buffer repeater consumers
 constant BufferRepeaterOutputPorts = 10

@@ -5,8 +5,8 @@ module LedBlinker {
   # ----------------------------------------------------------------------
 
   module Default {
-    constant QUEUE_SIZE = 10
-    constant STACK_SIZE = 64 * 1024
+    constant QUEUE_SIZE = 30
+    constant STACK_SIZE = 128 * 1024
   }
 
   # ----------------------------------------------------------------------
@@ -92,7 +92,6 @@ module LedBlinker {
     queue size Default.QUEUE_SIZE \
     stack size Default.STACK_SIZE \
     priority 96
-
 
 
   # ----------------------------------------------------------------------

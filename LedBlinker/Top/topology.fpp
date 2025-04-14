@@ -108,7 +108,7 @@ module LedBlinker {
       rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1.RateGroupMemberOut[1] -> fileDownlink.Run
      #TODO uncomment when systemResources is added
-     # rateGroup1.RateGroupMemberOut[2] -> systemResources.run
+    #  rateGroup1.RateGroupMemberOut[2] -> systemResources.run
 
       # Rate group 2
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup2] -> rateGroup2.CycleIn

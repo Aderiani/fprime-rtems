@@ -274,7 +274,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the size of the buffer that contains a communications packet.
 #ifndef FW_COM_BUFFER_MAX_SIZE
-#define FW_COM_BUFFER_MAX_SIZE 512
+#define FW_COM_BUFFER_MAX_SIZE 10*1024
 #endif
 
 // Specifies the size of the buffer attached to state machine signals.
@@ -392,15 +392,15 @@ typedef FwIndexType FwQueueSizeType;
 #endif
 
 #ifndef FW_FILE_HANDLE_MAX_SIZE
-#define FW_FILE_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS queues
+#define FW_FILE_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_MUTEX_HANDLE_MAX_SIZE
-#define FW_MUTEX_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS queues
+#define FW_MUTEX_HANDLE_MAX_SIZE 1024  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_QUEUE_HANDLE_MAX_SIZE
-#define FW_QUEUE_HANDLE_MAX_SIZE 352  //!< Maximum size of a handle for OS queues
+#define FW_QUEUE_HANDLE_MAX_SIZE 1024  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_DIRECTORY_HANDLE_MAX_SIZE

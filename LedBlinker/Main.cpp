@@ -8,7 +8,7 @@
 #include <Os/Os.hpp>
 #include <cstdlib>  // For atoi
 #include <cstring>  // For strcmp
-
+#include <signal.h>
 #ifdef __rtems__
 #include <rtems.h>
 // Add this for direct console output that doesn't rely on OS services
@@ -38,6 +38,10 @@ void safeLogAdd(const char* message) {
 }  // namespace
 extern "C" {
 #include "RTEMSInit/network_init.h"
+}
+
+static void signalHandler(int signum) {
+    LedBlinker::stopSimulatedCycle();
 }
 
 extern "C" int fprime_main(int argc, char* argv[]) {
@@ -87,20 +91,10 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     LedBlinker::startSimulatedCycle(Fw::TimeInterval(1, 0));
     DEBUG_PRINT("Simulated cycle started");
 
-// Platform-specific run mechanism
-#ifdef __rtems__
-    // RTEMS-specific delay
-    DEBUG_PRINT("Delaying for 60 seconds");
-    rtems_task_wake_after(rtems_clock_get_ticks_per_second() * 60);
-#else
-    // Generic time-based delay for non-RTEMS platforms
-    Os::Task::delay(Fw::TimeInterval(60, 0));
-#endif
-
-    // Stop simulated cycle
-    DEBUG_PRINT("Stopping simulated cycle");
-    LedBlinker::stopSimulatedCycle();
-    DEBUG_PRINT("Simulated cycle stopped");
+    // Setup program shutdown via Ctrl-C
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
+    (void)printf("Hit Ctrl-C to quit\n");
 
     // Teardown topology
     DEBUG_PRINT("Tearing down topology");
