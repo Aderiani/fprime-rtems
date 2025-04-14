@@ -17,7 +17,9 @@ add_definitions(-D__rtems__=1)
 add_definitions(-DRTEMS_DRVMGR_STARTUP)
 
 
-
+# Define these for queue debugging and verbose output
+add_definitions(-DDEBUG_QUEUE=1)
+add_definitions(-DRTEMS_VERBOSE=1)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE
     "STATIC_LIBRARY"

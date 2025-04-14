@@ -13,7 +13,14 @@
 #include <Fw/Logger/Logger.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <FpConfig.hpp>
-
+// In TcpServerSocket.cpp, add these includes at the top
+#ifdef __rtems__
+#include <fcntl.h>         // For fcntl, F_GETFL, F_SETFL, O_NONBLOCK
+#include <sys/select.h>     // For select, fd_set, FD_ZERO, FD_SET
+#include <sys/time.h>       // For struct timeval
+#include <netinet/tcp.h>    // For TCP_NODELAY
+#include <errno.h>          // For errno
+#endif
 #ifdef TGT_OS_TYPE_VXWORKS
     #include <socket.h>
     #include <inetLib.h>
@@ -129,7 +136,9 @@ void TcpServerSocket::terminate(const SocketDescriptor& socketDescriptor) {
         (void)::close(socketDescriptor.serverFd);
     }
 }
+// In TcpServerSocket.cpp - update the openProtocol method
 
+// Update the openProtocol method in TcpServerSocket.cpp
 SocketIpStatus TcpServerSocket::openProtocol(SocketDescriptor& socketDescriptor) {
     PlatformIntType clientFd = -1;
     PlatformIntType serverFd = socketDescriptor.serverFd;
@@ -143,11 +152,25 @@ SocketIpStatus TcpServerSocket::openProtocol(SocketDescriptor& socketDescriptor)
     // Accept a client connection
     struct sockaddr_in clientAddr;
     socklen_t addrLen = sizeof(clientAddr);
+    
     clientFd = ::accept(serverFd, reinterpret_cast<struct sockaddr*>(&clientAddr), &addrLen);
+    
     if (clientFd < 0) {
         Fw::Logger::log("[ERROR] Failed to accept client: %d\n", errno);
         return SOCK_FAILED_TO_ACCEPT;
     }
+
+    #ifdef __rtems__
+    // For RTEMS, set socket buffer sizes to reasonable values
+    int rcvbuf_size = 4096;  // 4KB receive buffer
+    int sndbuf_size = 4096;  // 4KB send buffer
+    setsockopt(clientFd, SOL_SOCKET, SO_RCVBUF, &rcvbuf_size, sizeof(rcvbuf_size));
+    setsockopt(clientFd, SOL_SOCKET, SO_SNDBUF, &sndbuf_size, sizeof(sndbuf_size));
+    
+    // For RTEMS, set some socket options to avoid buffering issues
+    int optval = 1;
+    setsockopt(clientFd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
+    #endif
 
     // Setup client send timeouts
     if (IpSocket::setupTimeouts(clientFd) != SOCK_SUCCESS) {
@@ -158,7 +181,7 @@ SocketIpStatus TcpServerSocket::openProtocol(SocketDescriptor& socketDescriptor)
 
     char clientIp[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &clientAddr.sin_addr, clientIp, INET_ADDRSTRLEN);
-    Fw::Logger::log("Accepted client from %s:%hu at %s:%hu\n", clientIp, ntohs(clientAddr.sin_port), m_hostname, m_port);
+    Fw::Logger::log("Accepted client from %s:%hu\n", clientIp, ntohs(clientAddr.sin_port));
     socketDescriptor.fd = clientFd;
     return SOCK_SUCCESS;
 }
