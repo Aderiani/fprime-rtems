@@ -6,6 +6,7 @@
 #include <rtems.h>
 #include <cstring>
 #include <errno.h>
+#include <Fw/Logger/Logger.hpp>
 
 
 namespace Os {
@@ -43,7 +44,7 @@ RTEMSQueue::~RTEMSQueue() {
 
 QueueInterface::Status RTEMSQueue::create(const Fw::StringBase &name, FwSizeType depth, FwSizeType msgSize) {
     if (m_handle.queue_id != 0) {
-        return Status::ALREADY_CREATED;
+        return QueueInterface::Status::ALREADY_CREATED;
     }
     
     // Store the queue parameters
@@ -80,60 +81,77 @@ QueueInterface::Status RTEMSQueue::create(const Fw::StringBase &name, FwSizeType
             case RTEMS_INVALID_ADDRESS:
             case RTEMS_INVALID_NAME:
             case RTEMS_INVALID_SIZE:
-                return Status::UNKNOWN_ERROR;
+                return QueueInterface::Status::UNKNOWN_ERROR;
             case RTEMS_TOO_MANY:
             case RTEMS_NO_MEMORY:
-                return Status::UNKNOWN_ERROR;
+                return QueueInterface::Status::UNKNOWN_ERROR;
             default:
-                return Status::UNKNOWN_ERROR;
+                return QueueInterface::Status::UNKNOWN_ERROR;
         }
     }
     
-    return Status::OP_OK;
+    return QueueInterface::Status::OP_OK;
 }
+
+// Improved RTEMSQueue implementation for Os/RTEMS/Queue.cpp
 
 QueueInterface::Status RTEMSQueue::send(const U8* buffer, FwSizeType size, FwQueuePriorityType priority, BlockingType block) {
     if (m_handle.queue_id == 0) {
-        return Status::UNINITIALIZED;
+        Fw::Logger::log("RTEMSQueue: Queue not initialized for send operation");
+        return QueueInterface::Status::UNINITIALIZED;
     }
     
     if (buffer == nullptr) {
-        return Status::UNKNOWN_ERROR;
+        Fw::Logger::log("RTEMSQueue: Null buffer passed to send");
+        return QueueInterface::Status::UNKNOWN_ERROR;
     }
     
     if (size > m_handle.msgSize) {
-        return Status::SIZE_MISMATCH;
+        Fw::Logger::log("RTEMSQueue: Buffer size %u exceeds queue message size %u", 
+                        static_cast<unsigned>(size), 
+                        static_cast<unsigned>(m_handle.msgSize));
+        return QueueInterface::Status::SIZE_MISMATCH;
     }
     
     rtems_option wait_option = (block == BlockingType::BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
     
-    rtems_status_code status = rtems_message_queue_send(
-        m_handle.queue_id,
-        buffer,
-        size
-    );
-    
-    if (status == RTEMS_SUCCESSFUL) {
-        return Status::OP_OK;
-    } else if (status == RTEMS_UNSATISFIED) {
-        return Status::FULL;
-    } else {
-        printf("RTEMSQueue: Send error: %d\n", status);
-        return Status::SEND_ERROR;
+    // Try sending with increased retries for RTEMS to handle potential resource constraints
+    for (int retry = 0; retry < 3; retry++) {
+        rtems_status_code status = rtems_message_queue_send(
+            m_handle.queue_id,
+            buffer,
+            size
+        );
+        
+        if (status == RTEMS_SUCCESSFUL) {
+            return QueueInterface::Status::OP_OK;
+        } else if (status == RTEMS_UNSATISFIED && block == BlockingType::NONBLOCKING) {
+            // Queue is full but we're non-blocking
+            return QueueInterface::Status::FULL;
+        } else if (status == RTEMS_UNSATISFIED && retry < 2) {
+            // Queue is full but we're blocking - wait a bit and retry
+            rtems_task_wake_after(1);
+            continue;
+        } else {
+            Fw::Logger::log("RTEMSQueue: Send error: %d", status);
+            return QueueInterface::Status::SEND_ERROR;
+        }
     }
+    
+    return QueueInterface::Status::SEND_ERROR;
 }
 
 QueueInterface::Status RTEMSQueue::receive(U8* destination, FwSizeType capacity, BlockingType block, FwSizeType& actualSize, FwQueuePriorityType& priority) {
     if (m_handle.queue_id == 0) {
-        return Status::UNINITIALIZED;
+        return QueueInterface::Status::UNINITIALIZED;
     }
     
     if (destination == nullptr) {
-        return Status::UNKNOWN_ERROR;
+        return QueueInterface::Status::UNKNOWN_ERROR;
     }
     
     if (capacity < m_handle.msgSize) {
-        return Status::SIZE_MISMATCH;
+        return QueueInterface::Status::SIZE_MISMATCH;
     }
     
     rtems_option wait_option = (block == BlockingType::BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
@@ -150,12 +168,12 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination, FwSizeType capacity,
     if (status == RTEMS_SUCCESSFUL) {
         actualSize = static_cast<FwSizeType>(msg_size);
         priority = 0; // RTEMS doesn't use priority for message queues by default
-        return Status::OP_OK;
+        return QueueInterface::Status::OP_OK;
     } else if (status == RTEMS_UNSATISFIED) {
-        return Status::EMPTY;
+        return QueueInterface::Status::EMPTY;
     } else {
         printf("RTEMSQueue: Receive error: %d\n", status);
-        return Status::RECEIVE_ERROR;
+        return QueueInterface::Status::RECEIVE_ERROR;
     }
 }
 

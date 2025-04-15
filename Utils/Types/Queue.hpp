@@ -82,6 +82,8 @@ class Queue {
 
     FwSizeType getQueueSize() const;
 
+    void ensureInitialized();
+
   private:
     CircularBuffer m_internal;
     FwSizeType m_message_size;

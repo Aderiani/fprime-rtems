@@ -274,7 +274,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the size of the buffer that contains a communications packet.
 #ifndef FW_COM_BUFFER_MAX_SIZE
-#define FW_COM_BUFFER_MAX_SIZE 10*1024
+#define FW_COM_BUFFER_MAX_SIZE 64 *1024
 #endif
 
 // Specifies the size of the buffer attached to state machine signals.
@@ -379,65 +379,65 @@ typedef FwIndexType FwQueueSizeType;
 // Configuration for Fw::String
 
 #ifndef FW_FIXED_LENGTH_STRING_SIZE
-#define FW_FIXED_LENGTH_STRING_SIZE 256  //!< Character array size for Fw::String
+#define FW_FIXED_LENGTH_STRING_SIZE 512  //!< Character array size for Fw::String
 #endif
 
 // OS configuration
 #ifndef FW_CONSOLE_HANDLE_MAX_SIZE
-#define FW_CONSOLE_HANDLE_MAX_SIZE 24  //!< Maximum size of a handle for OS queues
+#define FW_CONSOLE_HANDLE_MAX_SIZE 512  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_TASK_HANDLE_MAX_SIZE
-#define FW_TASK_HANDLE_MAX_SIZE 24  //!< Maximum size of a handle for OS queues
+#define FW_TASK_HANDLE_MAX_SIZE 512  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_FILE_HANDLE_MAX_SIZE
-#define FW_FILE_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS queues
+#define FW_FILE_HANDLE_MAX_SIZE 512  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_MUTEX_HANDLE_MAX_SIZE
-#define FW_MUTEX_HANDLE_MAX_SIZE 1024  //!< Maximum size of a handle for OS queues
+#define FW_MUTEX_HANDLE_MAX_SIZE 10* 1024  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_QUEUE_HANDLE_MAX_SIZE
-#define FW_QUEUE_HANDLE_MAX_SIZE 1024  //!< Maximum size of a handle for OS queues
+#define FW_QUEUE_HANDLE_MAX_SIZE 10* 1024  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_DIRECTORY_HANDLE_MAX_SIZE
-#define FW_DIRECTORY_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
+#define FW_DIRECTORY_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
 #endif
 
 #ifndef FW_FILESYSTEM_HANDLE_MAX_SIZE
-#define FW_FILESYSTEM_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
+#define FW_FILESYSTEM_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
 #endif
 
 #ifndef FW_RAW_TIME_HANDLE_MAX_SIZE
-#define FW_RAW_TIME_HANDLE_MAX_SIZE 24  //!< Maximum size of a handle for OS::RawTime objects
+#define FW_RAW_TIME_HANDLE_MAX_SIZE 256  //!< Maximum size of a handle for OS::RawTime objects
 #endif
 
 #ifndef FW_RAW_TIME_SERIALIZATION_MAX_SIZE
-#define FW_RAW_TIME_SERIALIZATION_MAX_SIZE 8  //!< Maximum allowed serialization size for Os::RawTime objects
+#define FW_RAW_TIME_SERIALIZATION_MAX_SIZE 16  //!< Maximum allowed serialization size for Os::RawTime objects
 #endif
 
 #ifndef FW_CONDITION_VARIABLE_HANDLE_MAX_SIZE
-#define FW_CONDITION_VARIABLE_HANDLE_MAX_SIZE 56  //!< Maximum size of a handle for OS condition variables
+#define FW_CONDITION_VARIABLE_HANDLE_MAX_SIZE 512  //!< Maximum size of a handle for OS condition variables
 #endif
 
 #ifndef FW_CPU_HANDLE_MAX_SIZE
-#define FW_CPU_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS cpu
+#define FW_CPU_HANDLE_MAX_SIZE 32  //!< Maximum size of a handle for OS cpu
 #endif
 
 #ifndef FW_MEMORY_HANDLE_MAX_SIZE
-#define FW_MEMORY_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS memory
+#define FW_MEMORY_HANDLE_MAX_SIZE 32  //!< Maximum size of a handle for OS memory
 #endif
 
 #ifndef FW_HANDLE_ALIGNMENT
-#define FW_HANDLE_ALIGNMENT 8  //!< Alignment of handle storage
+#define FW_HANDLE_ALIGNMENT 16  //!< Alignment of handle storage
 #endif
 
 // Note: One buffer of this size will be stack-allocated during certain OSAL operations e.g. when copying a file
 #ifndef FW_FILE_CHUNK_SIZE
-#define FW_FILE_CHUNK_SIZE 512  //!< Chunk size for working with files in the OSAL layer
+#define FW_FILE_CHUNK_SIZE 1024  //!< Chunk size for working with files in the OSAL layer
 #endif
 
 // *** NOTE configuration checks are in Fw/Cfg/ConfigCheck.cpp in order to have

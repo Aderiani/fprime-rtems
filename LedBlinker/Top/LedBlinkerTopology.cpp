@@ -50,22 +50,22 @@ NATIVE_INT_TYPE rateGroup3Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = 
 
 // A number of constants are needed for construction of the topology. These are specified here.
 enum TopologyConstants {
-    CMD_SEQ_BUFFER_SIZE = 4 * 1024,
-    FILE_DOWNLINK_TIMEOUT = 1000,
-    FILE_DOWNLINK_COOLDOWN = 1000,
-    FILE_DOWNLINK_CYCLE_TIME = 1000,
-    FILE_DOWNLINK_FILE_QUEUE_DEPTH = 10,
-    HEALTH_WATCHDOG_CODE = 0x123,
-    COMM_PRIORITY = 49,
+    CMD_SEQ_BUFFER_SIZE = 64 * 1024, // 64KB	
+    FILE_DOWNLINK_TIMEOUT = 1000, // 1 second
+    FILE_DOWNLINK_COOLDOWN = 1000, // 1 second
+    FILE_DOWNLINK_CYCLE_TIME = 1000, // 1 second
+    FILE_DOWNLINK_FILE_QUEUE_DEPTH = 10, // 10 files
+    HEALTH_WATCHDOG_CODE = 0x123, // Watchdog code for health component
+    COMM_PRIORITY = 49, // Communication task priority
     // bufferManager constants
     FRAMER_BUFFER_SIZE = FW_MAX(FW_COM_BUFFER_MAX_SIZE, FW_FILE_BUFFER_MAX_SIZE + sizeof(U32)) + HASH_DIGEST_LENGTH +
                          Svc::FpFrameHeader::SIZE,
-    FRAMER_BUFFER_COUNT = 30,
+    FRAMER_BUFFER_COUNT = 100, // Number of buffers for framer
     DEFRAMER_BUFFER_SIZE = FW_MAX(FW_COM_BUFFER_MAX_SIZE, FW_FILE_BUFFER_MAX_SIZE + sizeof(U32)),
-    DEFRAMER_BUFFER_COUNT = 30,
-    COM_DRIVER_BUFFER_SIZE = 5000,
-    COM_DRIVER_BUFFER_COUNT = 30,
-    BUFFER_MANAGER_ID = 200
+    DEFRAMER_BUFFER_COUNT = 100, // Number of buffers for deframer
+    COM_DRIVER_BUFFER_SIZE = 32 * 1024 , // 32KB    
+    COM_DRIVER_BUFFER_COUNT = 100, // Number of buffers for COM driver
+    BUFFER_MANAGER_ID = 200 // ID for buffer manager
 };
 
 
@@ -152,9 +152,9 @@ void configureTopology() {
    // tlmSend.setPacketList(LedBlinkerPacketsPkts, LedBlinkerPacketsIgnore, 1);
 
    // Events (highest-priority)
-   configurationTable.entries[0] = {.depth = 100, .priority = 0};
+   configurationTable.entries[0] = {.depth = 200, .priority = 0};
    // Telemetry
-   configurationTable.entries[1] = {.depth = 500, .priority = 2};
+   configurationTable.entries[1] = {.depth = 1000, .priority = 2};
    // File Downlink
    configurationTable.entries[2] = {.depth = 100, .priority = 1};
    // Allocation identifier is 0 as the MallocAllocator discards it
