@@ -6,7 +6,7 @@ module LedBlinker {
 
   module Default {
     constant QUEUE_SIZE = 30
-    constant STACK_SIZE = 16 * 1024
+    constant STACK_SIZE = 8 * 1024
   }
 
   # ----------------------------------------------------------------------
@@ -40,7 +40,7 @@ module LedBlinker {
     priority 118
 
   instance cmdDisp: Svc.CommandDispatcher base id 0x0500 \
-    queue size 20 \
+    queue size 20 \ 
     stack size Default.STACK_SIZE \
     priority 101
 
@@ -50,7 +50,7 @@ module LedBlinker {
     priority 100
 
   instance comQueue: Svc.ComQueue base id 0x0700 \
-      queue size Default.QUEUE_SIZE \
+      queue size 50 \
       stack size Default.STACK_SIZE \
       priority 100 \
 

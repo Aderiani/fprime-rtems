@@ -40,29 +40,12 @@ extern "C" {
 #include "RTEMSInit/network_init.h"
 }
 
-static void signalHandler(int signum) {
-    LedBlinker::stopSimulatedCycle();
-}
+// static void signalHandler(int signum) {
+//     LedBlinker::stopSimulatedCycle();
+// }
 
 extern "C" int fprime_main(int argc, char* argv[]) {
-    // Prepare network configuration
-    // struct FPrimeNetworkConfig network_config = default_network_config;
 
-    // // Parse command-line arguments
-    // for (int i = 1; i < argc; ++i) {
-    //     if (strcmp(argv[i], "--no-dhcp") == 0) {
-    //         network_config.use_dhcp = 0;
-    //     } else if (strcmp(argv[i], "--ip") == 0 && i + 1 < argc) {
-    //         network_config.use_dhcp = 0;
-    //         network_config.static_ip = argv[++i];
-    //     } else if (strcmp(argv[i], "--netmask") == 0 && i + 1 < argc) {
-    //         network_config.netmask = argv[++i];
-    //     } else if (strcmp(argv[i], "--gateway") == 0 && i + 1 < argc) {
-    //         network_config.gateway = argv[++i];
-    //     } else if (strcmp(argv[i], "--hostname") == 0 && i + 1 < argc) {
-    //         network_config.hostname = argv[++i];
-    //     }
-    // }
 
     // Existing F' initialization code...
     Os::init();
@@ -91,10 +74,10 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     LedBlinker::startSimulatedCycle(Fw::TimeInterval(1, 0));
     DEBUG_PRINT("Simulated cycle started");
 
-    // Setup program shutdown via Ctrl-C
-    signal(SIGINT, signalHandler);
-    signal(SIGTERM, signalHandler);
-    (void)printf("Hit Ctrl-C to quit\n");
+    // // Setup program shutdown via Ctrl-C
+    // signal(SIGINT, signalHandler);
+    // signal(SIGTERM, signalHandler);
+    // (void)printf("Hit Ctrl-C to quit\n");
 
     // Teardown topology
     DEBUG_PRINT("Tearing down topology");

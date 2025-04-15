@@ -134,24 +134,23 @@ void TcpServerComponentImpl::terminate() {
     this->m_descriptor.serverFd = -1;
 }
 
-// In TcpServerComponentImpl.cpp
-
 Fw::Buffer TcpServerComponentImpl::getBuffer() {
     #ifdef __rtems__
-    // For RTEMS, use a static buffer pool instead of dynamic allocation
-    // Create a pool of 4 static buffers that we rotate through
-    static U8 buffer_pool[4][1024];
+    // Ensure buffers are aligned on 8-byte boundaries for SPARC
+    static U8 buffer_pool[4][1024] __attribute__((aligned(8)));
     static int buffer_index = 0;
     
     // Get next buffer in rotation
     buffer_index = (buffer_index + 1) % 4;
     
-    // Allocate a buffer from our static pool 
+    // Zero the buffer to ensure clean state (helps with alignment issues)
+    memset(buffer_pool[buffer_index], 0, 1024);
+    
+    // Create aligned buffer
     Fw::Buffer buffer(buffer_pool[buffer_index], 1024);
     return buffer;
     #else
-    // Original code for other platforms
-    return allocate_out(0, static_cast<U32>(m_allocation_size));
+    // Original code
     #endif
 }
 
@@ -162,11 +161,22 @@ void TcpServerComponentImpl::readLoop() {
     
     Drv::SocketIpStatus status = Drv::SocketIpStatus::SOCK_NOT_STARTED;
     
+    // Add delay to give time for initialization to complete
+    Os::Task::delay(Fw::TimeInterval(2, 0));  // 2 second initialization delay
+    
     // Connect loop
     while (this->running()) {
         if (!this->isOpened()) {
-            status = this->open();
+            // Check if server is properly started before trying to open
+            if (!this->isStarted() || this->m_descriptor.serverFd == -1) {
+                Fw::Logger::log("[WARNING] Server not properly initialized, waiting...");
+                Os::Task::delay(SOCKET_RETRY_INTERVAL);
+                continue;
+            }
+            
+            status = SocketComponentHelper::open();  // Call parent method
             if (status != SOCK_SUCCESS) {
+                Fw::Logger::log("[INFO] Could not open connection, retrying...");
                 Os::Task::delay(SOCKET_RETRY_INTERVAL);
                 continue;
             }
@@ -174,14 +184,14 @@ void TcpServerComponentImpl::readLoop() {
         }
         
         // We're connected - use static buffer for receiving data
-        static U8 recv_buffer[1024];
+        static U8 recv_buffer[1024] __attribute__((aligned(8)));  // 8-byte aligned
         U32 size = sizeof(recv_buffer);
         
         status = this->recv(recv_buffer, size);
         
         if (status == SOCK_SUCCESS && size > 0) {
             // Data received - create a buffer without using queue allocations
-            static U8 msg_buffer[1024];
+            static U8 msg_buffer[1024] __attribute__((aligned(8)));  // 8-byte aligned
             memcpy(msg_buffer, recv_buffer, size);
             
             Fw::Buffer buffer(msg_buffer, size);
@@ -230,7 +240,6 @@ Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, 
     return SendStatus::SEND_OK;
 }
 
-// In TcpServerComponentImpl.cpp
 bool TcpServerComponentImpl::verifyNetworkReady() {
     // Try up to 5 times with increasing delays
     for (int attempt = 1; attempt <= 5; attempt++) {

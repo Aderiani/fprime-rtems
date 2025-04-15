@@ -117,7 +117,8 @@ module LedBlinker {
       # Rate group 3
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup3] -> rateGroup3.CycleIn
       rateGroup3.RateGroupMemberOut[0] -> $health.Run
-      rateGroup3.RateGroupMemberOut[1] -> blockDrv.Sched
+      #TODO: uncomment when a driver with isr is added. 
+      # rateGroup3.RateGroupMemberOut[1] -> blockDrv.Sched
       rateGroup3.RateGroupMemberOut[2] -> bufferManager.schedIn
     }
 
