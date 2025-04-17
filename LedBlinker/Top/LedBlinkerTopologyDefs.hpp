@@ -6,7 +6,7 @@
 #ifndef LEDBLINKER_LEDBLINKERTOPOLOGYDEFS_HPP
 #define LEDBLINKER_LEDBLINKERTOPOLOGYDEFS_HPP
 
-#include "Drv/BlockDriver/BlockDriver.hpp"
+// #include "Drv/BlockDriver/BlockDriver.hpp"
 #include "Fw/Types/MallocAllocator.hpp"
 #include "LedBlinker/Top/FppConstantsAc.hpp"
 #include "Svc/FramingProtocol/FprimeProtocol.hpp"
@@ -47,9 +47,7 @@ struct TopologyState {
  * ```
  */
 namespace PingEntries {
-namespace LedBlinker_blockDrv {
-enum { WARN = 3, FATAL = 5 };
-}
+
 namespace LedBlinker_tlmSend {
 enum { WARN = 3, FATAL = 5 };
 }

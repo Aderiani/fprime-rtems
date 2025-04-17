@@ -73,14 +73,14 @@ void teardownTopology(const TopologyState& state);
  *
  * \param milliseconds: milliseconds to delay for each cycle. Default: 1000 or 1Hz.
  */
-void startSimulatedCycle(Fw::TimeInterval interval = Fw::TimeInterval(1,0));
+
 
 /**
  * \brief stop the simulated cycle started by startSimulatedCycle
  *
  * This stops the cycle started by startSimulatedCycle.
  */
-void stopSimulatedCycle();
+
 
 } // namespace LedBlinker
 #endif

@@ -5,9 +5,9 @@
 # MOD_DEPS: (optional) module dependencies
 #
 ####
-set(SOURCE_FILES
-  "${CMAKE_CURRENT_LIST_DIR}/BlockDriver.fpp"
-  "${CMAKE_CURRENT_LIST_DIR}/BlockDriverImpl.cpp"
-)
+# set(SOURCE_FILES
+#   "${CMAKE_CURRENT_LIST_DIR}/BlockDriver.fpp"
+#   "${CMAKE_CURRENT_LIST_DIR}/BlockDriverImpl.cpp"
+# )
 
-register_fprime_module()
+# register_fprime_module()

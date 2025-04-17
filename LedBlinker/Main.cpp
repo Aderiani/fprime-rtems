@@ -69,10 +69,6 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     LedBlinker::setupTopology(inputs);
     DEBUG_PRINT("Topology setup complete");
 
-    // Start simulated cycle
-    DEBUG_PRINT("Starting simulated cycle");
-    LedBlinker::startSimulatedCycle(Fw::TimeInterval(1, 0));
-    DEBUG_PRINT("Simulated cycle started");
 
     // // Setup program shutdown via Ctrl-C
     // signal(SIGINT, signalHandler);

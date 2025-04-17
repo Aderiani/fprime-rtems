@@ -7,7 +7,7 @@ add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Ports/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Interfaces/")
 
 # Components
-add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/BlockDriver/")
+# add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/BlockDriver/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/ByteStreamDriverModel/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/LinuxGpioDriver/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/LinuxUartDriver/")

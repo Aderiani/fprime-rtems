@@ -18,7 +18,7 @@ module LedBlinker {
     # ----------------------------------------------------------------------
 
     instance $health
-    instance blockDrv
+    instance timerDriver
     instance tlmSend
     instance cmdDisp
     instance cmdSeq
@@ -101,7 +101,7 @@ module LedBlinker {
 
     connections RateGroups {
       # Block driver
-      blockDrv.CycleOut -> rateGroupDriver.CycleIn
+      timerDriver.CycleOut -> rateGroupDriver.CycleIn
 
       # Rate group 1
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn

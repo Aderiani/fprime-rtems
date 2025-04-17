@@ -12,17 +12,13 @@ module LedBlinker {
   # ----------------------------------------------------------------------
   # Active component instances
   # ----------------------------------------------------------------------
-    instance led: Components.Led base id 0x0E00 \
+  instance led: Components.Led base id 0x0E00 \
     queue size Default.QUEUE_SIZE \
     stack size Default.STACK_SIZE \
     priority 95
+  
+  instance timerDriver: Drv.GR740TimerDriver base id 0x0100  
 
-
-
-  instance blockDrv: Drv.BlockDriver base id 0x0100 \
-    queue size Default.QUEUE_SIZE \
-    stack size Default.STACK_SIZE \
-    priority 140
 
   instance rateGroup1: Svc.ActiveRateGroup base id 0x0200 \
     queue size Default.QUEUE_SIZE \

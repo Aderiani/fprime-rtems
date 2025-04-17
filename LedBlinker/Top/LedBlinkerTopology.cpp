@@ -64,28 +64,21 @@ enum TopologyConstants {
     DEFRAMER_BUFFER_COUNT = 100,         // Number of buffers for deframer
     COM_DRIVER_BUFFER_SIZE = 32 * 1024,  // 32KB
     COM_DRIVER_BUFFER_COUNT = 100,       // Number of buffers for COM driver
-    BUFFER_MANAGER_ID = 200              // ID for buffer manager
+    BUFFER_MANAGER_ID = 200,              // ID for buffer manager
+    TIMER_HZ = 10                        // Timer frequency (Hz)
 };
 
 void cycleComponentsFunc(void*) {
     while (!cycleHalt) {
-        // Call the ISR function to simulate a cycle
-        blockDrv.callIsr();
-
-#ifdef __rtems__
         // Use RTEMS native delay for better timing
         rtems_task_wake_after(rtems_clock_get_ticks_per_second() * cycleInterval.getSeconds() +
                               rtems_clock_get_ticks_per_second() * cycleInterval.getUSeconds() / 1000000);
-#else
-        // Delay to the next cycle using F' Time
-        Os::Task::delay(cycleInterval);
-#endif
+
     }
 }
 
 // Ping entries are autocoded, however; this code is not properly exported. Thus, it is copied here.
 Svc::Health::PingEntry pingEntries[] = {
-    {PingEntries::LedBlinker_blockDrv::WARN, PingEntries::LedBlinker_blockDrv::FATAL, "blockDrv"},
     {PingEntries::LedBlinker_tlmSend::WARN, PingEntries::LedBlinker_tlmSend::FATAL, "chanTlm"},
     {PingEntries::LedBlinker_cmdDisp::WARN, PingEntries::LedBlinker_cmdDisp::FATAL, "cmdDisp"},
     {PingEntries::LedBlinker_cmdSeq::WARN, PingEntries::LedBlinker_cmdSeq::FATAL, "cmdSeq"},
@@ -153,6 +146,9 @@ void configureTopology() {
     comQueue.configure(configurationTable, 0, mallocator);
 
     tcpServer.configure("192.168.0.67", 50000, 0, 100, 1 * 1024);  // 1KB buffer
+
+    // Initialize the hardware timer
+    timerDriver.initialize(TIMER_HZ);
 }
 
 void setupTopology(const TopologyState& state) {
@@ -175,12 +171,17 @@ void setupTopology(const TopologyState& state) {
 
     // Start TCP server task
     Os::TaskString name("RTEMS_TcpServer");
-    tcpServer.start(name, 100, 4* 1024);
+    tcpServer.start(name, 100, 4 * 1024);
 
     Os::Task::delay(Fw::TimeInterval(1, 0));  // 1 second delay
+
+    // Start the hardware timer
+    timerDriver.start();
+    Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
 }
 
 void teardownTopology(const TopologyState& state) {
+    timerDriver.stop();
     // Stop the TCP server task
     tcpServer.stop();
     tcpServer.join();  // Wait for task to exit
@@ -190,48 +191,6 @@ void teardownTopology(const TopologyState& state) {
 
     // Free threads - this call is generated automatically
     freeThreads(state);
-}
-
-// TODO: Impelement hardware clock instead of simulated clock
-Os::Mutex cycleLock;
-volatile bool cycleFlag = true;
-void startSimulatedCycle(Fw::TimeInterval interval) {
-#ifdef __rtems__
-    // Use direct blocking approach for RTEMS
-    Fw::Logger::log("Starting direct cycle in main thread");
-
-    // Use a safe counter-based approach instead of an infinite loop
-    U32 cycleCount = 0;
-    const U32 maxCycles = 10000;  // Allow up to 10,000 cycles before exiting
-
-    while (cycleCount < maxCycles) {
-        // Call block driver ISR directly but print status
-        Fw::Logger::log("Cycle %u: Calling ISR", cycleCount);
-        blockDrv.callIsr();
-        cycleCount++;
-
-        // Use safe RTEMS delay with fixed 1-second interval
-        rtems_task_wake_after(rtems_clock_get_ticks_per_second());
-    }
-
-    Fw::Logger::log("Cycle limit reached - exiting gracefully");
-#else
-    // Original implementation with cycleFlag for other platforms
-    cycleLock.lock();
-    cycleFlag = true;
-    cycleLock.unLock();
-
-    // Original task setup for non-RTEMS
-    Os::TaskString name("SimCycle");
-    Os::Task::Arguments arguments(name, cycleComponentsFunc, nullptr);
-    simulatedCycleTask.start(arguments);
-#endif
-}
-
-void stopSimulatedCycle() {
-    cycleLock.lock();
-    cycleFlag = false;
-    cycleLock.unLock();
 }
 
 }  // namespace LedBlinker
