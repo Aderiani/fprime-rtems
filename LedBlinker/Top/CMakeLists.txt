@@ -26,6 +26,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "RTEMS")
     Drv/RTEMS/GR740/SpiDriver
     Drv/RTEMS/GR740/I2cDriver
     Drv/RTEMS/GR740/Timer
+    Drv/RTEMS/GR740/Watchdog
     Drv/TcpServer
     Drv/TcpClient
     Drv/Udp

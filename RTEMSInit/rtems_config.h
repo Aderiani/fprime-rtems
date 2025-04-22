@@ -71,7 +71,10 @@ extern int fprime_main(int argc, char* argv[]); // Declare the LedBlinker entry 
 
 // Required drivers
 #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
+// One of the following three must be defined
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
+// #define CONFIGURE_APPLICATION_DOES_NOT_NEED_CLOCK_DRIVER
+// #define CONFIGURE_APPLICATION_NEEDS_TIMER_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_MEMORY
 #define CONFIGURE_APPLICATION_NEEDS_LIBC
 
@@ -137,6 +140,10 @@ GR-RASTA-SPW-ROUTER PCI peripheral PCI_GR_RASTA_SPW_ROUTER
 GR-LEON4-N2X PCI peripheral PCI_GR_LEON4_N2X
 GR-CPCI-GR740 PCI peripheral PCI_GR_CPCI_GR740
 */
+
+// Uncommet the following line to avoid watchdog timeout
+// #define RTEMS_NO_TIMEOUT  ((rtems_interval) WATCHDOG_NO_TIMEOUT)
+
 
 // Use unlimited objects where possible
 #define CONFIGURE_UNLIMITED_OBJECTS

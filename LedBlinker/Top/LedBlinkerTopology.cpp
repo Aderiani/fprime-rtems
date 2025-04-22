@@ -65,7 +65,7 @@ enum TopologyConstants {
     COM_DRIVER_BUFFER_SIZE = 32 * 1024,  // 32KB
     COM_DRIVER_BUFFER_COUNT = 100,       // Number of buffers for COM driver
     BUFFER_MANAGER_ID = 200,              // ID for buffer manager
-    TIMER_HZ = 10                        // Timer frequency (Hz)
+    TIMER_HZ = 2                        // Timer frequency (Hz)
 };
 
 void cycleComponentsFunc(void*) {
@@ -93,6 +93,7 @@ Svc::Health::PingEntry pingEntries[] = {
 };
 
 void configureTopology() {
+
     // Buffer managers need a configured set of buckets and an allocator used to allocate memory for those buckets.
     Svc::BufferManager::BufferBins upBuffMgrBins;
     memset(&upBuffMgrBins, 0, sizeof(upBuffMgrBins));
@@ -114,6 +115,8 @@ void configureTopology() {
     // Rate group driver needs a divisor list
     rateGroupDriver.configure(rateGroupDivisorsSet);
 
+    watchdogDriver.initialize(40);  // Initialize the watchdog driver with a timeout of 40ms
+
     // Rate groups require context arrays.
     rateGroup1.configure(rateGroup1Context, FW_NUM_ARRAY_ELEMENTS(rateGroup1Context));
     rateGroup2.configure(rateGroup2Context, FW_NUM_ARRAY_ELEMENTS(rateGroup2Context));
@@ -134,14 +137,14 @@ void configureTopology() {
     // tlmSend.setPacketList(LedBlinkerPacketsPkts, LedBlinkerPacketsIgnore, 1);
 
     // Use reasonable values that won't cause memory issues
-    configurationTable.entries[0].depth = 50;  // Events
-    configurationTable.entries[0].priority = 0;
+    configurationTable.entries[0].depth = 100;  // Events
+    configurationTable.entries[0].priority = 2;
 
     configurationTable.entries[1].depth = 100;  // Telemetry
-    configurationTable.entries[1].priority = 2;
+    configurationTable.entries[1].priority = 1;
 
-    configurationTable.entries[2].depth = 30;  // File Downlink
-    configurationTable.entries[2].priority = 1;
+    configurationTable.entries[2].depth = 50;  // File Downlink
+    configurationTable.entries[2].priority = 0;
     // Command - increase depth significantly
     comQueue.configure(configurationTable, 0, mallocator);
 

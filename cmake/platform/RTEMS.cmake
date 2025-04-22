@@ -31,6 +31,7 @@ choose_fprime_implementation(Os/Cpu Os_Cpu_RTEMS)
 choose_fprime_implementation(Os/Queue Os_Queue_RTEMS)
 choose_fprime_implementation(Os/Memory Os_Memory_RTEMS)
 
+
 # Set POSIX flag
 set(FPRIME_USE_POSIX ON)
 

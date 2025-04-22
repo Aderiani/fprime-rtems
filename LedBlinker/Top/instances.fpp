@@ -131,5 +131,7 @@ module LedBlinker {
 
   instance spiDriver: Drv.GR740SpiDriver base id 0x4E00
 
+  instance watchdogDriver: Drv.GR740WatchdogDriver base id 0x4F00
+
 
 }
