@@ -6,6 +6,9 @@
 #include <rtems.h>
 #include <cstring>
 #include <errno.h>
+#include <cstdlib>  // for free
+#include <malloc.h>  // for memalign
+#include <cstdint>  // for uintptr_t
 #include <Fw/Logger/Logger.hpp>
 
 
@@ -84,6 +87,7 @@ QueueInterface::Status RTEMSQueue::create(const Fw::StringBase &name, FwSizeType
     return QueueInterface::Status::OP_OK;
 }
 
+// In Os/RTEMS/Queue.cpp
 QueueInterface::Status RTEMSQueue::send(const U8* buffer, FwSizeType size, FwQueuePriorityType priority, BlockingType block) {
     if (m_handle.queue_id == 0) {
         return QueueInterface::Status::UNINITIALIZED;
@@ -93,21 +97,36 @@ QueueInterface::Status RTEMSQueue::send(const U8* buffer, FwSizeType size, FwQue
         return QueueInterface::Status::UNKNOWN_ERROR;
     }
     
-    if (size > m_handle.msgSize) {
+    if (size > static_cast<FwSizeType>(m_handle.msgSize)) {
         return QueueInterface::Status::SIZE_MISMATCH;
     }
     
-    // Create aligned buffer for SPARC
-    U8 aligned_buffer[m_handle.msgSize] __attribute__((aligned(8)));
-    memcpy(aligned_buffer, buffer, size);
+    // Use a fixed-size buffer or allocate dynamically
+    U8* aligned_buffer = nullptr;
+    bool needs_free = false;
     
-    rtems_option wait_option = (block == BlockingType::BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
+    // If buffer is already 8-byte aligned, use it directly
+    if ((reinterpret_cast<uintptr_t>(buffer) & 7) == 0) {
+        aligned_buffer = const_cast<U8*>(buffer);
+    } else {
+        // Allocate aligned buffer
+        aligned_buffer = static_cast<U8*>(memalign(8, m_handle.msgSize));
+        if (aligned_buffer == nullptr) {
+            return QueueInterface::Status::UNKNOWN_ERROR;
+        }
+        needs_free = true;
+        memcpy(aligned_buffer, buffer, static_cast<size_t>(size));
+    }
     
     rtems_status_code status = rtems_message_queue_send(
         m_handle.queue_id,
         aligned_buffer,
-        size
+        static_cast<size_t>(size)
     );
+    
+    if (needs_free) {
+        free(aligned_buffer);
+    }
     
     if (status == RTEMS_SUCCESSFUL) {
         return QueueInterface::Status::OP_OK;
@@ -118,7 +137,6 @@ QueueInterface::Status RTEMSQueue::send(const U8* buffer, FwSizeType size, FwQue
         return QueueInterface::Status::SEND_ERROR;
     }
 }
-
 
 
 
