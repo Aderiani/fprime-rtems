@@ -62,10 +62,10 @@ enum TopologyConstants {
     FRAMER_BUFFER_COUNT = 100,  // Number of buffers for framer
     DEFRAMER_BUFFER_SIZE = FW_MAX(FW_COM_BUFFER_MAX_SIZE, FW_FILE_BUFFER_MAX_SIZE + sizeof(U32)),
     DEFRAMER_BUFFER_COUNT = 100,         // Number of buffers for deframer
-    COM_DRIVER_BUFFER_SIZE = 32 * 1024,  // 32KB
+    COM_DRIVER_BUFFER_SIZE = 64 * 1024,  // 64KB
     COM_DRIVER_BUFFER_COUNT = 100,       // Number of buffers for COM driver
     BUFFER_MANAGER_ID = 200,             // ID for buffer manager
-    TIMER_HZ = 2                         // Timer frequency (Hz)
+    TIMER_HZ = 1                         // Timer frequency (Hz)
 };
 
 void cycleComponentsFunc(void*) {
@@ -124,11 +124,13 @@ void configureTopology() {
     fileDownlink.configure(FILE_DOWNLINK_TIMEOUT, FILE_DOWNLINK_COOLDOWN, FILE_DOWNLINK_CYCLE_TIME,
                            FILE_DOWNLINK_FILE_QUEUE_DEPTH);
 
+    // TODO: Fix the Parameter database file
     // Parameter database is configured with a database file name, and that file must be initially read.
-    prmDb.configure("PrmDb.dat");
+    // prmDb.configure("PrmDb.dat");
     // prmDb.readParamFile();
     U32 ledBlink = 1;  // Default to ON
-    prmDb.setPrm(0xe00, sizeof(U32), reinterpret_cast<U8*>(&ledBlink));
+    // prmDb.set()
+    // prmDb.setPrm(0xe00, sizeof(U32), reinterpret_cast<U8*>(&ledBlink));
 
     // Health is supplied a set of ping entires.
     health.setPingEntries(pingEntries, FW_NUM_ARRAY_ELEMENTS(pingEntries), HEALTH_WATCHDOG_CODE);

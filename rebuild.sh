@@ -25,3 +25,4 @@ fprime-util build
 wait
 
 cp /opt/fprime/ledtest/build-artifacts/gr740-rtems5/LedBlinker/bin/LedBlinker /app/exobiosphere/LedBlinker.exe
+

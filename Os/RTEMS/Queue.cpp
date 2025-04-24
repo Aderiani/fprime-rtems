@@ -1,4 +1,4 @@
-// Os/RTEMS/Queue.cpp - Comprehensive fix
+
 #include <errno.h>
 #include <malloc.h>  // for memalign
 #include <rtems.h>
@@ -59,7 +59,7 @@ QueueInterface::Status RTEMSQueue::create(const Fw::StringBase& name, FwSizeType
 
     // Store the ACTUAL depth and msgSize
     m_handle.depth = depth;
-    m_handle.msgSize = (msgSize + 7) & ~7;  // Round up to nearest 8 bytes
+    m_handle.msgSize = msgSize;  
 
     // Store the queue name
     strncpy(m_handle.name, name.toChar(), sizeof(m_handle.name) - 1);
@@ -157,6 +157,9 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
                                            BlockingType block,
                                            FwSizeType& actualSize,
                                            FwQueuePriorityType& priority) {
+    
+    Fw::Logger::log("RTEMSQueue: Receive for '%s' with capacity=%d, msgSize=%d\n", 
+                                                m_handle.name, (int)capacity, (int)m_handle.msgSize);
     if (m_handle.queue_id == 0) {
         Fw::Logger::log("RTEMSQueue: Receive error - queue not initialized\n");
         return QueueInterface::Status::UNINITIALIZED;
@@ -172,6 +175,9 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
         m_handle.msgSize = 1024;
     }
 
+    Fw::Logger::log("RTEMSQueue: Receive for '%s' with capacity=%d, msgSize=%d\n", 
+        m_handle.name, (int)capacity, (int)m_handle.msgSize);
+
     if (capacity == 0) {
         Fw::Logger::log("RTEMSQueue: Critical error - zero capacity buffer in receive for '%s'\n", m_handle.name);
 
@@ -185,6 +191,8 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
 
     if (capacity < m_handle.msgSize) {
         Fw::Logger::log("RTEMSQueue: Receive error - capacity too small: %d < %d\n", capacity, m_handle.msgSize);
+        Fw::Logger::log("Capacity < %f\n", capacity);
+
         return QueueInterface::Status::SIZE_MISMATCH;
     }
 

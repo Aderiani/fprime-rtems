@@ -251,7 +251,7 @@ typedef FwIndexType FwQueueSizeType;
 // When dumping the contents of the registry, this specifies the size of the buffer used to store object names. Should
 // be >= FW_OBJ_NAME_BUFFER_SIZE.
 #ifndef FW_OBJ_SIMPLE_REG_BUFF_SIZE
-#define FW_OBJ_SIMPLE_REG_BUFF_SIZE 255  //!< Size of object registry dump string
+#define FW_OBJ_SIMPLE_REG_BUFF_SIZE 1024 *2 //!< Size of object registry dump string
 #endif
 #endif
 
@@ -274,12 +274,12 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the size of the buffer that contains a communications packet.
 #ifndef FW_COM_BUFFER_MAX_SIZE
-#define FW_COM_BUFFER_MAX_SIZE 64 *1024
+#define FW_COM_BUFFER_MAX_SIZE 1024 *2
 #endif
 
 // Specifies the size of the buffer attached to state machine signals.
 #ifndef FW_SM_SIGNAL_BUFFER_MAX_SIZE
-#define FW_SM_SIGNAL_BUFFER_MAX_SIZE 128  // Not to exceed size of NATIVE_UINT_TYPE
+#define FW_SM_SIGNAL_BUFFER_MAX_SIZE 256  // Not to exceed size of NATIVE_UINT_TYPE
 #endif
 
 // Specifies the size of the buffer that contains the serialized command arguments.
@@ -331,17 +331,17 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the maximum size of a string in a parameter
 #ifndef FW_PARAM_STRING_MAX_SIZE
-#define FW_PARAM_STRING_MAX_SIZE 40  //!< Max size of parameter string type
+#define FW_PARAM_STRING_MAX_SIZE 256  //!< Max size of parameter string type
 #endif
 
 // Specifies the maximum size of a file upload chunk
 #ifndef FW_FILE_BUFFER_MAX_SIZE
-#define FW_FILE_BUFFER_MAX_SIZE 255  //!< Max size of file buffer (i.e. chunk of file)
+#define FW_FILE_BUFFER_MAX_SIZE 2*1024  //!< Max size of file buffer (i.e. chunk of file)
 #endif
 
 // Specifies the maximum size of a string in an interface call
 #ifndef FW_INTERNAL_INTERFACE_STRING_MAX_SIZE
-#define FW_INTERNAL_INTERFACE_STRING_MAX_SIZE 256  //!< Max size of interface string parameter type
+#define FW_INTERNAL_INTERFACE_STRING_MAX_SIZE 2*1024  //!< Max size of interface string parameter type
 #endif
 
 // enables text logging of events as well as data logging. Adds a second logging port for text output.
@@ -351,7 +351,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Define the size of the text log string buffer. Should be large enough for format string and arguments
 #ifndef FW_LOG_TEXT_BUFFER_SIZE
-#define FW_LOG_TEXT_BUFFER_SIZE 256  //!< Max size of string for text log message
+#define FW_LOG_TEXT_BUFFER_SIZE 2*1024  //!< Max size of string for text log message
 #endif
 
 // Define if serializables have toString() method. Turning off will save code space and
@@ -472,6 +472,10 @@ typedef FwSizeStoreType FwBuffSizeType;
 
 // If using file system, set appropriate macros for RTEMS
 #define RTEMS_FS 1
+
+
+#define FW_COMPONENT_QUEUE_MISMATCH_BEHAVIOR 1  // 0=assert, 1=log warning, 2=ignore
+#define FW_QUEUE_BUFFER_SIZE_SAFETY_MARGIN 256 
 
 // Include the platform types
 #include <PlatformTypes.h>

@@ -5,7 +5,7 @@ module LedBlinker {
   # ----------------------------------------------------------------------
 
   module Default {
-    constant QUEUE_SIZE = 50
+    constant QUEUE_SIZE = 30
     constant STACK_SIZE = 8 * 1024
   }
 
