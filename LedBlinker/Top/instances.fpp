@@ -5,7 +5,7 @@ module LedBlinker {
   # ----------------------------------------------------------------------
 
   module Default {
-    constant QUEUE_SIZE = 30
+    constant QUEUE_SIZE = 50
     constant STACK_SIZE = 8 * 1024
   }
 
@@ -22,7 +22,7 @@ module LedBlinker {
 
   instance rateGroup1: Svc.ActiveRateGroup base id 0x0200 \
     queue size Default.QUEUE_SIZE \
-    stack size Default.STACK_SIZE \
+    stack size 16 * 1024 \
     priority 120
 
   instance rateGroup2: Svc.ActiveRateGroup base id 0x0300 \

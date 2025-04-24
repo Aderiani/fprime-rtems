@@ -64,8 +64,8 @@ enum TopologyConstants {
     DEFRAMER_BUFFER_COUNT = 100,         // Number of buffers for deframer
     COM_DRIVER_BUFFER_SIZE = 32 * 1024,  // 32KB
     COM_DRIVER_BUFFER_COUNT = 100,       // Number of buffers for COM driver
-    BUFFER_MANAGER_ID = 200,              // ID for buffer manager
-    TIMER_HZ = 2                        // Timer frequency (Hz)
+    BUFFER_MANAGER_ID = 200,             // ID for buffer manager
+    TIMER_HZ = 2                         // Timer frequency (Hz)
 };
 
 void cycleComponentsFunc(void*) {
@@ -73,7 +73,6 @@ void cycleComponentsFunc(void*) {
         // Use RTEMS native delay for better timing
         rtems_task_wake_after(rtems_clock_get_ticks_per_second() * cycleInterval.getSeconds() +
                               rtems_clock_get_ticks_per_second() * cycleInterval.getUSeconds() / 1000000);
-
     }
 }
 
@@ -93,7 +92,6 @@ Svc::Health::PingEntry pingEntries[] = {
 };
 
 void configureTopology() {
-
     // Buffer managers need a configured set of buckets and an allocator used to allocate memory for those buckets.
     Svc::BufferManager::BufferBins upBuffMgrBins;
     memset(&upBuffMgrBins, 0, sizeof(upBuffMgrBins));
@@ -128,7 +126,9 @@ void configureTopology() {
 
     // Parameter database is configured with a database file name, and that file must be initially read.
     prmDb.configure("PrmDb.dat");
-    prmDb.readParamFile();
+    // prmDb.readParamFile();
+    U32 ledBlink = 1;  // Default to ON
+    prmDb.setPrm(0xe00, sizeof(U32), reinterpret_cast<U8*>(&ledBlink));
 
     // Health is supplied a set of ping entires.
     health.setPingEntries(pingEntries, FW_NUM_ARRAY_ELEMENTS(pingEntries), HEALTH_WATCHDOG_CODE);

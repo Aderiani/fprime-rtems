@@ -1,26 +1,24 @@
-// Os/RTEMS/Queue.cpp - Fixed implementation
+// Os/RTEMS/Queue.cpp - Comprehensive fix
+#include <errno.h>
+#include <malloc.h>  // for memalign
+#include <rtems.h>
+#include <Fw/Logger/Logger.hpp>
+#include <Fw/Types/Assert.hpp>
+#include <Os/Delegate.hpp>
 #include <Os/Queue.hpp>
 #include <Os/RTEMS/Queue.hpp>
-#include <Os/Delegate.hpp>
-#include <Fw/Types/Assert.hpp>
-#include <rtems.h>
-#include <cstring>
-#include <errno.h>
-#include <cstdlib>  // for free
-#include <malloc.h>  // for memalign
 #include <cstdint>  // for uintptr_t
-#include <Fw/Logger/Logger.hpp>
-
+#include <cstdlib>  // for free
+#include <cstring>
 
 namespace Os {
 namespace RTEMS {
 namespace Queue {
 
 QueueInterface* getDelegate(QueueHandleStorage& aligned_placement_new_memory) {
-    // Ensure the memory is properly aligned and large enough
-    FW_ASSERT(alignof(RTEMSQueue) <= FW_HANDLE_ALIGNMENT, alignof(RTEMSQueue), FW_HANDLE_ALIGNMENT);
     static_assert(sizeof(RTEMSQueue) <= sizeof(QueueHandleStorage), "FW_HANDLE_MAX_SIZE too small");
-    
+    static_assert((FW_HANDLE_ALIGNMENT % alignof(RTEMSQueue)) == 0, "Bad handle alignment");
+
     // Create implementation using placement new
     return new (&aligned_placement_new_memory) RTEMSQueue();
 }
@@ -31,149 +29,224 @@ RTEMSQueue::RTEMSQueue() {
     m_handle.depth = 0;
     m_handle.msgSize = 0;
     memset(m_handle.name, 0, sizeof(m_handle.name));
+
+    Fw::Logger::log("RTEMSQueue: Initialized at %p\n", this);
 }
 
 RTEMSQueue::~RTEMSQueue() {
+    Fw::Logger::log("RTEMSQueue: Destroying queue at %p, id=%d\n", this, m_handle.queue_id);
+
     if (m_handle.queue_id != 0) {
         rtems_status_code status = rtems_message_queue_delete(m_handle.queue_id);
         if (status != RTEMS_SUCCESSFUL) {
-            // Just print the error but don't assert since we're in a destructor
-            // We can't do much about deletion failures at this point
-            printf("RTEMSQueue: Failed to delete queue: %d\n", status);
+            Fw::Logger::log("RTEMSQueue: Failed to delete queue: %d\n", status);
         }
         m_handle.queue_id = 0;
     }
 }
 
-QueueInterface::Status RTEMSQueue::create(const Fw::StringBase &name, FwSizeType depth, FwSizeType msgSize) {
+QueueInterface::Status RTEMSQueue::create(const Fw::StringBase& name, FwSizeType depth, FwSizeType msgSize) {
     if (m_handle.queue_id != 0) {
+        Fw::Logger::log("RTEMSQueue: Queue already created: %s\n", name.toChar());
         return QueueInterface::Status::ALREADY_CREATED;
     }
-    
-    // Store the queue parameters
+
+    if (msgSize > 10000) {
+        Fw::Logger::log("RTEMSQueue: WARNING - Suspiciously large msgSize %d for queue '%s', capping at 1024\n",
+                        (int)msgSize, name.toChar());
+        msgSize = 1024;  // Cap at a reasonable size
+    }
+
+    // Store the ACTUAL depth and msgSize
     m_handle.depth = depth;
-    // Align message size to 8 bytes for SPARC
     m_handle.msgSize = (msgSize + 7) & ~7;  // Round up to nearest 8 bytes
-    
+
     // Store the queue name
     strncpy(m_handle.name, name.toChar(), sizeof(m_handle.name) - 1);
     m_handle.name[sizeof(m_handle.name) - 1] = 0;
-    
+
     // Create unique name from first 4 chars
-    char name_chars[5] = "    ";
+    char name_chars[5] = "QQQQ";
     for (size_t i = 0; i < 4 && i < name.length(); i++) {
         name_chars[i] = name.toChar()[i];
     }
-    name_chars[4] = '\0';
-    
-    rtems_name queue_name = rtems_build_name(
-        name_chars[0], name_chars[1], name_chars[2], name_chars[3]
-    );
-    
-    // Create the message queue with proper attributes
-    rtems_status_code status = rtems_message_queue_create(
-        queue_name,
-        depth,
-        m_handle.msgSize,  // Use aligned size
-        RTEMS_FIFO | RTEMS_LOCAL,  // Use FIFO instead of PRIORITY
-        &m_handle.queue_id
-    );
-    
+
+    rtems_name queue_name = rtems_build_name(name_chars[0], name_chars[1], name_chars[2], name_chars[3]);
+
+    Fw::Logger::log("RTEMSQueue: Creating queue '%s' with depth %d, msgSize %d\n", name.toChar(), (int)depth,
+                    (int)m_handle.msgSize);
+
+    // PASS THE DEPTH PARAMETER TO THE RTEMS FUNCTION
+    rtems_status_code status = rtems_message_queue_create(queue_name,
+                                                          depth,  // Pass the actual depth parameter
+                                                          m_handle.msgSize, RTEMS_FIFO, &m_handle.queue_id);
+
     if (status != RTEMS_SUCCESSFUL) {
-        printf("RTEMSQueue: Failed to create queue '%s': %d\n", name.toChar(), status);
+        Fw::Logger::log("RTEMSQueue: Failed to create queue '%s': error %d\n", name.toChar(), status);
         return QueueInterface::Status::UNKNOWN_ERROR;
     }
-    
+
+    Fw::Logger::log("RTEMSQueue: Created queue '%s' with depth %d, msgSize %d, id=%d\n", name.toChar(), (int)depth,
+                    (int)m_handle.msgSize, m_handle.queue_id);
+
     return QueueInterface::Status::OP_OK;
 }
 
-// In Os/RTEMS/Queue.cpp
-QueueInterface::Status RTEMSQueue::send(const U8* buffer, FwSizeType size, FwQueuePriorityType priority, BlockingType block) {
+QueueInterface::Status RTEMSQueue::send(const U8* buffer,
+                                        FwSizeType size,
+                                        FwQueuePriorityType priority,
+                                        BlockingType block) {
     if (m_handle.queue_id == 0) {
+        Fw::Logger::log("RTEMSQueue: Send error - queue not initialized\n");
         return QueueInterface::Status::UNINITIALIZED;
     }
-    
+
     if (buffer == nullptr) {
+        Fw::Logger::log("RTEMSQueue: Send error - null buffer\n");
         return QueueInterface::Status::UNKNOWN_ERROR;
     }
-    
+
     if (size > static_cast<FwSizeType>(m_handle.msgSize)) {
+        Fw::Logger::log("RTEMSQueue: Send error - size mismatch: %d > %d\n", size, m_handle.msgSize);
         return QueueInterface::Status::SIZE_MISMATCH;
     }
-    
-    // Use a fixed-size buffer or allocate dynamically
-    U8* aligned_buffer = nullptr;
-    bool needs_free = false;
-    
-    // If buffer is already 8-byte aligned, use it directly
-    if ((reinterpret_cast<uintptr_t>(buffer) & 7) == 0) {
-        aligned_buffer = const_cast<U8*>(buffer);
-    } else {
-        // Allocate aligned buffer
-        aligned_buffer = static_cast<U8*>(memalign(8, m_handle.msgSize));
-        if (aligned_buffer == nullptr) {
-            return QueueInterface::Status::UNKNOWN_ERROR;
-        }
-        needs_free = true;
-        memcpy(aligned_buffer, buffer, static_cast<size_t>(size));
+
+    // Prepare aligned message buffer
+    void* aligned_buffer = memalign(8, m_handle.msgSize);
+    if (aligned_buffer == nullptr) {
+        Fw::Logger::log("RTEMSQueue: Send error - failed to allocate aligned buffer\n");
+        return QueueInterface::Status::UNKNOWN_ERROR;
     }
-    
-    rtems_status_code status = rtems_message_queue_send(
-        m_handle.queue_id,
-        aligned_buffer,
-        static_cast<size_t>(size)
+
+    // Clear the entire buffer first to avoid uninitialized memory
+    memset(aligned_buffer, 0, m_handle.msgSize);
+
+    // Copy actual data
+    memcpy(aligned_buffer, buffer, size);
+
+    // Send with proper options
+    rtems_option send_option = (block == BlockingType::BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
+
+    rtems_status_code status = rtems_message_queue_send(m_handle.queue_id, aligned_buffer,
+                                                        size  // Send actual data size, not padded size
     );
-    
-    if (needs_free) {
-        free(aligned_buffer);
-    }
-    
+
+    // Free the aligned buffer as it's been copied by RTEMS
+    free(aligned_buffer);
+
     if (status == RTEMS_SUCCESSFUL) {
         return QueueInterface::Status::OP_OK;
     } else if (status == RTEMS_UNSATISFIED && block == BlockingType::NONBLOCKING) {
+        Fw::Logger::log("RTEMSQueue: Queue full (id=%d)\n", m_handle.queue_id);
         return QueueInterface::Status::FULL;
     } else {
-        printf("RTEMSQueue: Send error: %d (0x%x)\n", status, status);
+        Fw::Logger::log("RTEMSQueue: Send error: %d (0x%x)\n", status, status);
+
+        // Check if queue was deleted or is invalid
+        if (status == RTEMS_INVALID_ID || status == RTEMS_OBJECT_WAS_DELETED) {
+            m_handle.queue_id = 0;  // Mark as invalid
+            return QueueInterface::Status::UNINITIALIZED;
+        }
+
         return QueueInterface::Status::SEND_ERROR;
     }
 }
 
-
-
-
-QueueInterface::Status RTEMSQueue::receive(U8* destination, FwSizeType capacity, BlockingType block, FwSizeType& actualSize, FwQueuePriorityType& priority) {
+QueueInterface::Status RTEMSQueue::receive(U8* destination,
+                                           FwSizeType capacity,
+                                           BlockingType block,
+                                           FwSizeType& actualSize,
+                                           FwQueuePriorityType& priority) {
     if (m_handle.queue_id == 0) {
+        Fw::Logger::log("RTEMSQueue: Receive error - queue not initialized\n");
         return QueueInterface::Status::UNINITIALIZED;
     }
-    
+
     if (destination == nullptr) {
+        Fw::Logger::log("RTEMSQueue: Receive error - null destination\n");
         return QueueInterface::Status::UNKNOWN_ERROR;
     }
-    
-    if (capacity < m_handle.msgSize) {
+
+    if (m_handle.msgSize > 10000) {
+        Fw::Logger::log("RTEMSQueue: Corrupted msgSize %d, resetting to 1024\n", (int)m_handle.msgSize);
+        m_handle.msgSize = 1024;
+    }
+
+    if (capacity == 0) {
+        Fw::Logger::log("RTEMSQueue: Critical error - zero capacity buffer in receive for '%s'\n", m_handle.name);
+
+        // Initialize output parameters to safe values
+        actualSize = 0;
+        priority = 0;
+
+        // Return a size mismatch status that should be handled by the caller
         return QueueInterface::Status::SIZE_MISMATCH;
     }
-    
-    rtems_option wait_option = (block == BlockingType::BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
-    size_t msg_size;
-    
-    rtems_status_code status = rtems_message_queue_receive(
-        m_handle.queue_id,
-        destination,
-        &msg_size,
-        wait_option,
-        RTEMS_NO_TIMEOUT
-    );
-    
-    if (status == RTEMS_SUCCESSFUL) {
-        actualSize = static_cast<FwSizeType>(msg_size);
-        priority = 0; // RTEMS doesn't use priority for message queues by default
-        return QueueInterface::Status::OP_OK;
-    } else if (status == RTEMS_UNSATISFIED) {
-        return QueueInterface::Status::EMPTY;
-    } else {
-        printf("RTEMSQueue: Receive error: %d\n", status);
+
+    if (capacity < m_handle.msgSize) {
+        Fw::Logger::log("RTEMSQueue: Receive error - capacity too small: %d < %d\n", capacity, m_handle.msgSize);
+        return QueueInterface::Status::SIZE_MISMATCH;
+    }
+
+    // Check if queue is still valid before receiving
+    uint32_t pending = 0;
+    rtems_status_code check_status = rtems_message_queue_get_number_pending(m_handle.queue_id, &pending);
+
+    if (check_status != RTEMS_SUCCESSFUL) {
+        Fw::Logger::log("RTEMSQueue: Receive error - queue check failed: %d\n", check_status);
+        if (check_status == RTEMS_INVALID_ID || check_status == RTEMS_OBJECT_WAS_DELETED) {
+            m_handle.queue_id = 0;  // Mark as invalid
+            return QueueInterface::Status::UNINITIALIZED;
+        }
         return QueueInterface::Status::RECEIVE_ERROR;
+    }
+
+    // Special case for non-blocking: if empty, return immediately
+    if (block == BlockingType::NONBLOCKING && pending == 0) {
+        return QueueInterface::Status::EMPTY;
+    }
+
+    // Allocate aligned buffer for receiving
+    void* aligned_buffer = memalign(8, m_handle.msgSize);
+    if (aligned_buffer == nullptr) {
+        Fw::Logger::log("RTEMSQueue: Receive error - failed to allocate aligned buffer\n");
+        return QueueInterface::Status::UNKNOWN_ERROR;
+    }
+
+    rtems_option wait_option = (block == BlockingType::BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
+
+    size_t msg_size = 0;
+
+    rtems_status_code status = rtems_message_queue_receive(m_handle.queue_id,
+                                                           destination,  // Use destination directly if properly aligned
+                                                           &msg_size, wait_option, RTEMS_NO_TIMEOUT);
+
+    if (status == RTEMS_SUCCESSFUL) {
+        // Copy data to destination buffer
+        memcpy(destination, aligned_buffer, msg_size);
+        free(aligned_buffer);
+
+        actualSize = static_cast<FwSizeType>(msg_size);
+        priority = 0;  // RTEMS doesn't use priority for message queues by default
+        return QueueInterface::Status::OP_OK;
+    } else {
+        free(aligned_buffer);
+
+        if (status == RTEMS_UNSATISFIED) {
+            // Queue is empty
+            Fw::Logger::log("RTEMSQueue: Queue empty (id=%d)\n", m_handle.queue_id);
+            return QueueInterface::Status::EMPTY;
+        } else {
+            Fw::Logger::log("RTEMSQueue: Receive error: %d\n", status);
+
+            // Check if queue was deleted or is invalid
+            if (status == RTEMS_INVALID_ID || status == RTEMS_OBJECT_WAS_DELETED) {
+                m_handle.queue_id = 0;  // Mark as invalid
+                return QueueInterface::Status::UNINITIALIZED;
+            }
+
+            return QueueInterface::Status::RECEIVE_ERROR;
+        }
     }
 }
 
@@ -181,14 +254,16 @@ FwSizeType RTEMSQueue::getMessagesAvailable() const {
     if (m_handle.queue_id == 0) {
         return 0;
     }
-    
+
     uint32_t count = 0;
-    rtems_status_code status = rtems_message_queue_get_number_pending(
-        m_handle.queue_id,
-        &count
-    );
-    
-    return (status == RTEMS_SUCCESSFUL) ? static_cast<FwSizeType>(count) : 0;
+    rtems_status_code status = rtems_message_queue_get_number_pending(m_handle.queue_id, &count);
+
+    if (status != RTEMS_SUCCESSFUL) {
+        Fw::Logger::log("RTEMSQueue: Failed to get pending count: %d\n", status);
+        return 0;
+    }
+
+    return static_cast<FwSizeType>(count);
 }
 
 FwSizeType RTEMSQueue::getMessageHighWaterMark() const {
@@ -201,6 +276,6 @@ QueueHandle* RTEMSQueue::getHandle() {
     return &m_handle;
 }
 
-} // namespace Queue
-} // namespace RTEMS
-} // namespace Os
+}  // namespace Queue
+}  // namespace RTEMS
+}  // namespace Os
