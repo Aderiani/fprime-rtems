@@ -39,7 +39,7 @@ module LedBlinker {
     instance rateGroup2
     instance rateGroup3
     instance rateGroupDriver
-    instance textLogger
+    # instance textLogger
     # instance systemResources
     instance led
     instance gpioDriver
@@ -62,7 +62,7 @@ module LedBlinker {
 
     telemetry connections instance tlmSend
 
-    text event connections instance textLogger
+    # text event connections instance textLogger
 
     time connections instance chronoTime
 

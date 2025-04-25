@@ -79,9 +79,9 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     while (1) {
         // Service the watchdog (if needed)
         // bsp_watchdog_reload(0, 0x1fffff);
-        
+        rtems_task_wake_after(RTEMS_YIELD_PROCESSOR);
         // Sleep for a bit to avoid hogging CPU
-        Os::Task::delay(Fw::TimeInterval(1, 0)); // 1 second delay
+        // Os::Task::delay(Fw::TimeInterval(1, 0)); // 1 second delay
     }
 
     // We should never reach here

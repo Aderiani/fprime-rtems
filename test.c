@@ -1,57 +1,55 @@
-// test_rtems_cv.c
+// test_fprime_style.c
 #include <rtems.h>
-#include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <drvmgr/drvmgr.h>
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-volatile int flag = 0;
+// Forward declaration for a function that would call the F' initialization
+void init_fprime(void);
 
-void *thread_func(void *arg) {
-    printf("Thread started\n");
+// Simulated F' main function - equivalent to your fprime_main
+int fprime_main(int argc, char* argv[]) {
+    printf("Fprime-style main starting...\n");
     
-    pthread_mutex_lock(&mutex);
-    while (flag == 0) {
-        printf("Thread waiting on condition\n");
-        pthread_cond_wait(&cond, &mutex);
+    // Initialize fprime components (simulated)
+    init_fprime();
+    
+    printf("Entering F' main infinite loop\n");
+    
+    // The critical infinite loop
+    unsigned int counter = 0;
+    while (1) {
+        if (counter % 10 == 0) {
+            printf("F' style main heartbeat: %u\n", counter/10);
+        }
+        counter++;
+        
+        // Sleep for a bit
+        rtems_task_wake_after(100); // 1 second at 100 ticks/sec
     }
-    printf("Thread woken up, flag = %d\n", flag);
-    pthread_mutex_unlock(&mutex);
     
-    printf("Thread exiting\n");
-    return NULL;
+    printf("This should never be reached!\n");
+    return 0;
 }
 
-rtems_task Init(rtems_task_argument ignored) {
-    printf("RTEMS Init task started\n");
+// Standard main that calls fprime_main - similar to your custom_init.c
+int main(int argc, char* argv[]) {
+    printf("Main function starting\n");
+    printf("Calling fprime_main\n");
     
-    pthread_t thread;
-    pthread_attr_t attr;
-    
-    pthread_attr_init(&attr);
-    pthread_create(&thread, &attr, thread_func, NULL);
-    
-    rtems_task_wake_after(rtems_clock_get_ticks_per_second());
-    printf("Main task setting flag and signaling\n");
-    
-    pthread_mutex_lock(&mutex);
-    flag = 1;
-    pthread_cond_signal(&cond);
-    pthread_mutex_unlock(&mutex);
-    
-    pthread_join(thread, NULL);
-    printf("Thread joined successfully\n");
-    
-    printf("Test completed successfully\n");
-    rtems_shutdown_executive(0);
+    return fprime_main(argc, argv);
 }
 
-#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
-#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
-#define CONFIGURE_MAXIMUM_TASKS 4
-#define CONFIGURE_MAXIMUM_POSIX_THREADS 4
-#define CONFIGURE_MAXIMUM_POSIX_CONDITION_VARIABLES 4
-#define CONFIGURE_MAXIMUM_POSIX_MUTEXES 4
-#define CONFIGURE_INIT
-#include <rtems/confdefs.h>
+// Simulated F' initialization function
+void init_fprime(void) {
+    printf("Initializing driver manager\n");
+    
+    // Initialize driver manager
+    if (drvmgr_init() != 0) {
+        printf("Driver manager initialization failed\n");
+        exit(1);
+    }
+    
+    printf("Driver manager initialized\n");
+    printf("F' initialization complete\n");
+}

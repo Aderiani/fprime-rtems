@@ -117,7 +117,7 @@ module LedBlinker {
 
   instance rateGroupDriver: Svc.RateGroupDriver base id 0x4600
 
-  instance textLogger: Svc.PassiveTextLogger base id 0x4800
+  # instance textLogger: Svc.PassiveTextLogger base id 0x4800
 
   instance deframer: Svc.Deframer base id 0x4900
 

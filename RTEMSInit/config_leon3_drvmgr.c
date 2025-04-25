@@ -140,6 +140,8 @@ struct drvmgr_bus_res grlib_drv_resources =
 	/* Enable greth0 th our configuration */
 	{DRIVER_AMBAPP_GAISLER_GRETH_ID, 0, &grlib_drv_res_greth0[0]},
 	{DRIVER_AMBAPP_GAISLER_GRGPIO_ID, 0, &grlib_drv_res_grgpio0[0]},
+	// {DRIVER_AMBAPP_GAISLER_APBUART_ID, 1, NULL}, /* Do not use APBUART1 */
+	// {DRIVER_AMBAPP_GAISLER_GPTIMER_ID, 1, NULL}, /* Do not use GPTIMER1 */
 /*
 	{DRIVER_AMBAPP_GAISLER_B1553RT_ID, 0, &grlib_drv_res_b1553rt0[0]},
 	{DRIVER_AMBAPP_GAISLER_GRPCI_ID, 0, &grlib_drv_res_grpci0[0]},
