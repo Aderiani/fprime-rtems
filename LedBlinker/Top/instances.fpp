@@ -5,17 +5,17 @@ module LedBlinker {
   # ----------------------------------------------------------------------
 
   module Default {
-    constant QUEUE_SIZE = 30
-    constant STACK_SIZE = 8 * 1024
+    constant QUEUE_SIZE = 20
+    constant STACK_SIZE = 64 * 1024
   }
 
   # ----------------------------------------------------------------------
   # Active component instances
   # ----------------------------------------------------------------------
-  instance led: Components.Led base id 0x0E00 \
-    queue size Default.QUEUE_SIZE \
-    stack size Default.STACK_SIZE \
-    priority 95
+  # instance led: Components.Led base id 0x0E00 \
+  #   queue size Default.QUEUE_SIZE \
+  #   stack size Default.STACK_SIZE \
+  #   priority 95
   
   instance timerDriver: Drv.GR740TimerDriver base id 0x0100  
 
@@ -74,20 +74,20 @@ module LedBlinker {
   # depending on which form of telemetry downlink
   # you wish to use
 
-  instance tlmSend: Svc.TlmChan base id 0x0C00 \
-    queue size Default.QUEUE_SIZE \
-    stack size Default.STACK_SIZE \
-    priority 97
+  # instance tlmSend: Svc.TlmChan base id 0x0C00 \
+  #   queue size Default.QUEUE_SIZE \
+  #   stack size Default.STACK_SIZE \
+  #   priority 97
 
   #instance tlmSend: Svc.TlmPacketizer base id 0x0C00 \
   #    queue size Default.QUEUE_SIZE \
   #    stack size Default.STACK_SIZE \
   #    priority 97
 
-  instance prmDb: Svc.PrmDb base id 0x0D00 \
-    queue size Default.QUEUE_SIZE \
-    stack size Default.STACK_SIZE \
-    priority 96
+  # instance prmDb: Svc.PrmDb base id 0x0D00 \
+  #   queue size Default.QUEUE_SIZE \
+  #   stack size Default.STACK_SIZE \
+  #   priority 96
 
 
   # ----------------------------------------------------------------------
@@ -113,7 +113,7 @@ module LedBlinker {
 
   instance bufferManager: Svc.BufferManager base id 0x4400
 
-  instance chronoTime: Svc.ChronoTime base id 0x4500
+#  instance chronoTime: Svc.ChronoTime base id 0x4500
 
   instance rateGroupDriver: Svc.RateGroupDriver base id 0x4600
 
@@ -121,7 +121,7 @@ module LedBlinker {
 
   instance deframer: Svc.Deframer base id 0x4900
 
-  instance systemResources: Svc.SystemResources base id 0x4A00
+  # instance systemResources: Svc.SystemResources base id 0x4A00
 
   instance comStub: Svc.ComStub base id 0x4B00
 

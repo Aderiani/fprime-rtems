@@ -21,11 +21,14 @@
 #define CONFIGURE_LIBIO_MAXIMUM_FILE_DESCRIPTORS 32
 
 // Init task table required
-// #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
+ #define CONFIGURE_RTEMS_INIT_TASKS_TABLE
 extern int fprime_main(int argc, char* argv[]); // Declare the LedBlinker entry point
-// #define CONFIGURE_INIT_TASK_ENTRY_POINT   fprime_main  // F Prime’s entry point
-// #define CONFIGURE_INIT_TASK_NAME          rtems_build_name('F', 'P', 'R', 'M')
-// #define CONFIGURE_INIT_TASK_ATTRIBUTES    RTEMS_FLOATING_POINT
+#define CONFIGURE_INIT_TASK_PRIORITY 100
+#define CONFIGURE_INIT_TASK_INITIAL_MODES (RTEMS_PREEMPT | RTEMS_TIMESLICE)
+#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+#define CONFIGURE_INIT_TASK_ENTRY_POINT   fprime_main  // F Prime’s entry point
+#define CONFIGURE_INIT_TASK_NAME          rtems_build_name('F', 'P', 'R', 'M')
+
 
 // Required for networking
 #define CONFIGURE_MAXIMUM_DRIVERS 32
@@ -168,9 +171,7 @@ struct bintime {
 
 
 
-#define CONFIGURE_INIT_TASK_PRIORITY 100
-#define CONFIGURE_INIT_TASK_INITIAL_MODES (RTEMS_PREEMPT | RTEMS_TIMESLICE)
-#define CONFIGURE_INIT_TASK_ATTRIBUTES RTEMS_FLOATING_POINT
+
 
 #define ENABLE_NETWORK
 

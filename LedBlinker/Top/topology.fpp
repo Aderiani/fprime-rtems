@@ -19,7 +19,7 @@ module LedBlinker {
 
     instance $health
     instance timerDriver
-    instance tlmSend
+    # instance tlmSend
     instance cmdDisp
     instance cmdSeq
     instance comQueue
@@ -33,15 +33,15 @@ module LedBlinker {
     instance fileUplink
     instance bufferManager
     instance framer
-    instance chronoTime
-    instance prmDb
+    # instance chronoTime
+    # instance prmDb
     instance rateGroup1
     instance rateGroup2
     instance rateGroup3
     instance rateGroupDriver
     # instance textLogger
     # instance systemResources
-    instance led
+    # instance led
     instance gpioDriver
     instance uartDriver
     instance spiDriver
@@ -58,13 +58,13 @@ module LedBlinker {
 
     event connections instance eventLogger
 
-    param connections instance prmDb
+    # param connections instance prmDb
 
-    telemetry connections instance tlmSend
+    # telemetry connections instance tlmSend
 
     # text event connections instance textLogger
 
-    time connections instance chronoTime
+    # time connections instance chronoTime
 
     health connections instance $health
 
@@ -77,7 +77,7 @@ module LedBlinker {
     connections Downlink {
 
       eventLogger.PktSend -> comQueue.comQueueIn[0]
-      tlmSend.PktSend -> comQueue.comQueueIn[1]
+      # tlmSend.PktSend -> comQueue.comQueueIn[1]
       fileDownlink.bufferSendOut -> comQueue.buffQueueIn[0]
 
       comQueue.comQueueSend -> framer.comIn
@@ -110,7 +110,7 @@ module LedBlinker {
 
       # Rate group 1
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
-      rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
+      # rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1.RateGroupMemberOut[1] -> fileDownlink.Run
      #TODO uncomment when systemResources is added
     #  rateGroup1.RateGroupMemberOut[2] -> systemResources.run
@@ -152,9 +152,9 @@ module LedBlinker {
     connections LedBlinker {
       # # Add here connections to user-defined components
       # # Rate Group 1 (1Hz cycle) ouput is connected to led's run input
-      rateGroup1.RateGroupMemberOut[3] -> led.run
+      # rateGroup1.RateGroupMemberOut[3] -> led.run
       # # led's gpioSet output is connected to gpioDriver's gpioWrite input
-      led.gpioSet -> gpioDriver.gpioWrite
+      # led.gpioSet -> gpioDriver.gpioWrite
     }
 
   }
