@@ -35,9 +35,9 @@ module LedBlinker {
     instance framer
     # instance chronoTime
     # instance prmDb
-    instance rateGroup1
-    instance rateGroup2
-    instance rateGroup3
+    # instance rateGroup1
+    # instance rateGroup2
+    # instance rateGroup3
     instance rateGroupDriver
     # instance textLogger
     # instance systemResources
@@ -100,32 +100,32 @@ module LedBlinker {
       eventLogger.FatalAnnounce -> fatalHandler.FatalReceive
     }
 
-    connections RateGroups {
+    # connections RateGroups {
       
-        # Add watchdog servicing to the highest priority rate group
-      rateGroup1.RateGroupMemberOut[4] -> watchdogDriver.StrokeWatchdog
+    #     # Add watchdog servicing to the highest priority rate group
+    #   rateGroup1.RateGroupMemberOut[4] -> watchdogDriver.StrokeWatchdog
       
-      # Block driver
-      timerDriver.CycleOut -> rateGroupDriver.CycleIn
+    #   # Block driver
+    #   timerDriver.CycleOut -> rateGroupDriver.CycleIn
 
-      # Rate group 1
-      rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
-      # rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
-      rateGroup1.RateGroupMemberOut[1] -> fileDownlink.Run
-     #TODO uncomment when systemResources is added
-    #  rateGroup1.RateGroupMemberOut[2] -> systemResources.run
+    #   # Rate group 1
+    #   rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
+    #   # rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
+    #   rateGroup1.RateGroupMemberOut[1] -> fileDownlink.Run
+    #  #TODO uncomment when systemResources is added
+    # #  rateGroup1.RateGroupMemberOut[2] -> systemResources.run
 
-      # Rate group 2
-      rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup2] -> rateGroup2.CycleIn
-      rateGroup2.RateGroupMemberOut[0] -> cmdSeq.schedIn
+    #   # Rate group 2
+    #   rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup2] -> rateGroup2.CycleIn
+    #   rateGroup2.RateGroupMemberOut[0] -> cmdSeq.schedIn
 
-      # Rate group 3
-      rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup3] -> rateGroup3.CycleIn
-      rateGroup3.RateGroupMemberOut[0] -> $health.Run
-      #TODO: uncomment when a driver with isr is added. 
-      # rateGroup3.RateGroupMemberOut[1] -> blockDrv.Sched
-      rateGroup3.RateGroupMemberOut[2] -> bufferManager.schedIn
-    }
+    #   # Rate group 3
+    #   rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup3] -> rateGroup3.CycleIn
+    #   rateGroup3.RateGroupMemberOut[0] -> $health.Run
+    #   #TODO: uncomment when a driver with isr is added. 
+    #   # rateGroup3.RateGroupMemberOut[1] -> blockDrv.Sched
+    #   rateGroup3.RateGroupMemberOut[2] -> bufferManager.schedIn
+    # }
 
     connections Sequencer {
       cmdSeq.comCmdOut -> cmdDisp.seqCmdBuff

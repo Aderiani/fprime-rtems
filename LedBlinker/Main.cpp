@@ -3,20 +3,16 @@
 // \brief Main program for F' application
 // ======================================================================
 
+#include <signal.h>
 #include <Fw/Logger/Logger.hpp>
 #include <LedBlinker/Top/LedBlinkerTopology.hpp>
 #include <Os/Os.hpp>
 #include <cstdlib>  // For atoi
 #include <cstring>  // For strcmp
-#include <signal.h>
-#ifdef __rtems__
+
 #include <rtems.h>
 // Add this for direct console output that doesn't rely on OS services
 #include <stdio.h>
-#define DEBUG_PRINT(msg) printf("%s\n", msg)
-#else
-#define DEBUG_PRINT(msg) /* empty in non-RTEMS builds */
-#endif
 
 // External network initialization functions (optional, only for RTEMS)
 #ifdef __rtems__
@@ -25,19 +21,17 @@ void system_init();
 }
 #endif
 
-// Logging wrapper to handle different Logger interfaces
-namespace {
-void safeLogAdd(const char* message) {
-    // For RTEMS, use direct printf for initialization debugging
-#ifdef __rtems__
-    printf("[F'] %s\n", message);
-#else
-    Fw::Logger::log(message);
-#endif
-}
-}  // namespace
 extern "C" {
 #include "RTEMSInit/network_init.h"
+
+    // // In Main.cpp, at various points:
+    // void checkResources() {
+    //     rtems_resource_snapshot snapshot;
+    //     rtems_resource_snapshot_take(&snapshot);
+
+    //     printf("RTEMS Resources: Tasks: %d/%d, Semaphores: %d/%d\n", snapshot.tasks_count, CONFIGURE_MAXIMUM_TASKS,
+    //            snapshot.semaphores_count, CONFIGURE_MAXIMUM_SEMAPHORES);
+    // }
 
 }
 
@@ -46,8 +40,6 @@ extern "C" {
 // }
 
 extern "C" int fprime_main(int argc, char* argv[]) {
-
-
     // Existing F' initialization code...
     Os::init();
 
@@ -62,14 +54,11 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     inputs.hostname = "192.168.0.67";
     inputs.port = 50000;  // Default port
 
-    // Logging initialization
-    safeLogAdd("Starting F' Application");
-
     // Setup topology
-    DEBUG_PRINT("Setting up topology");
+    printf("Setting up topology");
     LedBlinker::setupTopology(inputs);
-    DEBUG_PRINT("Topology setup complete");
-
+    printf("Topology setup complete");
+    fflush(stdout);
 
     // // Setup program shutdown via Ctrl-C
     // signal(SIGINT, signalHandler);
@@ -77,23 +66,40 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // (void)printf("Hit Ctrl-C to quit\n");
 
     printf("Entering F' main infinite loop\n");
+
+    // checkResources();
+    volatile bool keep_running = true;
+    rtems_id task_id;
+    rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_LOCAL_NODE, &task_id);
+    printf("Main task ID: %lu\n", (unsigned long)task_id);
     
-    // The critical infinite loop
-    unsigned int counter = 0;
-    while (1) {
+    // In the main loop
+    int counter = 0;
+    printf("Entering enhanced main loop\n");
+    while (keep_running) {
+        rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_LOCAL_NODE, &task_id);
+        printf("Loop #%u - Task ID: %lu\n", counter, (unsigned long)task_id);
+        
+        // Normal heartbeat code
         if (counter % 10 == 0) {
             printf("F' style main heartbeat2: %u\n", counter/10);
         }
         counter++;
         
-        // Sleep for a bit
-        rtems_task_wake_after(100); // 1 second at 100 ticks/sec
+        // Force a flush to ensure output is seen
+        fflush(stdout);
+        
+        // Add a barrier to prevent optimization
+        asm volatile("" ::: "memory");
+        
+        // Very short delay to allow for more debug output
+        rtems_task_wake_after(2);
     }
 
     // We should never reach here
-    DEBUG_PRINT("Tearing down topology");
+    printf("Tearing down topology");
     LedBlinker::teardownTopology(inputs);
-    DEBUG_PRINT("Topology teardown complete");
+    printf("Topology teardown complete");
 
     return 0;
 }

@@ -41,11 +41,11 @@ Svc::ComQueue::QueueConfigurationTable configurationTable;
 
 Svc::RateGroupDriver::DividerSet rateGroupDivisorsSet{{{1, 0}, {2, 0}, {4, 0}}};
 
-// Rate groups may supply a context token to each of the attached children whose purpose is set by the project. The
-// reference topology sets each token to zero as these contexts are unused in this project.
-NATIVE_INT_TYPE rateGroup1Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
-NATIVE_INT_TYPE rateGroup2Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
-NATIVE_INT_TYPE rateGroup3Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
+// // Rate groups may supply a context token to each of the attached children whose purpose is set by the project. The
+// // reference topology sets each token to zero as these contexts are unused in this project.
+// NATIVE_INT_TYPE rateGroup1Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
+// NATIVE_INT_TYPE rateGroup2Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
+// NATIVE_INT_TYPE rateGroup3Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
 
 // A number of constants are needed for construction of the topology. These are specified here.
 enum TopologyConstants {
@@ -113,12 +113,14 @@ void configureTopology() {
     // Rate group driver needs a divisor list
     rateGroupDriver.configure(rateGroupDivisorsSet);
 
-    watchdogDriver.initialize(40);  // Initialize the watchdog driver with a timeout of 40ms
 
-    // Rate groups require context arrays.
-    rateGroup1.configure(rateGroup1Context, FW_NUM_ARRAY_ELEMENTS(rateGroup1Context));
-    rateGroup2.configure(rateGroup2Context, FW_NUM_ARRAY_ELEMENTS(rateGroup2Context));
-    rateGroup3.configure(rateGroup3Context, FW_NUM_ARRAY_ELEMENTS(rateGroup3Context));
+    printf("DEBUG: Watchdog initialization DISABLED for testing\n");
+    // watchdogDriver.initialize(40);  // Initialize the watchdog driver with a timeout of 40ms
+
+    // // Rate groups require context arrays.
+    // rateGroup1.configure(rateGroup1Context, FW_NUM_ARRAY_ELEMENTS(rateGroup1Context));
+    // rateGroup2.configure(rateGroup2Context, FW_NUM_ARRAY_ELEMENTS(rateGroup2Context));
+    // rateGroup3.configure(rateGroup3Context, FW_NUM_ARRAY_ELEMENTS(rateGroup3Context));
 
     // File downlink requires some project-derived properties.
     fileDownlink.configure(FILE_DOWNLINK_TIMEOUT, FILE_DOWNLINK_COOLDOWN, FILE_DOWNLINK_CYCLE_TIME,
@@ -180,9 +182,9 @@ void setupTopology(const TopologyState& state) {
 
     Os::Task::delay(Fw::TimeInterval(1, 0));  // 1 second delay
 
-    // Start the hardware timer
-    timerDriver.start();
-    Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
+    // // Start the hardware timer
+    // timerDriver.start();
+    // Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
 }
 
 void teardownTopology(const TopologyState& state) {

@@ -54,6 +54,8 @@ namespace Svc {
 
     void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleStart) {
 
+        printf("DEBUG: RateGroup%d cycle executing\n", portNum); // Replace X with 1, 2, or 3
+
         // Make sure it's been configured
         FW_ASSERT(this->m_numContexts);
 
@@ -103,6 +105,8 @@ namespace Svc {
 
         // increment cycle
         this->m_cycles++;
+
+        printf("DEBUG: RateGroup%d cycle complete in %d cycles.\n", portNum, this->m_cycles);
 
     }
 

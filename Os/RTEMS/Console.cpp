@@ -22,8 +22,7 @@ RtemsConsole::~RtemsConsole() {
 
 
 void RtemsConsole::writeMessage(const CHAR* message, const FwSizeType size) {
-    // Add a debug print
-    printf("Console writing: %.*s\n", (int)size, message);
+
     ::write(STDOUT_FILENO, message, size);
 }
 

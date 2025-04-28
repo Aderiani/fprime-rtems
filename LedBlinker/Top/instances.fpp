@@ -37,7 +37,7 @@ module LedBlinker {
 
   instance cmdDisp: Svc.CommandDispatcher base id 0x0500 \
     queue size 20 \ 
-    stack size Default.STACK_SIZE \
+    stack size Default.STACK_SIZE *2\
     priority 101
 
   instance cmdSeq: Svc.CmdSequencer base id 0x0600 \
