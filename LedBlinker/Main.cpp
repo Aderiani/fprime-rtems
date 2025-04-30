@@ -74,26 +74,16 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     printf("Main task ID: %lu\n", (unsigned long)task_id);
     
     // In the main loop
-    int counter = 0;
-    printf("Entering enhanced main loop\n");
+    unsigned int counter = 0;
     while (keep_running) {
-        rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_LOCAL_NODE, &task_id);
-        printf("Loop #%u - Task ID: %lu\n", counter, (unsigned long)task_id);
-        
-        // Normal heartbeat code
+        // Print heartbeat every 10 iterations
         if (counter % 10 == 0) {
             printf("F' style main heartbeat2: %u\n", counter/10);
         }
         counter++;
-        
-        // Force a flush to ensure output is seen
-        fflush(stdout);
-        
-        // Add a barrier to prevent optimization
-        asm volatile("" ::: "memory");
-        
-        // Very short delay to allow for more debug output
-        rtems_task_wake_after(2);
+
+        // Sleep for a short period - much shorter than timer interval
+        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 100); // 10ms
     }
 
     // We should never reach here

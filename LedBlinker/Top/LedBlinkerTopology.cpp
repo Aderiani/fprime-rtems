@@ -86,9 +86,9 @@ Svc::Health::PingEntry pingEntries[] = {
     {PingEntries::LedBlinker_fileManager::WARN, PingEntries::LedBlinker_fileManager::FATAL, "fileManager"},
     {PingEntries::LedBlinker_fileUplink::WARN, PingEntries::LedBlinker_fileUplink::FATAL, "fileUplink"},
     // {PingEntries::LedBlinker_prmDb::WARN, PingEntries::LedBlinker_prmDb::FATAL, "prmDb"},
-    {PingEntries::LedBlinker_rateGroup1::WARN, PingEntries::LedBlinker_rateGroup1::FATAL, "rateGroup1"},
-    {PingEntries::LedBlinker_rateGroup2::WARN, PingEntries::LedBlinker_rateGroup2::FATAL, "rateGroup2"},
-    {PingEntries::LedBlinker_rateGroup3::WARN, PingEntries::LedBlinker_rateGroup3::FATAL, "rateGroup3"},
+    // {PingEntries::LedBlinker_rateGroup1::WARN, PingEntries::LedBlinker_rateGroup1::FATAL, "rateGroup1"},
+    // {PingEntries::LedBlinker_rateGroup2::WARN, PingEntries::LedBlinker_rateGroup2::FATAL, "rateGroup2"},
+    // {PingEntries::LedBlinker_rateGroup3::WARN, PingEntries::LedBlinker_rateGroup3::FATAL, "rateGroup3"},
 };
 
 void configureTopology() {
@@ -154,8 +154,7 @@ void configureTopology() {
 
     tcpServer.configure("192.168.0.67", 50000, 0, 100, 1 * 1024);  // 1KB buffer
 
-    // Initialize the hardware timer
-    timerDriver.initialize(TIMER_HZ);
+
 }
 
 void setupTopology(const TopologyState& state) {
@@ -182,9 +181,11 @@ void setupTopology(const TopologyState& state) {
 
     Os::Task::delay(Fw::TimeInterval(1, 0));  // 1 second delay
 
-    // // Start the hardware timer
-    // timerDriver.start();
-    // Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
+    // Start the hardware timer
+    // Initialize the hardware timer
+    timerDriver.initialize(TIMER_HZ);
+    timerDriver.start();
+    Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
 }
 
 void teardownTopology(const TopologyState& state) {

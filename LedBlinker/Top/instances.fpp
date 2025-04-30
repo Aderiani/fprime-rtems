@@ -17,7 +17,8 @@ module LedBlinker {
   #   stack size Default.STACK_SIZE \
   #   priority 95
   
-  instance timerDriver: Drv.GR740TimerDriver base id 0x0100  
+  instance timerDriver: Drv.GR740TimerDriver base id 0x0100 \
+
 
 
   instance rateGroup1: Svc.ActiveRateGroup base id 0x0200 \
