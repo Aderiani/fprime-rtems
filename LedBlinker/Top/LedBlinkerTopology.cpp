@@ -85,10 +85,10 @@ Svc::Health::PingEntry pingEntries[] = {
     {PingEntries::LedBlinker_fileDownlink::WARN, PingEntries::LedBlinker_fileDownlink::FATAL, "fileDownlink"},
     {PingEntries::LedBlinker_fileManager::WARN, PingEntries::LedBlinker_fileManager::FATAL, "fileManager"},
     {PingEntries::LedBlinker_fileUplink::WARN, PingEntries::LedBlinker_fileUplink::FATAL, "fileUplink"},
-    // {PingEntries::LedBlinker_prmDb::WARN, PingEntries::LedBlinker_prmDb::FATAL, "prmDb"},
-    // {PingEntries::LedBlinker_rateGroup1::WARN, PingEntries::LedBlinker_rateGroup1::FATAL, "rateGroup1"},
-    // {PingEntries::LedBlinker_rateGroup2::WARN, PingEntries::LedBlinker_rateGroup2::FATAL, "rateGroup2"},
-    // {PingEntries::LedBlinker_rateGroup3::WARN, PingEntries::LedBlinker_rateGroup3::FATAL, "rateGroup3"},
+    {PingEntries::LedBlinker_prmDb::WARN, PingEntries::LedBlinker_prmDb::FATAL, "prmDb"},
+    {PingEntries::LedBlinker_rateGroup1::WARN, PingEntries::LedBlinker_rateGroup1::FATAL, "rateGroup1"},
+    {PingEntries::LedBlinker_rateGroup2::WARN, PingEntries::LedBlinker_rateGroup2::FATAL, "rateGroup2"},
+    {PingEntries::LedBlinker_rateGroup3::WARN, PingEntries::LedBlinker_rateGroup3::FATAL, "rateGroup3"},
 };
 
 void configureTopology() {
@@ -127,14 +127,14 @@ void configureTopology() {
                            FILE_DOWNLINK_FILE_QUEUE_DEPTH);
     
 
-    // // Fix the Parameter database file
-    // prmDb.configure("PrmDb.dat");
+    // Fix the Parameter database file
+    prmDb.configure("PrmDb.dat");
     
-    // // Set default parameters before reading from file
-    // U32 defaultBlinkInterval = 1;
+    // Set default parameters before reading from file
+    U32 defaultBlinkInterval = 1;
     
-    // // Then try to read from file
-    // prmDb.readParamFile();
+    // Then try to read from file
+    prmDb.readParamFile();
 
 
     // Health is supplied a set of ping entires.

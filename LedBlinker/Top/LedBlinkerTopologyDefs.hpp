@@ -69,9 +69,9 @@ enum { WARN = 3, FATAL = 5 };
 namespace LedBlinker_fileUplink {
 enum { WARN = 3, FATAL = 5 };
 }
-// namespace LedBlinker_prmDb {
-// enum { WARN = 3, FATAL = 5 };
-// }
+namespace LedBlinker_prmDb {
+enum { WARN = 3, FATAL = 5 };
+}
 namespace LedBlinker_rateGroup1 {
 enum { WARN = 3, FATAL = 5 };
 }
