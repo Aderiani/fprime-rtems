@@ -40,8 +40,8 @@ SocketIpStatus TcpServerComponentImpl::configure(const char* hostname,
                                                  const U32 send_timeout_seconds,
                                                  const U32 send_timeout_microseconds,
                                                  FwSizeType buffer_size) {
-// Use a smaller default buffer size for RTEMS
-#ifdef __rtems__
+    // Use a smaller default buffer size for RTEMS
+
     // For RTEMS, limit buffer size to avoid overwhelming the queue
     const FwSizeType max_rtems_buffer = 1024;  // 1KB max for RTEMS
     if (buffer_size > max_rtems_buffer) {
@@ -49,7 +49,6 @@ SocketIpStatus TcpServerComponentImpl::configure(const char* hostname,
                         static_cast<unsigned long>(buffer_size), static_cast<unsigned long>(max_rtems_buffer));
         buffer_size = max_rtems_buffer;
     }
-#endif
 
     FW_ASSERT(buffer_size <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(buffer_size));
     m_allocation_size = buffer_size;
@@ -59,16 +58,31 @@ SocketIpStatus TcpServerComponentImpl::configure(const char* hostname,
 }
 
 void TcpServerComponentImpl::sendBuffer(Fw::Buffer buffer, SocketIpStatus status) {
-#ifdef __rtems__
-    Fw::Logger::log("TcpServer: sendBuffer called with status=%d, size=%u, data=%p", status, buffer.getSize(),
-                    buffer.getData());
+    Fw::Logger::log("TcpServer: sendBuffer called with status=%d, size=%u, data=%p, context=0x%X", status,
+                    buffer.getSize(), buffer.getData(), buffer.getContext());
+
     // For RTEMS, handle potential null buffer cases
     if (buffer.getData() == nullptr) {
         Fw::Logger::log("[WARNING] Null buffer in sendBuffer, skipping");
         return;
     }
-#endif
 
+    // Check if this is our special internal buffer that doesn't need deallocation
+    U32 context = buffer.getContext();
+    U32 mgrId = context >> 16;
+
+    // Special marker for our internal buffers (0xDEAD)
+    if (mgrId == 0xDEAD) {
+        Fw::Logger::log("TcpServer: Internal buffer detected, not requiring normal processing");
+        // Just pass the buffer to recv_out without special handling
+        Drv::RecvStatus recvStatus = (status == SOCK_SUCCESS)             ? RecvStatus::RECV_OK
+                                     : (status == SOCK_NO_DATA_AVAILABLE) ? RecvStatus::RECV_NO_DATA
+                                                                          : RecvStatus::RECV_ERROR;
+        this->recv_out(0, buffer, recvStatus);
+        return;
+    }
+
+    // Regular buffer processing for normally allocated buffers
     Drv::RecvStatus recvStatus = RecvStatus::RECV_ERROR;
     if (status == SOCK_SUCCESS) {
         recvStatus = RecvStatus::RECV_OK;
@@ -78,7 +92,6 @@ void TcpServerComponentImpl::sendBuffer(Fw::Buffer buffer, SocketIpStatus status
         recvStatus = RecvStatus::RECV_ERROR;
     }
 
-    // No try/catch - just call the output port
     this->recv_out(0, buffer, recvStatus);
 }
 
@@ -135,35 +148,51 @@ void TcpServerComponentImpl::terminate() {
 }
 
 Fw::Buffer TcpServerComponentImpl::getBuffer() {
-    #ifdef __rtems__
-    // Ensure buffers are aligned on 8-byte boundaries for SPARC
+    // Instead of creating buffers directly, request them from the buffer manager
+    // This ensures they are properly tracked as allocated
+
+    // First try to get a buffer through the normal allocation port
+    if (this->isConnected_allocate_OutputPort(0)) {
+        Fw::Buffer allocated = this->allocate_out(0, 1024);
+        // Check if allocation was successful (non-zero size)
+        if (allocated.getSize() > 0) {
+            Fw::Logger::log("TcpServer: Got buffer from allocator, data=%p, size=%u, context=0x%X", allocated.getData(),
+                            allocated.getSize(), allocated.getContext());
+            return allocated;
+        }
+    }
+
+    // Fallback to our static buffer pool if allocation fails
     static U8 buffer_pool[4][1024] __attribute__((aligned(8)));
     static int buffer_index = 0;
-    
+
     // Get next buffer in rotation
     buffer_index = (buffer_index + 1) % 4;
-    
-    // Zero the buffer to ensure clean state (helps with alignment issues)
+
+    // Zero the buffer to ensure clean state
     memset(buffer_pool[buffer_index], 0, 1024);
-    
-    // Create aligned buffer
+
+    // Mark this as a special buffer that doesn't need deallocation
+    // Use a special context value that won't be mistaken for a normal buffer
+    // For example, set manager ID to 0xDEAD (not 200) as a marker
     Fw::Buffer buffer(buffer_pool[buffer_index], 1024);
+    buffer.setContext(0xDEAD0000);  // Special value to indicate internal buffer
+
+    Fw::Logger::log("TcpServer: Using internal buffer, data=%p, size=%u, context=0x%X", buffer.getData(),
+                    buffer.getSize(), buffer.getContext());
+
     return buffer;
-    #else
-    // Original code
-    #endif
 }
 
 void TcpServerComponentImpl::readLoop() {
-    #ifdef __rtems__
     // Simplified RTEMS implementation with direct buffer handling
     Fw::Logger::log("TcpServer: Starting read loop with direct buffer handling");
-    
+
     Drv::SocketIpStatus status = Drv::SocketIpStatus::SOCK_NOT_STARTED;
-    
+
     // Add delay to give time for initialization to complete
     Os::Task::delay(Fw::TimeInterval(2, 0));  // 2 second initialization delay
-    
+
     // Connect loop
     while (this->running()) {
         if (!this->isOpened()) {
@@ -173,7 +202,7 @@ void TcpServerComponentImpl::readLoop() {
                 Os::Task::delay(SOCKET_RETRY_INTERVAL);
                 continue;
             }
-            
+
             status = SocketComponentHelper::open();  // Call parent method
             if (status != SOCK_SUCCESS) {
                 Fw::Logger::log("[INFO] Could not open connection, retrying...");
@@ -182,61 +211,82 @@ void TcpServerComponentImpl::readLoop() {
             }
             this->connected();
         }
-        
+
         // We're connected - use static buffer for receiving data
         static U8 recv_buffer[1024] __attribute__((aligned(8)));  // 8-byte aligned
         U32 size = sizeof(recv_buffer);
-        
+
         status = this->recv(recv_buffer, size);
-        
+
         if (status == SOCK_SUCCESS && size > 0) {
-            // Data received - create a buffer without using queue allocations
-            static U8 msg_buffer[1024] __attribute__((aligned(8)));  // 8-byte aligned
-            memcpy(msg_buffer, recv_buffer, size);
-            
-            Fw::Buffer buffer(msg_buffer, size);
-            Drv::RecvStatus recvStatus = RecvStatus::RECV_OK;
-            
-            // Process the buffer
-            this->recv_out(0, buffer, recvStatus);
-        } else if (status == SOCK_DISCONNECTED) {
-            this->close();
-            Fw::Logger::log("Client disconnected, will reopen");
-        } else {
-            // Short delay to avoid CPU spinning
-            Os::Task::delay(Fw::TimeInterval(0, 50000)); // 50ms
+            // Create buffer with correct manager ID
+            Fw::Buffer buffer;
+            // Try to allocate a buffer of appropriate size
+            if (this->isConnected_allocate_OutputPort(0)) {
+                buffer = this->allocate_out(0, size);
+
+                // Verify the allocation was successful
+                if (buffer.getSize() >= size) {
+                    // Copy data into the allocated buffer
+                    memcpy(buffer.getData(), recv_buffer, size);
+
+                    // Process the properly allocated buffer
+                    Drv::RecvStatus recvStatus = RecvStatus::RECV_OK;
+                    this->recv_out(0, buffer, recvStatus);
+                    continue;  // Skip to next iteration
+                }
+            }
+
+            // Fallback if allocation failed: use static buffer but mark as special
+            static U8 msg_buffer[1024] __attribute__((aligned(8)));
+            if (size <= sizeof(msg_buffer)) {
+                memcpy(msg_buffer, recv_buffer, size);
+
+                // Create buffer with special marker
+                Fw::Buffer fallbackBuffer(msg_buffer, size);
+                fallbackBuffer.setContext(0xDEAD0000);  // Special marker
+
+                Drv::RecvStatus recvStatus = RecvStatus::RECV_OK;
+                this->recv_out(0, fallbackBuffer, recvStatus);
+            } else if (status == SOCK_DISCONNECTED) {
+                this->close();
+                Fw::Logger::log("Client disconnected, will reopen");
+            } else {
+                // Short delay to avoid CPU spinning
+                Os::Task::delay(Fw::TimeInterval(0, 50000));  // 50ms
+            }
         }
     }
-    #else
-    // Original implementation for other platforms
-    SocketComponentHelper::readLoop();
-    #endif
 }
-
 // ----------------------------------------------------------------------
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
 Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer) {
-// Add graceful failure for RTEMS when network isn't ready
-#ifdef __rtems__
-    if (!this->isStarted() || this->m_descriptor.serverFd == -1) {
-        if (isConnected_deallocate_OutputPort(0)) {
+    // Check for special internal buffers
+    U32 context = fwBuffer.getContext();
+    U32 mgrId = context >> 16;
+    
+    bool isInternalBuffer = (mgrId == 0xDEAD);
+    
+    // Handle sending the data
+    Drv::SocketIpStatus status = this->send(fwBuffer.getData(), fwBuffer.getSize());
+    
+    // Only deallocate non-internal buffers
+    if (status == SOCK_INTERRUPTED_TRY_AGAIN) {
+        return SendStatus::SEND_RETRY;
+    } else if (status != SOCK_SUCCESS) {
+        // Only deallocate if this is not an internal buffer
+        if (!isInternalBuffer && this->isConnected_deallocate_OutputPort(0)) {
             deallocate_out(0, fwBuffer);
         }
         return SendStatus::SEND_ERROR;
     }
-#endif
-
-    Drv::SocketIpStatus status = this->send(fwBuffer.getData(), fwBuffer.getSize());
-    // Only deallocate buffer when the caller is not asked to retry
-    if (status == SOCK_INTERRUPTED_TRY_AGAIN) {
-        return SendStatus::SEND_RETRY;
-    } else if (status != SOCK_SUCCESS) {
+    
+    // Only deallocate if this is not an internal buffer
+    if (!isInternalBuffer && this->isConnected_deallocate_OutputPort(0)) {
         deallocate_out(0, fwBuffer);
-        return SendStatus::SEND_ERROR;
     }
-    deallocate_out(0, fwBuffer);
     return SendStatus::SEND_OK;
 }
 

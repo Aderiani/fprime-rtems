@@ -274,7 +274,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the size of the buffer that contains a communications packet.
 #ifndef FW_COM_BUFFER_MAX_SIZE
-#define FW_COM_BUFFER_MAX_SIZE 1024 * 64
+#define FW_COM_BUFFER_MAX_SIZE 1024 * 32
 #endif
 
 // Specifies the size of the buffer attached to state machine signals.

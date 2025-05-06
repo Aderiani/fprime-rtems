@@ -52,18 +52,18 @@ enum TopologyConstants {
     CMD_SEQ_BUFFER_SIZE = 64 * 1024,      // 64KB
     FILE_DOWNLINK_TIMEOUT = 1000,         // 1 second
     FILE_DOWNLINK_COOLDOWN = 1000,        // 1 second
-    FILE_DOWNLINK_CYCLE_TIME = 1000,      // 1 second
+    FILE_DOWNLINK_CYCLE_TIME = 10000,      // 10 second
     FILE_DOWNLINK_FILE_QUEUE_DEPTH = 10,  // 10 files
     HEALTH_WATCHDOG_CODE = 0x123,         // Watchdog code for health component
     COMM_PRIORITY = 49,                   // Communication task priority
     // bufferManager constants
     FRAMER_BUFFER_SIZE = FW_MAX(FW_COM_BUFFER_MAX_SIZE, FW_FILE_BUFFER_MAX_SIZE + sizeof(U32)) + HASH_DIGEST_LENGTH +
                          Svc::FpFrameHeader::SIZE,
-    FRAMER_BUFFER_COUNT = 100,  // Number of buffers for framer
+    FRAMER_BUFFER_COUNT = 200,  // Number of buffers for framer
     DEFRAMER_BUFFER_SIZE = FW_MAX(FW_COM_BUFFER_MAX_SIZE, FW_FILE_BUFFER_MAX_SIZE + sizeof(U32)),
-    DEFRAMER_BUFFER_COUNT = 100,         // Number of buffers for deframer
+    DEFRAMER_BUFFER_COUNT = 200,         // Number of buffers for deframer
     COM_DRIVER_BUFFER_SIZE = 64 * 1024,  // 64KB
-    COM_DRIVER_BUFFER_COUNT = 100,       // Number of buffers for COM driver
+    COM_DRIVER_BUFFER_COUNT = 200,       // Number of buffers for COM driver
     BUFFER_MANAGER_ID = 200,             // ID for buffer manager
     TIMER_HZ = 1                         // Timer frequency (Hz)
 };
@@ -155,7 +155,7 @@ void configureTopology() {
     // Command - increase depth significantly
     comQueue.configure(configurationTable, 0, mallocator);
 
-    tcpServer.configure("192.168.0.67", 50000, 0, 100, 1 * 1024);  // 1KB buffer
+    tcpServer.configure("192.168.0.67", 50000, 0, 100, 16 * 1024);  // 1KB buffer
 
 
 }

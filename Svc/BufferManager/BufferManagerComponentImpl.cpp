@@ -80,6 +80,27 @@ void BufferManagerComponentImpl ::bufferSendIn_handler(const FwIndexType portNum
     U32 context = fwBuffer.getContext();
     U32 id = context & 0xFFFF;
     U32 mgrId = context >> 16;
+
+    if (id >= this->m_numStructs) {
+        // Log which port this came from and data pointer
+        Fw::Logger::log("BufferMgr: Invalid buffer ID %d, max=%d, port=%d, data=%p, size=%d\n", 
+                         id, this->m_numStructs, portNum, fwBuffer.getData(), fwBuffer.getSize());
+        return;
+    }
+    
+    if (mgrId != this->m_mgrId) {
+        Fw::Logger::log("BufferMgr: Manager ID mismatch %d != %d\n", mgrId, this->m_mgrId);
+        return;
+    }
+    
+    if (!this->m_buffers[id].allocated) {
+        Fw::Logger::log("BufferMgr: Buffer %d not allocated\n", id);
+        return;
+    }
+
+
+
+
     // check some things
     FW_ASSERT(id < this->m_numStructs, static_cast<FwAssertArgType>(id),
               static_cast<FwAssertArgType>(this->m_numStructs));
@@ -159,15 +180,14 @@ void BufferManagerComponentImpl::setup(NATIVE_UINT_TYPE mgrId,       //!< manage
     bool recoverable = false;  //!< don't care if it is recoverable since they are a pool of user buffers
     void* memory = allocator.allocate(memId, allocatedSize, recoverable);
 
-#if defined(__sparc__)
+
     // Check alignment and fix if needed
     if (((uintptr_t)memory) & 0x7) {  // Not 8-byte aligned
         // Warning: unaligned memory detected
         Fw::Logger::log("WARNING: BufferManager received unaligned memory: %p\n", (U32)memory);
-
         // We'll continue but this might cause issues on SPARC
     }
-#endif
+
     // make sure the memory returns was non-zero and the size requested
     FW_ASSERT(memory != nullptr && memorySize == allocatedSize, static_cast<FwAssertArgType>(mgrId),
               static_cast<FwAssertArgType>(memId),
