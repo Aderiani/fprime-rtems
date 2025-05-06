@@ -19,7 +19,7 @@ module LedBlinker {
 
     instance $health
     instance timerDriver
-    # instance tlmSend
+    instance tlmSend
     instance cmdDisp
     instance cmdSeq
     instance comQueue
@@ -60,7 +60,7 @@ module LedBlinker {
 
     param connections instance prmDb
 
-    # telemetry connections instance tlmSend
+    telemetry connections instance tlmSend
 
     # text event connections instance textLogger
 
@@ -77,7 +77,7 @@ module LedBlinker {
     connections Downlink {
 
       eventLogger.PktSend -> comQueue.comQueueIn[0]
-      # tlmSend.PktSend -> comQueue.comQueueIn[1]
+      tlmSend.PktSend -> comQueue.comQueueIn[1]
       fileDownlink.bufferSendOut -> comQueue.buffQueueIn[0]
 
       comQueue.comQueueSend -> framer.comIn
@@ -110,7 +110,7 @@ module LedBlinker {
 
       # Rate group 1
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
-      # rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
+      rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1.RateGroupMemberOut[1] -> fileDownlink.Run
      #TODO uncomment when systemResources is added
     #  rateGroup1.RateGroupMemberOut[2] -> systemResources.run

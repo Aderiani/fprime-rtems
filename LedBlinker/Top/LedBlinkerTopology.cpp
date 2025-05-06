@@ -155,7 +155,7 @@ void configureTopology() {
     // Command - increase depth significantly
     comQueue.configure(configurationTable, 0, mallocator);
 
-    tcpServer.configure("192.168.0.67", 50000, 0, 100, 16 * 1024);  // 1KB buffer
+    tcpServer.configure("192.168.0.67", 50000, 0, 100, 16 * 1024);  // 16KB buffer
 
 
 }
