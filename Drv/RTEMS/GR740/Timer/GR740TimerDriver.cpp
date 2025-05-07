@@ -36,6 +36,13 @@ bool GR740TimerDriver::initialize(U32 timerHz) {
         m_ticksPerCycle = 1; // Minimum of 1 tick
     }
     
+        // A one-time test call to make sure the port is connected
+        Os::RawTime testTime;
+        testTime.now();
+        printf("GR740TimerDriver: Testing CycleOut port connection\n");
+        this->CycleOut_out(0, testTime);
+
+
     m_initialized = true;
     this->log_ACTIVITY_HI_TimerInitialized(m_timerHz);
     return true;
@@ -51,11 +58,80 @@ bool GR740TimerDriver::start() {
         return true; // Already running
     }
     
-    Fw::Logger::log("GR740TimerDriver: Starting timer with %u ticks per interval", 
-                   static_cast<unsigned int>(m_ticksPerCycle));
+    printf("GR740TimerDriver: Starting timer with %u ticks per interval\n", 
+           static_cast<unsigned int>(m_ticksPerCycle));
     
+    // Set running flag
     m_running = true;
     m_lastTickTime.now(); // Reset last tick time
+    
+    // Create a dedicated task for timer ticks
+    // Note: Don't use Os::Task::spawn directly if it's not in your API
+    rtems_status_code status;
+    rtems_id timerTaskId;
+    
+    // Create a simple RTEMS task for the timer
+    status = rtems_task_create(
+        rtems_build_name('T', 'I', 'M', 'R'),
+        100,                 // Priority
+        8 * 1024,            // Stack size
+        RTEMS_DEFAULT_MODES,
+        RTEMS_DEFAULT_ATTRIBUTES,
+        &timerTaskId
+    );
+    
+    if (status != RTEMS_SUCCESSFUL) {
+        printf("GR740TimerDriver: Failed to create timer task: %d\n", status);
+        m_running = false;
+        return false;
+    }
+    
+    // Set up context pointer to this object
+    struct TimerTaskContext {
+        GR740TimerDriver* driver;
+    };
+    
+    TimerTaskContext* context = new TimerTaskContext();
+    context->driver = this;
+    
+    // Start the timer task
+    status = rtems_task_start(
+        timerTaskId,
+        [](rtems_task_argument arg) {
+            TimerTaskContext* ctx = reinterpret_cast<TimerTaskContext*>(arg);
+            GR740TimerDriver* driver = ctx->driver;
+            
+            printf("GR740TimerDriver: Timer task started\n");
+            
+            while (driver->m_running) {
+                // Get current time
+                Os::RawTime currentTime;
+                currentTime.now();
+                
+                // Generate a tick
+                driver->CycleOut_out(0, currentTime);
+                printf("GR740TimerDriver: Generated tick #%u\n", driver->m_cycleCount);
+                
+                // Update count
+                driver->m_cycleCount++;
+                driver->tlmWrite_TimerCycles(driver->m_cycleCount);
+                
+                // Sleep for one cycle period
+                rtems_task_wake_after(driver->m_ticksPerCycle);
+            }
+            
+            delete ctx;
+            rtems_task_delete(RTEMS_SELF);
+        },
+        reinterpret_cast<rtems_task_argument>(context)
+    );
+    
+    if (status != RTEMS_SUCCESSFUL) {
+        printf("GR740TimerDriver: Failed to start timer task: %d\n", status);
+        delete context;
+        m_running = false;
+        return false;
+    }
     
     this->log_ACTIVITY_HI_TimerStarted();
     return true;
@@ -107,6 +183,23 @@ bool GR740TimerDriver::checkTick() {
     }
     
     return false;
+}
+
+void GR740TimerDriver::generateTick() {
+    if (!m_running) {
+        return;
+    }
+    
+    Os::RawTime currentTime;
+    currentTime.now();
+    
+    printf("[TIMER] Manually generating timer tick #%u\n", m_cycleCount);
+    this->CycleOut_out(0, currentTime);
+    
+    m_cycleCount++;
+    this->tlmWrite_TimerCycles(m_cycleCount);
+    
+    m_lastTickTime = currentTime;
 }
 
 } // namespace Drv

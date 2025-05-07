@@ -15,6 +15,9 @@
 #include "Fw/Logger/Logger.hpp"
 #include "Utils/Hash/Hash.hpp"
 
+#define DEBUG_FRAMER 1  // Set to 0 to disable debug prints
+
+
 namespace Svc {
 
 // ----------------------------------------------------------------------
@@ -33,6 +36,11 @@ void Framer ::setup(FramingProtocol& protocol) {
 }
 
 void Framer ::handle_framing(const U8* const data, const U32 size, Fw::ComPacket::ComPacketType packet_type) {
+
+    #if DEBUG_FRAMER
+    printf("[FRAMER] Handling frame: size=%u, type=%d\n", size, packet_type);
+    #endif
+
     FW_ASSERT(this->m_protocol != nullptr);
     this->m_frame_sent = false;  // Clear the flag to detect if frame was sent
     this->m_protocol->frame(data, size, packet_type);
@@ -69,6 +77,21 @@ void Framer ::comStatusIn_handler(const FwIndexType portNum, Fw::Success& condit
 // ----------------------------------------------------------------------
 
 void Framer ::send(Fw::Buffer& outgoing) {
+
+    #if DEBUG_FRAMER
+    printf("[FRAMER] Sending packet: size=%u, data=%p\n", 
+           outgoing.getSize(), outgoing.getData());
+    
+    // Print packet type
+    // if (outgoing.getSize() >= 4) {
+    //     FwPacketDescriptorType descriptor;
+    //     Fw::SerializeBufferBase sb(outgoing.getData(), 4);
+    //     sb.deserialize(descriptor);
+    //     printf("[FRAMER] Packet type: 0x%X\n", descriptor);
+    // }
+    #endif
+
+
     FW_ASSERT(!this->m_frame_sent); // Prevent multiple sends per-packet
     const Drv::SendStatus sendStatus = this->framedOut_out(0, outgoing);
     if (sendStatus.e != Drv::SendStatus::SEND_OK) {

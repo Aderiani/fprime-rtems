@@ -103,7 +103,7 @@ module LedBlinker {
     connections RateGroups {
       
         # Add watchdog servicing to the highest priority rate group
-      rateGroup1.RateGroupMemberOut[4] -> watchdogDriver.StrokeWatchdog
+      # rateGroup1.RateGroupMemberOut[4] -> watchdogDriver.StrokeWatchdog
       
       # Block driver
       timerDriver.CycleOut -> rateGroupDriver.CycleIn

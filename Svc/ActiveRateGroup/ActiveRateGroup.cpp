@@ -17,6 +17,7 @@
 #include <FpConfig.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <Os/Console.hpp>
+#define DEBUG_RATEGROUP 1  // Set to 0 to disable debug prints
 
 namespace Svc {
 
@@ -54,7 +55,9 @@ namespace Svc {
 
     void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleStart) {
 
-        printf("DEBUG: RateGroup%d cycle executing\n", portNum); // Replace X with 1, 2, or 3
+        #if DEBUG_RATEGROUP
+        printf("[RATEGROUP%d] Cycle handler called\n", portNum);
+        #endif
 
         // Make sure it's been configured
         FW_ASSERT(this->m_numContexts);
@@ -107,6 +110,10 @@ namespace Svc {
         this->m_cycles++;
 
         printf("DEBUG: RateGroup%d cycle complete in %d cycles.\n", portNum, this->m_cycles);
+        #if DEBUG_RATEGROUP
+        printf("[RATEGROUP%d] Cycle complete in %d us\n", 
+               portNum, cycleTime);
+        #endif
 
     }
 

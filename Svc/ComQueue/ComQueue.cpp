@@ -7,6 +7,7 @@
 #include <Fw/Types/Assert.hpp>
 #include <Svc/ComQueue/ComQueue.hpp>
 #include "Fw/Types/BasicTypes.hpp"
+#define DEBUG_COMQUEUE 1  // Set to 0 to disable debug prints
 
 namespace Svc {
 
@@ -125,6 +126,10 @@ void ComQueue::configure(QueueConfigurationTable queueConfig,
 // ----------------------------------------------------------------------
 
 void ComQueue::comQueueIn_handler(const FwIndexType portNum, Fw::ComBuffer& data, U32 context) {
+    #if DEBUG_COMQUEUE
+    printf("[COMQUEUE] Received COM data: port=%u, size=%llu\n", 
+           portNum, data.getBuffLength());
+    #endif
     // Ensure that the port number of comQueueIn is consistent with the expectation
     FW_ASSERT(portNum >= 0 && portNum < COM_PORT_COUNT, portNum);
     (void)this->enqueue(portNum, QueueType::COM_QUEUE, reinterpret_cast<const U8*>(&data), sizeof(Fw::ComBuffer));
@@ -238,6 +243,25 @@ void ComQueue::sendBuffer(Fw::Buffer& buffer) {
 void ComQueue::processQueue() {
     FwIndexType priorityIndex = 0;
     FwIndexType sendPriority = 0;
+
+    #if DEBUG_COMQUEUE
+    printf("[COMQUEUE] Processing queue\n");
+    #endif
+    
+    // Check that we are in the appropriate state
+    FW_ASSERT(this->m_state == READY);
+    
+    // Track how many queues have data
+    #if DEBUG_COMQUEUE
+    U32 nonEmptyQueues = 0;
+    for (FwIndexType i = 0; i < TOTAL_PORT_COUNT; i++) {
+        if (this->m_queues[i].getQueueSize() > 0) {
+            nonEmptyQueues++;
+        }
+    }
+    printf("[COMQUEUE] Queues with data: %u out of %u\n", 
+           nonEmptyQueues, TOTAL_PORT_COUNT);
+    #endif
     // Check that we are in the appropriate state
     FW_ASSERT(this->m_state == READY);
 

@@ -14,6 +14,8 @@
 #include <Fw/Types/Assert.hpp>
 #include <Svc/TlmChan/TlmChan.hpp>
 
+#define DEBUG_TLMCHAN 1  // Set to 0 to disable debug prints
+
 namespace Svc {
 
 TlmChan::TlmChan(const char* name) : TlmChanComponentBase(name), m_activeBuffer(0) {
@@ -79,6 +81,10 @@ void TlmChan::TlmGet_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& tim
 }
 
 void TlmChan::TlmRecv_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) {
+#if DEBUG_TLMCHAN
+    printf("[TLMCHAN] Received telemetry: id=0x%X, size=%llu\n", id, val.getBuffLength());
+#endif
+
     // Compute index for entry
 
     NATIVE_UINT_TYPE index = this->doHash(id);
@@ -129,8 +135,16 @@ void TlmChan::TlmRecv_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& ti
 }
 
 void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
+#if DEBUG_TLMCHAN
+    static U32 run_count = 0;
+    printf("[TLMCHAN] Run handler called: %u\n", ++run_count);
+#endif
+
     // Only write packets if connected
     if (not this->isConnected_PktSend_OutputPort(0)) {
+#if DEBUG_TLMCHAN
+        printf("[TLMCHAN] PktSend port not connected\n");
+#endif
         return;
     }
 
@@ -172,12 +186,15 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
             // flag as updated
             p_entry->updated = false;
         }  // end if entry was updated
-    }      // end for each entry
+    }  // end for each entry
 
     // send remnant entries
     if (pkt.getNumEntries() > 0) {
         this->PktSend_out(0, pkt.getBuffer(), 0);
     }
+    #if DEBUG_TLMCHAN
+    printf("[TLMCHAN] Sent %llu telemetry entries\n", pkt.getNumEntries());
+    #endif
 }  // end run handler
 
 }  // namespace Svc

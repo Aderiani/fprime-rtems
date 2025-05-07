@@ -29,7 +29,9 @@ class GR740TimerDriver : public GR740TimerDriverComponentBase {
     void manualTick();
     
     // Check if it's time for a tick
-    bool checkTick();
+    bool checkTick(); 
+    void generateTick();
+
     
   PRIVATE:
     U32 m_timerHz;                   // Timer frequency in Hz

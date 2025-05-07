@@ -26,7 +26,7 @@
 #include "Fw/Logger/Logger.hpp"
 #include "Fw/Types/Assert.hpp"
 #include "TcpServerComponentImpl.hpp"
-
+#define DEBUG_TCP_SERVER 1  // Set to 0 to disable debug prints
 namespace Drv {
 
 // ----------------------------------------------------------------------
@@ -186,7 +186,9 @@ Fw::Buffer TcpServerComponentImpl::getBuffer() {
 
 void TcpServerComponentImpl::readLoop() {
     // Simplified RTEMS implementation with direct buffer handling
-    Fw::Logger::log("TcpServer: Starting read loop with direct buffer handling");
+    #if DEBUG_TCP_SERVER
+    printf("[TCP-SERVER] Starting read loop\n");
+    #endif
 
     Drv::SocketIpStatus status = Drv::SocketIpStatus::SOCK_NOT_STARTED;
 
@@ -219,6 +221,15 @@ void TcpServerComponentImpl::readLoop() {
         status = this->recv(recv_buffer, size);
 
         if (status == SOCK_SUCCESS && size > 0) {
+
+            #if DEBUG_TCP_SERVER
+            printf("[TCP-SERVER] Received data: size=%u\n", size);
+            // Print the first few bytes to see what's coming in
+            if (size >= 4) {
+                printf("[TCP-SERVER] Received header: 0x%02X 0x%02X 0x%02X 0x%02X\n", 
+                       recv_buffer[0], recv_buffer[1], recv_buffer[2], recv_buffer[3]);
+            }
+            #endif
             // Create buffer with correct manager ID
             Fw::Buffer buffer;
             // Try to allocate a buffer of appropriate size
@@ -263,6 +274,20 @@ void TcpServerComponentImpl::readLoop() {
 // ----------------------------------------------------------------------
 
 Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer) {
+    
+    #if DEBUG_TCP_SERVER
+    printf("[TCP-SERVER] Send called: size=%u, data=%p, context=0x%X\n", 
+           fwBuffer.getSize(), fwBuffer.getData(), fwBuffer.getContext());
+    
+    // Print first few bytes of packet to debug header issues
+    if (fwBuffer.getSize() >= 4) {
+        printf("[TCP-SERVER] Packet header: 0x%02X 0x%02X 0x%02X 0x%02X\n", 
+               fwBuffer.getData()[0], fwBuffer.getData()[1], 
+               fwBuffer.getData()[2], fwBuffer.getData()[3]);
+    }
+    #endif
+    
+    
     // Check for special internal buffers
     U32 context = fwBuffer.getContext();
     U32 mgrId = context >> 16;

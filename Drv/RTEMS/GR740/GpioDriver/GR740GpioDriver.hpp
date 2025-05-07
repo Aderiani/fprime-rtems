@@ -7,15 +7,6 @@
 // Include our driver common definitions
 #include <Drv/RTEMS/include/DriverCommon.hpp>
 
-// Include our custom GPIO register definitions (C header)
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <Drv/RTEMS/GR740/include/gr740_gpio.h>
-#ifdef __cplusplus
-}
-#endif
-
 namespace Drv {
 
   class GR740GpioDriver final : public GR740GpioDriverComponentBase {
@@ -58,10 +49,25 @@ namespace Drv {
     ) override;
 
     // Member variables
-    volatile gr740_gpio_regs* m_gpioRegs; //!< GRGPIO register structure
     bool m_initialized;              //!< Initialization flag
     Fw::Logic m_outputState[MAX_GPIO_PINS]; //!< Current output state of each pin
     GpioDirection m_pinDirection[MAX_GPIO_PINS]; //!< Direction configuration for each pin
+    
+    // Direct register access pointers for both GPIO controllers
+    volatile uint32_t* m_gpio0_data_reg;  //!< GPIO0 data register
+    volatile uint32_t* m_gpio0_dir_reg;   //!< GPIO0 direction register
+    volatile uint32_t* m_gpio1_data_reg;  //!< GPIO1 data register
+    volatile uint32_t* m_gpio1_dir_reg;   //!< GPIO1 direction register
+    
+    // Constants for GPIO controller addresses
+    static constexpr uintptr_t GPIO0_BASE_ADDR = 0xffa08000;
+    static constexpr uintptr_t GPIO1_BASE_ADDR = 0xff902000;
+    static constexpr uintptr_t GPIO_DATA_OUT_OFFSET = 0x04;
+    static constexpr uintptr_t GPIO_DIRECTION_OFFSET = 0x08;
+    
+    // LED pin mapping
+    static constexpr uint32_t LED7_BIT = 0x20;  // Bit 5 for LED7
+    static constexpr uint32_t LED8_BIT = 0x40;  // Bit 6 for LED8
   };
 
 } // end namespace Drv

@@ -22,17 +22,17 @@ void system_init();
 #endif
 
 extern "C" {
+#include "Drv/RTEMS/GR740/Timer/GR740TimerDriver.hpp"
 #include "RTEMSInit/network_init.h"
 
-    // // In Main.cpp, at various points:
-    // void checkResources() {
-    //     rtems_resource_snapshot snapshot;
-    //     rtems_resource_snapshot_take(&snapshot);
+// // In Main.cpp, at various points:
+// void checkResources() {
+//     rtems_resource_snapshot snapshot;
+//     rtems_resource_snapshot_take(&snapshot);
 
-    //     printf("RTEMS Resources: Tasks: %d/%d, Semaphores: %d/%d\n", snapshot.tasks_count, CONFIGURE_MAXIMUM_TASKS,
-    //            snapshot.semaphores_count, CONFIGURE_MAXIMUM_SEMAPHORES);
-    // }
-
+//     printf("RTEMS Resources: Tasks: %d/%d, Semaphores: %d/%d\n", snapshot.tasks_count, CONFIGURE_MAXIMUM_TASKS,
+//            snapshot.semaphores_count, CONFIGURE_MAXIMUM_SEMAPHORES);
+// }
 }
 
 // static void signalHandler(int signum) {
@@ -72,18 +72,34 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     rtems_id task_id;
     rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_LOCAL_NODE, &task_id);
     printf("Main task ID: %lu\n", (unsigned long)task_id);
-    
+
     // In the main loop
+    extern Drv::GR740TimerDriver timerDriver;
+
+    // In the main loop:
     unsigned int counter = 0;
+    rtems_interval lastTickTime = rtems_clock_get_ticks_since_boot();
+    rtems_interval tickInterval = rtems_clock_get_ticks_per_second();  // 1 second = 1Hz
     while (keep_running) {
         // Print heartbeat every 10 iterations
-        if (counter % 10 == 0) {
-            printf("F' style main heartbeat2: %u\n", counter/10);
+        if (counter % 1000 == 0) {
+            printf("F' style main heartbeat2: %u\n", counter / 10);
         }
         counter++;
 
+        // Check if time for a tick (1Hz)
+        // Check if time for a tick (1Hz)
+        rtems_interval currentTime = rtems_clock_get_ticks_since_boot();
+        if (currentTime - lastTickTime >= tickInterval) {
+            lastTickTime = currentTime;
+
+            // Generate a timer tick using the public method
+            printf("[MAIN] Calling timer tick generator\n");
+            timerDriver.generateTick();
+        }
+
         // Sleep for a short period - much shorter than timer interval
-        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 100); // 10ms
+        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 100);  // 10ms
     }
 
     // We should never reach here

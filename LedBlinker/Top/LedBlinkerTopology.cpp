@@ -160,6 +160,18 @@ void configureTopology() {
 
 }
 
+namespace LedBlinker {
+    bool checkAndProcessTimerTick() {
+        if (timerDriver.checkTick()) {
+            timerDriver.manualTick();
+            return true;
+        }
+        return false;
+    }
+}
+
+
+
 void setupTopology(const TopologyState& state) {
     // Initialize components one by one
     initComponents(state);
