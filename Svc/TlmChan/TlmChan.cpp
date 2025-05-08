@@ -142,9 +142,9 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
 
     // Only write packets if connected
     if (not this->isConnected_PktSend_OutputPort(0)) {
-#if DEBUG_TLMCHAN
+    #if DEBUG_TLMCHAN
         printf("[TLMCHAN] PktSend port not connected\n");
-#endif
+    #endif
         return;
     }
 

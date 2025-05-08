@@ -24,15 +24,15 @@ class TlmChan final : public TlmChanComponentBase {
     TlmChan(const char* compName);
     virtual ~TlmChan();
 
+    //TODO: this is a private function, temperory moved here to calli it from the ledtoplology. Needs to be fixed.     
+    void Run_handler(FwIndexType portNum, U32 context);
   PROTECTED:
     // can be overridden for alternate algorithms
     virtual NATIVE_UINT_TYPE doHash(FwChanIdType id);
-
   PRIVATE:
     // Port functions
     void TlmRecv_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val);
     void TlmGet_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val);
-    void Run_handler(FwIndexType portNum, U32 context);
     //! Handler implementation for pingIn
     //!
     void pingIn_handler(const FwIndexType portNum, /*!< The port number*/

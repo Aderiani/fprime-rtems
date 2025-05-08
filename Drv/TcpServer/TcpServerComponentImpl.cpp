@@ -273,45 +273,61 @@ void TcpServerComponentImpl::readLoop() {
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
+// In Drv/TcpServer/TcpServerComponentImpl.cpp, enhance send_handler:
+
 Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer) {
-    
-    #if DEBUG_TCP_SERVER
-    printf("[TCP-SERVER] Send called: size=%u, data=%p, context=0x%X\n", 
+    printf("[TCP-SERVER] Send handler called: size=%u, data=%p, context=0x%X\n", 
            fwBuffer.getSize(), fwBuffer.getData(), fwBuffer.getContext());
     
-    // Print first few bytes of packet to debug header issues
+    // Print first few bytes of packet for debugging
     if (fwBuffer.getSize() >= 4) {
         printf("[TCP-SERVER] Packet header: 0x%02X 0x%02X 0x%02X 0x%02X\n", 
                fwBuffer.getData()[0], fwBuffer.getData()[1], 
                fwBuffer.getData()[2], fwBuffer.getData()[3]);
     }
-    #endif
     
+    // Check if socket is opened
+    if (!this->isOpened()) {
+        printf("[TCP-SERVER] Socket not opened, returning SEND_RETRY\n");
+        return SendStatus::SEND_RETRY;
+    }
     
-    // Check for special internal buffers
+    // Ensure buffer has valid data
+    if (fwBuffer.getData() == nullptr || fwBuffer.getSize() == 0) {
+        printf("[TCP-SERVER] Invalid buffer (NULL or zero size)\n");
+        return SendStatus::SEND_ERROR;
+    }
+    
+    // Special marker for internal buffers (0xDEAD)
     U32 context = fwBuffer.getContext();
     U32 mgrId = context >> 16;
-    
     bool isInternalBuffer = (mgrId == 0xDEAD);
     
-    // Handle sending the data
+    // Try to send data
+    printf("[TCP-SERVER] Sending %u bytes to socket\n", fwBuffer.getSize());
     Drv::SocketIpStatus status = this->send(fwBuffer.getData(), fwBuffer.getSize());
+    printf("[TCP-SERVER] Send returned status: %d\n", status);
     
-    // Only deallocate non-internal buffers
     if (status == SOCK_INTERRUPTED_TRY_AGAIN) {
+        printf("[TCP-SERVER] Send interrupted, returning SEND_RETRY\n");
         return SendStatus::SEND_RETRY;
     } else if (status != SOCK_SUCCESS) {
-        // Only deallocate if this is not an internal buffer
+        printf("[TCP-SERVER] Send error: %d\n", status);
+        // Only deallocate if not an internal buffer
         if (!isInternalBuffer && this->isConnected_deallocate_OutputPort(0)) {
+            printf("[TCP-SERVER] Deallocating buffer after error\n");
             deallocate_out(0, fwBuffer);
         }
         return SendStatus::SEND_ERROR;
     }
     
-    // Only deallocate if this is not an internal buffer
+    // Only deallocate if not an internal buffer
     if (!isInternalBuffer && this->isConnected_deallocate_OutputPort(0)) {
+        printf("[TCP-SERVER] Deallocating buffer after successful send\n");
         deallocate_out(0, fwBuffer);
     }
+    
+    printf("[TCP-SERVER] Send successful\n");
     return SendStatus::SEND_OK;
 }
 

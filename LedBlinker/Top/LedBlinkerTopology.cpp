@@ -169,10 +169,45 @@ bool checkAndProcessTimerTick() {
     return true;
 }
 
-
-
-
-
+void forceTelemetryDownlink() {
+    printf("[FORCE-TLM] Manually forcing telemetry downlink\n");
+    
+    // Create a telemetry packet directly
+    Fw::ComBuffer buffer;
+    buffer.resetSer();
+    
+    // Add a packet descriptor (0 = telemetry)
+    U32 descriptor = 0;
+    Fw::SerializeStatus stat = buffer.serialize(descriptor);
+    
+    // Add current time
+    Fw::Time time;
+    time.set(1, 0);  // Set to a fixed value for testing
+    stat = buffer.serialize(time);
+    
+    // Add channel ID (0x100)
+    U32 id = 0x100;
+    stat = buffer.serialize(id);
+    
+    // Add value (heartbeat counter)
+    static U32 counter = 0;
+    counter++;
+    stat = buffer.serialize(counter);
+    
+    // Get the final buffer
+    printf("[FORCE-TLM] Created telemetry buffer with size %llu\n", 
+           buffer.getBuffLength());
+    
+    // Send directly to comQueue
+    if (comQueue.isConnected_comQueueIn_InputPort(0)) {
+        printf("[FORCE-TLM] Sending telemetry directly to comQueue\n");
+        comQueue.comQueueIn_handler(0, buffer, 0);
+    } else {
+        printf("[FORCE-TLM] ERROR: comQueue input port not connected!\n");
+    }
+    
+    printf("[FORCE-TLM] Force telemetry complete\n");
+}
 
 void setupTopology(const TopologyState& state) {
     // Initialize components one by one
@@ -203,6 +238,7 @@ void setupTopology(const TopologyState& state) {
     timerDriver.initialize(TIMER_HZ);
     timerDriver.start();
     Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
+
 }
 
 void teardownTopology(const TopologyState& state) {

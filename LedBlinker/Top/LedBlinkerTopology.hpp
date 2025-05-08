@@ -74,6 +74,7 @@ void teardownTopology(const TopologyState& state);
  * \param milliseconds: milliseconds to delay for each cycle. Default: 1000 or 1Hz.
  */
 bool checkAndProcessTimerTick();
+void forceTelemetryDownlink();
 
 /**
  * \brief stop the simulated cycle started by startSimulatedCycle

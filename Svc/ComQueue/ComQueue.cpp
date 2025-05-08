@@ -65,12 +65,12 @@ void ComQueue::configure(QueueConfigurationTable queueConfig,
     for (FwIndexType currentPriority = 0; currentPriority < TOTAL_PORT_COUNT; currentPriority++) {
         // Walk each queue configuration entry and add them into the prioritized metadata list when matching the current
         // priority value
-        for (FwIndexType entryIndex = 0; entryIndex < static_cast<FwIndexType>(FW_NUM_ARRAY_ELEMENTS(queueConfig.entries)); entryIndex++) {
+        for (FwIndexType entryIndex = 0;
+             entryIndex < static_cast<FwIndexType>(FW_NUM_ARRAY_ELEMENTS(queueConfig.entries)); entryIndex++) {
             // Check for valid configuration entry
             FW_ASSERT(queueConfig.entries[entryIndex].priority < TOTAL_PORT_COUNT,
                       static_cast<FwAssertArgType>(queueConfig.entries[entryIndex].priority),
-                      static_cast<FwAssertArgType>(TOTAL_PORT_COUNT),
-                      static_cast<FwAssertArgType>(entryIndex));
+                      static_cast<FwAssertArgType>(TOTAL_PORT_COUNT), static_cast<FwAssertArgType>(entryIndex));
 
             if (currentPriority == queueConfig.entries[entryIndex].priority) {
                 // Set up the queue metadata object in order to track priority, depth, index into the queue list of the
@@ -101,11 +101,8 @@ void ComQueue::configure(QueueConfigurationTable queueConfig,
         FwSizeType allocationSize = this->m_prioritizedList[i].depth * this->m_prioritizedList[i].msgSize;
         FW_ASSERT(this->m_prioritizedList[i].index < static_cast<FwIndexType>(FW_NUM_ARRAY_ELEMENTS(this->m_queues)),
                   this->m_prioritizedList[i].index);
-        FW_ASSERT(
-            (allocationSize + allocationOffset) <= totalAllocation,
-            static_cast<FwAssertArgType>(allocationSize),
-            static_cast<FwAssertArgType>(allocationOffset),
-            static_cast<FwAssertArgType>(totalAllocation));
+        FW_ASSERT((allocationSize + allocationOffset) <= totalAllocation, static_cast<FwAssertArgType>(allocationSize),
+                  static_cast<FwAssertArgType>(allocationOffset), static_cast<FwAssertArgType>(totalAllocation));
 
         // Setup queue's memory allocation, depth, and message size. Setup is skipped for a depth 0 queue
         if (allocationSize > 0) {
@@ -116,20 +113,17 @@ void ComQueue::configure(QueueConfigurationTable queueConfig,
         allocationOffset += allocationSize;
     }
     // Safety check that all memory was used as expected
-    FW_ASSERT(
-        allocationOffset == totalAllocation,
-        static_cast<FwAssertArgType>(allocationOffset),
-        static_cast<FwAssertArgType>(totalAllocation));
+    FW_ASSERT(allocationOffset == totalAllocation, static_cast<FwAssertArgType>(allocationOffset),
+              static_cast<FwAssertArgType>(totalAllocation));
 }
 // ----------------------------------------------------------------------
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
 void ComQueue::comQueueIn_handler(const FwIndexType portNum, Fw::ComBuffer& data, U32 context) {
-    #if DEBUG_COMQUEUE
-    printf("[COMQUEUE] Received COM data: port=%u, size=%llu\n", 
-           portNum, data.getBuffLength());
-    #endif
+#if DEBUG_COMQUEUE
+    printf("[COMQUEUE] Received COM data: port=%u, size=%llu\n", portNum, data.getBuffLength());
+#endif
     // Ensure that the port number of comQueueIn is consistent with the expectation
     FW_ASSERT(portNum >= 0 && portNum < COM_PORT_COUNT, portNum);
     (void)this->enqueue(portNum, QueueType::COM_QUEUE, reinterpret_cast<const U8*>(&data), sizeof(Fw::ComBuffer));
@@ -148,21 +142,22 @@ void ComQueue::buffQueueIn_handler(const FwIndexType portNum, Fw::Buffer& fwBuff
 }
 
 void ComQueue::comStatusIn_handler(const FwIndexType portNum, Fw::Success& condition) {
+    printf("[COMQUEUE] comStatusIn_handler called with state=%d, status=%d\n", 
+           this->m_state, condition.e);
+    
     switch (this->m_state) {
-        // On success, the queue should be processed. On failure, the component should still wait.
         case WAITING:
             if (condition.e == Fw::Success::SUCCESS) {
+                printf("[COMQUEUE] Received SUCCESS, changing to READY state\n");
                 this->m_state = READY;
                 this->processQueue();
-                // A message may or may not be sent. Thus, READY or WAITING are acceptable final states.
-                FW_ASSERT((this->m_state == WAITING || this->m_state == READY), this->m_state);
             } else {
+                printf("[COMQUEUE] Received FAILURE, remaining in WAITING state\n");
                 this->m_state = WAITING;
             }
             break;
-        // Both READY and unknown states should not be possible at this point. To receive a status message we must be
-        // one of the WAITING or RETRY states.
         default:
+            printf("[COMQUEUE] Unexpected state: %d\n", this->m_state);
             FW_ASSERT(0, this->m_state);
             break;
     }
@@ -205,10 +200,7 @@ bool ComQueue::enqueue(const FwIndexType queueNum, QueueType queueType, const U8
     const FwSizeType expectedSize = (queueType == QueueType::COM_QUEUE) ? sizeof(Fw::ComBuffer) : sizeof(Fw::Buffer);
     const FwIndexType portNum = queueNum - ((queueType == QueueType::COM_QUEUE) ? 0 : COM_PORT_COUNT);
     bool rvStatus = true;
-    FW_ASSERT(
-        expectedSize == size,
-        static_cast<FwAssertArgType>(size),
-        static_cast<FwAssertArgType>(expectedSize));
+    FW_ASSERT(expectedSize == size, static_cast<FwAssertArgType>(size), static_cast<FwAssertArgType>(expectedSize));
     FW_ASSERT(portNum >= 0, portNum);
     Fw::SerializeStatus status = this->m_queues[queueNum].enqueue(data, size);
     if (status == Fw::FW_SERIALIZE_NO_ROOM_LEFT) {
@@ -228,83 +220,90 @@ bool ComQueue::enqueue(const FwIndexType queueNum, QueueType queueType, const U8
 }
 
 void ComQueue::sendComBuffer(Fw::ComBuffer& comBuffer) {
+    printf("[COMQUEUE] sendComBuffer: size=%lu\n", 
+           static_cast<unsigned long>(comBuffer.getBuffLength()));
+    
     FW_ASSERT(this->m_state == READY);
     this->comQueueSend_out(0, comBuffer, 0);
     this->m_state = WAITING;
+    
+    printf("[COMQUEUE] Sent ComBuffer and set state to WAITING\n");
 }
 
 void ComQueue::sendBuffer(Fw::Buffer& buffer) {
-    // Retry buffer expected to be cleared as we are either transferring ownership or have already deallocated it.
+    printf("[COMQUEUE] sendBuffer: size=%u, data=%p\n", 
+           buffer.getSize(), buffer.getData());
+    
     FW_ASSERT(this->m_state == READY);
     this->buffQueueSend_out(0, buffer);
     this->m_state = WAITING;
+    
+    printf("[COMQUEUE] Sent Buffer and set state to WAITING\n");
 }
 
 void ComQueue::processQueue() {
-    FwIndexType priorityIndex = 0;
-    FwIndexType sendPriority = 0;
+    printf("[COMQUEUE] Process queue called, state=%d\n", this->m_state);
+    
+    // Check state first
+    if (this->m_state != READY) {
+        printf("[COMQUEUE] Queue not in ready state, skipping processing\n");
+        return;
+    }
 
-    #if DEBUG_COMQUEUE
-    printf("[COMQUEUE] Processing queue\n");
-    #endif
+    FwIndexType priorityIndex = 0;
+
     
-    // Check that we are in the appropriate state
-    FW_ASSERT(this->m_state == READY);
-    
-    // Track how many queues have data
-    #if DEBUG_COMQUEUE
+    // Count active queues for debugging
     U32 nonEmptyQueues = 0;
     for (FwIndexType i = 0; i < TOTAL_PORT_COUNT; i++) {
         if (this->m_queues[i].getQueueSize() > 0) {
             nonEmptyQueues++;
+            printf("[COMQUEUE] Queue %u has %lu items\n", 
+                   i, static_cast<unsigned long>(this->m_queues[i].getQueueSize()));
         }
     }
-    printf("[COMQUEUE] Queues with data: %u out of %u\n", 
+    printf("[COMQUEUE] Found %u queues with data out of %u total\n", 
            nonEmptyQueues, TOTAL_PORT_COUNT);
-    #endif
-    // Check that we are in the appropriate state
-    FW_ASSERT(this->m_state == READY);
-
-    // Walk all the queues in priority order. Send the first message that is available in priority order. No balancing
-    // is done within this loop.
+    
+    // Walk all the queues in priority order
     for (priorityIndex = 0; priorityIndex < TOTAL_PORT_COUNT; priorityIndex++) {
         QueueMetadata& entry = this->m_prioritizedList[priorityIndex];
         Types::Queue& queue = this->m_queues[entry.index];
-
-        // Continue onto next prioritized queue if there is no items in the current queue
-        if (queue.getQueueSize() == 0) {
+        
+        FwSizeType queueSize = queue.getQueueSize();
+        if (queueSize == 0) {
             continue;
         }
-
+        
+        printf("[COMQUEUE] Found data in queue %u (priority %u), size: %lu\n", 
+               entry.index, entry.priority, static_cast<unsigned long>(queueSize));
+        
         // Send out the message based on the type
         if (entry.index < COM_PORT_COUNT) {
+            printf("[COMQUEUE] Sending Com buffer from queue %u\n", entry.index);
             Fw::ComBuffer comBuffer;
             queue.dequeue(reinterpret_cast<U8*>(&comBuffer), sizeof(comBuffer));
+            printf("[COMQUEUE] Dequeued buffer with size %lu\n", 
+                   static_cast<unsigned long>(comBuffer.getBuffLength()));
             this->sendComBuffer(comBuffer);
         } else {
+            printf("[COMQUEUE] Sending Buffer from queue %u\n", entry.index);
             Fw::Buffer buffer;
             queue.dequeue(reinterpret_cast<U8*>(&buffer), sizeof(buffer));
+            printf("[COMQUEUE] Dequeued buffer with size %u\n", buffer.getSize());
             this->sendBuffer(buffer);
         }
-
-        // Update the throttle and the index that was just sent
+        
         this->m_throttle[entry.index] = false;
 
-        // Priority used in the next loop
-        sendPriority = entry.priority;
+        
+        printf("[COMQUEUE] Successfully sent data from queue %u\n", entry.index);
         break;
     }
-
-    // Starting on the priority entry after the one dispatched and continuing through the end of the set of entries that
-    // share the same priority, rotate those entries such that the currently dispatched queue is last and the rest are
-    // shifted up by one. This effectively round-robins the queues of the same priority.
-    for (priorityIndex++;
-         priorityIndex < TOTAL_PORT_COUNT && (this->m_prioritizedList[priorityIndex].priority == sendPriority);
-         priorityIndex++) {
-        // Swap the previous entry with this one.
-        QueueMetadata temp = this->m_prioritizedList[priorityIndex];
-        this->m_prioritizedList[priorityIndex] = this->m_prioritizedList[priorityIndex - 1];
-        this->m_prioritizedList[priorityIndex - 1] = temp;
+    
+    // Add a check after the loop
+    if (priorityIndex >= TOTAL_PORT_COUNT) {
+        printf("[COMQUEUE] No data was sent from any queue\n");
     }
 }
 }  // end namespace Svc

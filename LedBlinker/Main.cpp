@@ -73,8 +73,8 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // Critical: Don't exit the loop until explicitly told to
     while (keep_running) {
         // Print heartbeat occasionally
-        if (counter % 100 == 0) {
-            printf("F' style main heartbeat: %u\n", counter / 100);
+        if (counter % 500 == 0) {
+            printf("F' style main heartbeat: %u\n", counter / 500);
         }
         counter++;
 
@@ -82,6 +82,11 @@ extern "C" int fprime_main(int argc, char* argv[]) {
         if (counter % 10 == 0) {  
             printf("[MAIN] Calling LedBlinker::checkAndProcessTimerTick()\n");
             LedBlinker::checkAndProcessTimerTick();
+        }
+        
+        if (counter % 50 == 0) {  // Every ~5 seconds
+            printf("F' style main heartbeat: %u\n", counter / 50);
+            LedBlinker::forceTelemetryDownlink();
         }
 
         // Sleep for a short period
