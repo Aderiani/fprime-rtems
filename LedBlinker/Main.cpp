@@ -80,14 +80,14 @@ extern "C" int fprime_main(int argc, char* argv[]) {
 
         // Generate a tick every second (approximately)
         if (counter % 10 == 0) {  
-            printf("[MAIN] Calling LedBlinker::checkAndProcessTimerTick()\n");
+            // printf("[MAIN] Calling LedBlinker::checkAndProcessTimerTick()\n");
             LedBlinker::checkAndProcessTimerTick();
         }
         
-        if (counter % 50 == 0) {  // Every ~5 seconds
-            printf("F' style main heartbeat: %u\n", counter / 50);
-            LedBlinker::forceTelemetryDownlink();
-        }
+        // if (counter % 50 == 0) {  // Every ~5 seconds
+        //     printf("F' style main heartbeat: %u\n", counter / 50);
+        //     LedBlinker::forceTelemetryDownlink();
+        // }
 
         // Sleep for a short period
         rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 10);  
