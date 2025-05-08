@@ -1,316 +1,3 @@
-  GRMON debug monitor v4.0.2 64-bit eval version
-
-  Copyright (C) 2025 Frontgrade Gaisler - All rights reserved.
-  For latest updates, go to https://www.gaisler.com/
-  Comments or bug-reports to support@gaisler.com
-
-  This eval version will expire on 22/07/2025
-
-JTAG chain (1): GR740
-  Device ID:           0x740
-  GRLIB build version: 4153
-  Detected system:     GR740 rev1
-  Detected frequency:  248.0 MHz
-
-  Component                            Vendor
-  JTAG Debug Link                      Frontgrade Gaisler
-  GRSPW2 SpaceWire Serial Link         Frontgrade Gaisler
-  EDCL master interface                Frontgrade Gaisler
-  EDCL master interface                Frontgrade Gaisler
-  LEON4 SPARC V8 Processor             Frontgrade Gaisler
-  LEON4 SPARC V8 Processor             Frontgrade Gaisler
-  LEON4 SPARC V8 Processor             Frontgrade Gaisler
-  LEON4 SPARC V8 Processor             Frontgrade Gaisler
-  IO Memory Management Unit            Frontgrade Gaisler
-  AHB-to-AHB Bridge                    Frontgrade Gaisler
-  L2-Cache Controller                  Frontgrade Gaisler
-  AHB Memory Scrubber                  Frontgrade Gaisler
-  IOMMU secondary master i/f           Frontgrade Gaisler
-  AHB-to-AHB Bridge                    Frontgrade Gaisler
-  LEON4 Debug Support Unit             Frontgrade Gaisler
-  AHB/APB Bridge                       Frontgrade Gaisler
-  AMBA Trace Buffer                    Frontgrade Gaisler
-  AHB/APB Bridge                       Frontgrade Gaisler
-  AHB/APB Bridge                       Frontgrade Gaisler
-  Muxed FT DDR/SDRAM controller        Frontgrade Gaisler
-  Memory controller with EDAC          Frontgrade Gaisler
-  GRPCI2 PCI/AHB bridge                Frontgrade Gaisler
-  GRSPW Router                         Frontgrade Gaisler
-  LEON4 Statistics Unit                Frontgrade Gaisler
-  GRPCI2 Trace buffer                  Frontgrade Gaisler
-  Generic UART                         Frontgrade Gaisler
-  Generic UART                         Frontgrade Gaisler
-  General Purpose I/O port             Frontgrade Gaisler
-  Multi-processor Interrupt Ctrl.      Frontgrade Gaisler
-  Modular Timer Unit                   Frontgrade Gaisler
-  Modular Timer Unit                   Frontgrade Gaisler
-  Modular Timer Unit                   Frontgrade Gaisler
-  Modular Timer Unit                   Frontgrade Gaisler
-  Modular Timer Unit                   Frontgrade Gaisler
-  GRSPW Router DMA interface           Frontgrade Gaisler
-  GRSPW Router DMA interface           Frontgrade Gaisler
-  GRSPW Router DMA interface           Frontgrade Gaisler
-  GRSPW Router DMA interface           Frontgrade Gaisler
-  GR Ethernet MAC                      Frontgrade Gaisler
-  GR Ethernet MAC                      Frontgrade Gaisler
-  CAN Controller with DMA              Frontgrade Gaisler
-  CAN Controller with DMA              Frontgrade Gaisler
-  SPI Controller                       Frontgrade Gaisler
-  Clock gating unit                    Frontgrade Gaisler
-  MIL-STD-1553B Interface              Frontgrade Gaisler
-  AHB Status Register                  Frontgrade Gaisler
-  AHB Status Register                  Frontgrade Gaisler
-  General Purpose I/O port             Frontgrade Gaisler
-  General Purpose Register             Frontgrade Gaisler
-  Temperature sensor                   Frontgrade Gaisler
-  General Purpose Register Bank        Frontgrade Gaisler
-  CCSDS TDP / SpaceWire I/F            Frontgrade Gaisler
-  LEON4 Statistics Unit                Frontgrade Gaisler
-  64-bit PC133 SDRAM Controller        Frontgrade Gaisler
-
-  Use command 'info sys' to print a detailed report of attached cores
-
-grmon4> reset
-
-grmon4> load C:/Development/FPrimeContainer/exobioshpere/LedBlinker.exe
-                 0 .text            838.0kB / 838.0kB   [===============>] 100%
-             d1830 .rtemsroset        464B              [===============>] 100%
-             d3a00 .data             10.2kB /  10.2kB   [===============>] 100%
-  Total size: 848.73kB (780.08kbit/s)
-  Entry point 0x00000000
-  Image C:/Development/FPrimeContainer/exobioshpere/LedBlinker.exe loaded
-
-grmon4> run
-OS Init: Initializing Console
-Creating Console delegate - start
-RTEMS Console called
-Console delegate created - end
-m_delegate address: 0xffffdd0
-TestConstructor exiting, this = 0xffffdc0
-Stack pointer: 0xa3dc48
-Singleton created at 0xffffdc0
-Singleton returning at 0xffffdc0
-FileSystem singleton created at 0xffffd10
-FileSystem singleton returning at 0xffffd10
-Cpu singleton created at 0xffffcc0
-Cpu singleton returning at 0xffffcc0
-Memory singleton created at 0xffffc70
-Memory singleton returning at 0xffffc70
-Task singleton created at 0xfffd1b0
-OS Init:initialization complete
-Initializing RTEMS networking for GR740...
-Using RTEMS_DRVMGR_STARTUP mode
-*** GR740 Board Initialization ***
-Initializing driver manager
-Driver manager initialized, registering GRLIB devices...
-Using RTEMS_DRVMGR_STARTUP, driver resources defined but registration handled by BSP
-Checking available drivers:
- -- DRIVER 0xd5df8 --
-  DRIVER ID:   0x1001a03
-  NAME:        GRGPIO_DRV
-  BUS TYPE:    3
-  OPERATIONS:
-   init[1]:    0x3ba08
-   init[2]:    0x0
-   init[3]:    0x0
-   init[4]:    0x0
-   remove:     0x0
-   info:       0x0
-  NO. DEVICES: 2
-
-
- -- DRIVER 0xd5e50 --
-  DRIVER ID:   0x1001d03
-  NAME:        GRETH_DRV
-  BUS TYPE:    3
-  OPERATIONS:
-   init[1]:    0x0
-   init[2]:    0x3bbb4
-   init[3]:    0x3da9c
-   init[4]:    0x0
-   remove:     0x0
-   info:       0x3bb14
-  NO. DEVICES: 2
-
-
- -- DRIVER 0xd5eb0 --
-  DRIVER ID:   0x1000c03
-  NAME:        APBUART_DRV
-  BUS TYPE:    3
-  OPERATIONS:
-   init[1]:    0x3dc64
-   init[2]:    0x0
-   init[3]:    0x0
-   init[4]:    0x0
-   remove:     0x0
-   info:       0x3e284
-  NO. DEVICES: 2
-
-
- -- DRIVER 0xd5d48 --
-  DRIVER ID:   0x1001103
-  NAME:        GPTIMER_DRV
-  BUS TYPE:    3
-  OPERATIONS:
-   init[1]:    0x3ad7c
-   init[2]:    0x0
-   init[3]:    0x0
-   init[4]:    0x0
-   remove:     0x0
-   info:       0x3aa78
-  NO. DEVICES: 5
-
-
-Board initialization complete
-Starting network stack with explicit initialization...
-Checking if GRETH driver is available...
-GRETH driver found, initializing network interfaces
-greth: driver attached
-Auto negotiation timed out. Selecting default config
-**** PHY ****
-Vendor: 885   Device: 22   Revision: 2
-Current Operating Mode: 1000 Mbit Full Duplex
-Autonegotiation Time: 4019ms
-Network initialized, waiting for interfaces...
-NETWORK CONFIGURATION:
-Destination     Gateway/Mask/Hw    Flags     Refs     Use Expire Interface
-default         127.0.0.1          UGS         0        0      0 lo0
-127.0.0.1       127.0.0.1          UH          1        0      0 lo0
-192.168.0.0     255.255.255.0      U           0        0      6 gr_eth1
-************ INTERFACE STATISTICS ************
-***** lo0 *****
-Address:127.0.0.1       Net mask:255.0.0.0
-Flags: Up Loopback Running Multicast
-Send queue limit:50   length:0    Dropped:0
-***** gr_eth2 *****
-Ethernet Address: 08:08:08:08:08:08
-Flags: Broadcast Simplex Multicast
-Send queue limit:50   length:0    Dropped:0
-      Rx Interrupts:0             Rx Packets:0                 Length:0              Non-octet:0
-            Bad CRC:0                Overrun:0             Tx Interrupts:0             Maximal Frags:0             GBIT MAC:0       ***** gr_eth1 *****
-Ethernet Address: 00:80:7F:22:61:79
-Address:192.168.0.67    Broadcast Address:192.168.0.255   Net mask:255.255.255.0
-Flags: Up Broadcast Running Simplex Multicast
-Send queue limit:50   length:0    Dropped:0
-      Rx Interrupts:0             Rx Packets:0                 Length:0              Non-octet:0
-            Bad CRC:0                Overrun:0             Tx Interrupts:0             Maximal Frags:1             GBIT MAC:1
-************ MBUF STATISTICS ************
-mbufs: 512    clusters:  64    free:  32
-drops:   0       waits:   0  drains:   0
-      free:478           data:34          header:0           socket:0
-       pcb:0           rtable:0           htable:0           atable:0
-    soname:0           soopts:0           ftable:0           rights:0
-    ifaddr:0          control:0          oobdata:0
-
-RTEMSQueue: WARNING - Suspiciously large msgSize 16398 for queue 'cmdDisp', capping at 1024
-RTEMSQueue: Creating queue 'cmdDisp' with depth 20, msgSize 1024
-RTEMSQueue: Created queue 'cmdDisp' with depth 20, msgSize 1024, id=570490881
-RTEMSQueue: WARNING - Suspiciously large msgSize 16396 for queue 'cmdSeq', capping at 1024
-RTEMSQueue: Creating queue 'cmdSeq' with depth 50, msgSize 1024
-RTEMSQueue: Created queue 'cmdSeq' with depth 50, msgSize 1024, id=570490882
-RTEMSQueue: WARNING - Suspiciously large msgSize 16398 for queue 'comQueue', capping at 1024
-RTEMSQueue: Creating queue 'comQueue' with depth 50, msgSize 1024
-RTEMSQueue: Created queue 'comQueue' with depth 50, msgSize 1024, id=570490883
-RTEMSQueue: WARNING - Suspiciously large msgSize 16405 for queue 'eventLogger', capping at 1024
-RTEMSQueue: Creating queue 'eventLogger' with depth 50, msgSize 1024
-RTEMSQueue: Created queue 'eventLogger' with depth 50, msgSize 1024, id=570490884
-RTEMSQueue: WARNING - Suspiciously large msgSize 16396 for queue 'fileDownlink', capping at 1024
-RTEMSQueue: Creating queue 'fileDownlink' with depth 30, msgSize 1024
-RTEMSQueue: Created queue 'fileDownlink' with depth 30, msgSize 1024, id=570490885
-RTEMSQueue: WARNING - Suspiciously large msgSize 16396 for queue 'fileManager', capping at 1024
-RTEMSQueue: Creating queue 'fileManager' with depth 30, msgSize 1024
-RTEMSQueue: Created queue 'fileManager' with depth 30, msgSize 1024, id=570490886
-RTEMSQueue: Creating queue 'fileUplink' with depth 30, msgSize 20
-RTEMSQueue: Created queue 'fileUplink' with depth 30, msgSize 20, id=570490887
-RTEMSQueue: WARNING - Suspiciously large msgSize 16396 for queue 'health', capping at 1024
-RTEMSQueue: Creating queue 'health' with depth 25, msgSize 1024
-RTEMSQueue: Created queue 'health' with depth 25, msgSize 1024, id=570490888
-RTEMSQueue: WARNING - Suspiciously large msgSize 16396 for queue 'led', capping at 1024
-RTEMSQueue: Creating queue 'led' with depth 50, msgSize 1024
-RTEMSQueue: Created queue 'led' with depth 50, msgSize 1024, id=570490889
-RTEMSQueue: WARNING - Suspiciously large msgSize 16396 for queue 'prmDb', capping at 1024
-RTEMSQueue: Creating queue 'prmDb' with depth 50, msgSize 1024
-RTEMSQueue: Created queue 'prmDb' with depth 50, msgSize 1024, id=570490890
-RTEMSQueue: Creating queue 'rateGroup1' with depth 50, msgSize 24
-RTEMSQueue: Created queue 'rateGroup1' with depth 50, msgSize 24, id=570490891
-RTEMSQueue: Creating queue 'rateGroup2' with depth 50, msgSize 24
-RTEMSQueue: Created queue 'rateGroup2' with depth 50, msgSize 24, id=570490892
-RTEMSQueue: Creating queue 'rateGroup3' with depth 50, msgSize 24
-RTEMSQueue: Created queue 'rateGroup3' with depth 50, msgSize 24, id=570490893
-RTEMSQueue: Creating queue 'tlmSend' with depth 50, msgSize 12
-RTEMSQueue: Created queue 'tlmSend' with depth 50, msgSize 12, id=570490894
-Setting up topologyRateGroupDriver: Configuring with 3 dividers
-RateGroupDriver: Divider[0] = {div:1, offset:0}
-RateGroupDriver: Divider[1] = {div:2, offset:0}
-RateGroupDriver: Divider[2] = {div:4, offset:0}
-DEBUG: Watchdog initialization DISABLED for testing
-RTEMSQueue: Creating queue 'fileDownlinkQueue' with depth 10, msgSize 228
-RTEMSQueue: Created queue 'fileDownlinkQueue' with depth 10, msgSize 228, id=570490895
-DEBUG: Received event ID 3334 with severity 2
-WARNING: CircularBuffer::setup called when already setupWARNING: Reducing buffer size from 16384 to 1024 for RTEMS compatibility[INFO] Checking network readiness (attempt 1/5)[INFO] Network is readyAttempting to bind to 192.168.0.67:50000
-Listening for single client at 192.168.0.67:50000
-DEBUG: cmdDisp registration - port 0, opcode 0x500
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 0, opcode 0x501
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 0, opcode 0x502
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 0, opcode 0x503
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x600
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x601
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x602
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x603
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x604
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x605
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x606
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 1, opcode 0x607
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 2, opcode 0xB00
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 2, opcode 0xB02
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 2, opcode 0xB03
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 3, opcode 0x800
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 3, opcode 0x801
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 3, opcode 0x802
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 4, opcode 0x900
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 4, opcode 0x901
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 4, opcode 0x902
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 4, opcode 0x903
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 4, opcode 0x904
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 4, opcode 0x905
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 4, opcode 0x906
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 5, opcode 0x2000
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 5, opcode 0x2001
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 5, opcode 0x2002
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 6, opcode 0xE00
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 6, opcode 0xE01
-DEBUG: Received event ID 1280 with severity 7
-DEBUG: cmdDisp registration - port 6, opcode 0xE02
-DEBUG: Received event ID 1280 with severity 7
 DEBUG: cmdDisp registration - port 7, opcode 0xD00
 DEBUG: Received event ID 1280 with severity 7
 DEBUG: Received event ID 3328 with severity 3
@@ -359,55 +46,14 @@ GR740TimerDriver: Starting timer with 100 ticks per interval
 DEBUG: Received event ID 257 with severity 5
 Hardware timer started at 1 HzTopology setup completeEntering F' main infinite loop with periodic timer ticks
 F' style main heartbeat: 0
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 1
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 2
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'eventLogger' with capacity=16405, msgSize=1024
 RTEMSQueue: Receive for 'eventLogger' with capacity=16405, msgSize=1024
 RTEMSQueue: Receive for 'eventLogger' with capacity=16405, msgSize=1024
 RTEMSQueue: Receive for 'eventLogger' with capacity=16405, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 3
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 4
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 5
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 6
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 7
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 8
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 9
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 10
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #0
 [RG-DRIVER] CycleIn called, portNum=0, tick=1
@@ -416,49 +62,13 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 11
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
+Accepted client from 192.168.0.50:51375
+[COMSTUB] drvConnected called
+[COMSTUB] Sending SUCCESS status to framer after connection
+[COMSTUB] drvConnected called
+[COMSTUB] Not re-initializing in drvConnected_handler
 RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
 RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 12
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 13
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 14
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 15
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 16
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 17
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 18
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 19
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 20
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #1
 [RG-DRIVER] CycleIn called, portNum=0, tick=2
@@ -470,49 +80,19 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 21
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 22
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 23
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 24
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 25
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 26
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 27
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 28
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 29
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 30
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 12 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #2
 [RG-DRIVER] CycleIn called, portNum=0, tick=3
@@ -521,49 +101,23 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 31
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 32
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 33
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 34
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 35
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 36
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 37
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 38
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 39
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 40
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #3
 [RG-DRIVER] CycleIn called, portNum=0, tick=4
@@ -576,49 +130,18 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 41
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 42
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 43
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 44
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 45
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 46
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 47
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 48
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 49
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 50
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #4
 [RG-DRIVER] CycleIn called, portNum=0, tick=5
@@ -627,49 +150,18 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 51
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 52
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 53
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 54
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 55
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 56
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 57
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 58
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 59
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 60
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #5
 [RG-DRIVER] CycleIn called, portNum=0, tick=6
@@ -680,50 +172,24 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 61
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 62
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 63
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 64
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 65
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 66
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 67
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 68
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 69
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 70
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #6
 [RG-DRIVER] CycleIn called, portNum=0, tick=7
@@ -732,49 +198,19 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 71
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 72
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 73
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 74
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 75
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 76
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 77
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 78
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 79
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 80
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #7
 [RG-DRIVER] CycleIn called, portNum=0, tick=0
@@ -787,64 +223,22 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 81
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 82
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 83
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-Accepted client from 192.168.0.50:53409
-[COMSTUB] drvConnected called
-[COMSTUB] Sending SUCCESS status to framer after connection
-[COMSTUB] drvConnected called
-[COMSTUB] Not re-initializing in drvConnected_handler
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 84
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 85
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 86
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 87
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 88
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 89
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 90
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #8
 [RG-DRIVER] CycleIn called, portNum=0, tick=1
@@ -853,61 +247,20 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 91
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 92
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 93
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 94
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 95
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 96
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 97
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 98
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 99
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 100
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #9
 [RG-DRIVER] CycleIn called, portNum=0, tick=2
@@ -918,67 +271,19 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-F' style main heartbeat: 1
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 101
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 102
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 103
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 104
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 105
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 106
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 107
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 108
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 109
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 110
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #10
 [RG-DRIVER] CycleIn called, portNum=0, tick=3
@@ -989,63 +294,21 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 111
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 112
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 113
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 114
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 115
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 116
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 117
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 118
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 119
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 120
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #11
 [RG-DRIVER] CycleIn called, portNum=0, tick=4
@@ -1058,63 +321,19 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 121
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 122
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 123
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 124
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 125
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 126
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 127
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 128
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 129
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 130
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #12
 [RG-DRIVER] CycleIn called, portNum=0, tick=5
@@ -1123,63 +342,20 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 131
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 132
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 133
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 134
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 135
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 136
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 137
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 138
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 139
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 140
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #13
 [RG-DRIVER] CycleIn called, portNum=0, tick=6
@@ -1191,64 +367,22 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 141
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 142
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 143
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 144
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 145
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 146
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 147
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 148
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 149
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 150
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #14
 [RG-DRIVER] CycleIn called, portNum=0, tick=7
@@ -1257,62 +391,18 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 151
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 152
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 153
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 154
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 155
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 156
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 157
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 158
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 159
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 160
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #15
 [RG-DRIVER] CycleIn called, portNum=0, tick=0
@@ -1325,65 +415,23 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 161
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 162
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 163
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 164
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 165
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 166
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 167
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 168
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 169
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 170
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=12
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #16
 [RG-DRIVER] CycleIn called, portNum=0, tick=1
@@ -1392,61 +440,19 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 171
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 172
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 173
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 174
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 175
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 176
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 177
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 178
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 179
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 180
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #17
 [RG-DRIVER] CycleIn called, portNum=0, tick=2
@@ -1458,66 +464,18 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 181
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 182
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 183
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 184
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 185
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 186
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 187
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 188
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 189
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 190
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #18
 [RG-DRIVER] CycleIn called, portNum=0, tick=3
@@ -1526,68 +484,22 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 191
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 192
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 193
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 194
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 195
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 196
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 197
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 198
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 199
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 200
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #19
 [RG-DRIVER] CycleIn called, portNum=0, tick=4
@@ -1600,66 +512,20 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-F' style main heartbeat: 2
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 201
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 202
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 203
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 204
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 205
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 206
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 207
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 208
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 209
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 210
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #20
 [RG-DRIVER] CycleIn called, portNum=0, tick=5
@@ -1669,66 +535,18 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 211
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 212
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 213
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 214
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 215
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 216
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 217
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 218
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 219
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 220
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #21
 [RG-DRIVER] CycleIn called, portNum=0, tick=6
@@ -1739,68 +557,24 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 221
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 222
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 223
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 224
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 225
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 226
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 227
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 228
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 229
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 230
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #22
 [RG-DRIVER] CycleIn called, portNum=0, tick=7
@@ -1811,63 +585,16 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 231
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 232
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 233
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 234
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 235
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 236
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 237
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 238
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 239
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 240
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #23
 [RG-DRIVER] CycleIn called, portNum=0, tick=0
@@ -1879,66 +606,21 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 241
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 242
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 243
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 244
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 245
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 246
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 247
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 248
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 249
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 250
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #24
 [RG-DRIVER] CycleIn called, portNum=0, tick=1
@@ -1947,65 +629,22 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 251
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 252
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 253
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 254
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 255
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 256
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 257
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 258
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 259
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 260
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #25
 [RG-DRIVER] CycleIn called, portNum=0, tick=2
@@ -2016,72 +655,19 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 261
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 262
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 263
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 264
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 265
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 266
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=24
-[TCP-SERVER] Received header: 0xDE 0xAD 0xBE 0xEF
-[COMSTUB] drvDataIn called: status=0, size=24, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 267
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'cmdDisp' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'cmdDisp' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 268
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 269
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 270
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #26
 [RG-DRIVER] CycleIn called, portNum=0, tick=3
@@ -2092,63 +678,19 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 271
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 272
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 273
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 274
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 275
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 276
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 277
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 278
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 279
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 280
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #27
 [RG-DRIVER] CycleIn called, portNum=0, tick=4
@@ -2160,66 +702,22 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 281
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 282
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 283
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 284
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 285
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 286
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 287
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 288
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 289
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 290
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #28
 [RG-DRIVER] CycleIn called, portNum=0, tick=5
@@ -2230,63 +728,24 @@ RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 291
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 292
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 293
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 294
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 295
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 296
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
+[TCP-SERVER] Received data: size=24
+[TCP-SERVER] Received header: 0xDE 0xAD 0xBE 0xEF
+[COMSTUB] drvDataIn called: status=0, size=24, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 297
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 298
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 299
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 300
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 24 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 31 bytes
+RTEMSQueue: Receive for 'cmdDisp' with capacity=16398, msgSize=1024
+RTEMSQueue: Receive for 'cmdDisp' with capacity=16398, msgSize=1024
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #29
 [RG-DRIVER] CycleIn called, portNum=0, tick=6
@@ -2297,67 +756,25 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-F' style main heartbeat: 3
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 301
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 302
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 303
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 12 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 304
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 305
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 306
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 307
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 308
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 309
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 310
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #30
 [RG-DRIVER] CycleIn called, portNum=0, tick=7
@@ -2367,64 +784,17 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 311
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 312
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 313
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 314
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 315
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 316
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 317
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 318
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 319
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 320
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #31
 [RG-DRIVER] CycleIn called, portNum=0, tick=0
@@ -2436,66 +806,21 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 321
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 322
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 323
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 324
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 325
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 326
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 327
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 328
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 329
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 330
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #32
 [RG-DRIVER] CycleIn called, portNum=0, tick=1
@@ -2504,65 +829,22 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
+[COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 331
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 332
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 333
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 334
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 335
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 336
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 337
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 338
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 339
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 340
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #33
 [RG-DRIVER] CycleIn called, portNum=0, tick=2
@@ -2573,66 +855,19 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 341
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 342
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 343
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 344
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 345
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 346
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 347
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 348
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 349
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 350
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #34
 [RG-DRIVER] CycleIn called, portNum=0, tick=3
@@ -2642,64 +877,17 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 351
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 352
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 353
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 354
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 355
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 356
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 357
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 358
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 359
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 360
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #35
 [RG-DRIVER] CycleIn called, portNum=0, tick=4
@@ -2711,66 +899,25 @@ RateGroupDriver: CycleIn_handler completed
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 361
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
 RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 362
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 363
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 364
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TCP-SERVER] Received data: size=12
 [TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 365
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
+[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfd58
 [COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 366
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 367
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 368
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 369
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 370
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
+[DEFRAMER-DEBUG] Added 12 bytes to ring buffer
+[DEFRAMER-DEBUG] processRing called with 19 bytes
 [TICK] Manually calling timerDriver.generateTick()
 [TIMER] Manually generating timer tick #36
 [RG-DRIVER] CycleIn called, portNum=0, tick=5
@@ -2779,851 +926,3 @@ RateGroupDriver: CycleIn_handler completed
 [TLMCHAN] Received telemetry: id=0x100, size=4
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
 RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 371
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 372
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 373
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 374
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 375
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 376
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 377
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 378
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 379
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 380
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #37
-[RG-DRIVER] CycleIn called, portNum=0, tick=6
-[RG-DRIVER] Triggering CycleOut port 0
-[RG-DRIVER] Triggering CycleOut port 1
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 381
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 382
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 383
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 384
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 385
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 386
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 387
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 388
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 389
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 390
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #38
-[RG-DRIVER] CycleIn called, portNum=0, tick=7
-[RG-DRIVER] Triggering CycleOut port 0
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 391
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 392
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 393
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 394
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 395
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 396
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 397
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 398
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 399
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 400
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #39
-[RG-DRIVER] CycleIn called, portNum=0, tick=0
-[RG-DRIVER] Triggering CycleOut port 0
-[RG-DRIVER] Triggering CycleOut port 1
-[RG-DRIVER] Triggering CycleOut port 2
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-F' style main heartbeat: 4
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 401
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 402
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 403
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 404
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 405
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 406
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 407
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 408
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 409
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 410
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #40
-[RG-DRIVER] CycleIn called, portNum=0, tick=1
-[RG-DRIVER] Triggering CycleOut port 0
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 411
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 412
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 413
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 414
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 415
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 416
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 417
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 418
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 419
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 420
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #41
-[RG-DRIVER] CycleIn called, portNum=0, tick=2
-[RG-DRIVER] Triggering CycleOut port 0
-[RG-DRIVER] Triggering CycleOut port 1
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 421
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 422
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 423
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 424
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 425
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 426
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 427
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 428
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 429
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 430
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #42
-[RG-DRIVER] CycleIn called, portNum=0, tick=3
-[RG-DRIVER] Triggering CycleOut port 0
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 431
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 432
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 433
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 434
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 435
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 436
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 437
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 438
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 439
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 440
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #43
-[RG-DRIVER] CycleIn called, portNum=0, tick=4
-[RG-DRIVER] Triggering CycleOut port 0
-[RG-DRIVER] Triggering CycleOut port 1
-[RG-DRIVER] Triggering CycleOut port 2
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 441
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 442
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 443
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 444
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 445
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 446
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 447
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 448
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 449
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 450
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #44
-[RG-DRIVER] CycleIn called, portNum=0, tick=5
-[RG-DRIVER] Triggering CycleOut port 0
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 451
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 452
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 453
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 454
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 455
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 456
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 457
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 458
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 459
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 460
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #45
-[RG-DRIVER] CycleIn called, portNum=0, tick=6
-[RG-DRIVER] Triggering CycleOut port 0
-[RG-DRIVER] Triggering CycleOut port 1
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 461
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 462
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 463
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 464
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 465
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 466
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 467
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 468
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 469
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 470
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #46
-[RG-DRIVER] CycleIn called, portNum=0, tick=7
-[RG-DRIVER] Triggering CycleOut port 0
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 471
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 472
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 473
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 474
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 475
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 476
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 477
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 478
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 479
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 480
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #47
-[RG-DRIVER] CycleIn called, portNum=0, tick=0
-[RG-DRIVER] Triggering CycleOut port 0
-[RG-DRIVER] Triggering CycleOut port 1
-[RG-DRIVER] Triggering CycleOut port 2
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 481
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-RTEMSQueue: Receive for 'rateGroup2' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 482
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 483
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 484
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 485
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 486
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 487
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 488
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 489
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 490
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced
-[MAIN] Calling LedBlinker::checkAndProcessTimerTick()
-[TICK] Manually calling timerDriver.generateTick()
-[TIMER] Manually generating timer tick #48
-[RG-DRIVER] CycleIn called, portNum=0, tick=1
-[RG-DRIVER] Triggering CycleOut port 0
-RateGroupDriver: CycleIn_handler completed
-[TLMCHAN] Received telemetry: id=0x100, size=4
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-RTEMSQueue: Receive for 'rateGroup1' with capacity=24, msgSize=24
-[TCP-SERVER] Received data: size=12
-[TCP-SERVER] Received header: 0x73 0x69 0x74 0x74
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 491
-[TLMCHAN] Sent 1 telemetry entries
-[MAIN] Telemetry downlink forced
-[COMSTUB] drvDataIn called: status=0, size=12, data=0xadfb58
-[COMSTUB] Forwarding data to deframer
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-RTEMSQueue: Receive for 'comQueue' with capacity=16398, msgSize=1024
-[MAIN] Forcing telemetry downlink...
-[TLMCHAN] Run handler called: 492
-[TLMCHAN] Sent 0 telemetry entries
-[MAIN] Telemetry downlink forced

@@ -142,9 +142,9 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
 
     // Only write packets if connected
     if (not this->isConnected_PktSend_OutputPort(0)) {
-    #if DEBUG_TLMCHAN
+#if DEBUG_TLMCHAN
         printf("[TLMCHAN] PktSend port not connected\n");
-    #endif
+#endif
         return;
     }
 
@@ -169,6 +169,16 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
 
             // check to see if this packet is full, if so, send it
             if (Fw::FW_SERIALIZE_NO_ROOM_LEFT == stat) {
+                printf("[TLMCHAN] Sending packet with %llu entries to PktSend_out\n", pkt.getNumEntries());
+                // Hexdump first few bytes of buffer
+                printf("[TLMCHAN] Packet data: ");
+                const U8* bufAddr = pkt.getBuffer().getBuffAddr();
+                U32 bufLen = pkt.getBuffer().getBuffLength();
+                for (U32 i = 0; i < (bufLen > 16 ? 16 : bufLen); i++) {
+                    printf("%02X ", bufAddr[i]);
+                }
+                printf("\n");
+
                 this->PktSend_out(0, pkt.getBuffer(), 0);
                 // reset packet for more entries
                 pkt.resetPktSer();
@@ -192,9 +202,9 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
     if (pkt.getNumEntries() > 0) {
         this->PktSend_out(0, pkt.getBuffer(), 0);
     }
-    #if DEBUG_TLMCHAN
+#if DEBUG_TLMCHAN
     printf("[TLMCHAN] Sent %llu telemetry entries\n", pkt.getNumEntries());
-    #endif
+#endif
 }  // end run handler
 
 }  // namespace Svc

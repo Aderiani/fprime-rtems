@@ -22,7 +22,6 @@ ComStub::~ComStub() {}
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
-// In Svc/ComStub/ComStub.cpp, modify the comDataIn_handler:
 
 Drv::SendStatus ComStub::comDataIn_handler(const FwIndexType portNum, Fw::Buffer& sendBuffer) {
     // Add debug logs
@@ -58,6 +57,9 @@ Drv::SendStatus ComStub::comDataIn_handler(const FwIndexType portNum, Fw::Buffer
         printf("[COMSTUB] comStatus port not connected!\n");
     }
     
+    printf("[COMSTUB-DEBUG] Sent status=%d to framer\n", comSuccess.e);
+
+
     // Restore initialization state
     this->m_reinitialize = previousInit;
     

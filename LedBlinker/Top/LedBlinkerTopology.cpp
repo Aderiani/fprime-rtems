@@ -239,6 +239,7 @@ void setupTopology(const TopologyState& state) {
     timerDriver.start();
     Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
 
+
 }
 
 void teardownTopology(const TopologyState& state) {
