@@ -65,74 +65,6 @@ bool GR740TimerDriver::start() {
     m_running = true;
     m_lastTickTime.now(); // Reset last tick time
     
-    // Create a dedicated task for timer ticks
-    // Note: Don't use Os::Task::spawn directly if it's not in your API
-    rtems_status_code status;
-    rtems_id timerTaskId;
-    
-    // Create a simple RTEMS task for the timer
-    status = rtems_task_create(
-        rtems_build_name('T', 'I', 'M', 'R'),
-        100,                 // Priority
-        8 * 1024,            // Stack size
-        RTEMS_DEFAULT_MODES,
-        RTEMS_DEFAULT_ATTRIBUTES,
-        &timerTaskId
-    );
-    
-    if (status != RTEMS_SUCCESSFUL) {
-        printf("GR740TimerDriver: Failed to create timer task: %d\n", status);
-        m_running = false;
-        return false;
-    }
-    
-    // Set up context pointer to this object
-    struct TimerTaskContext {
-        GR740TimerDriver* driver;
-    };
-    
-    TimerTaskContext* context = new TimerTaskContext();
-    context->driver = this;
-    
-    // Start the timer task
-    status = rtems_task_start(
-        timerTaskId,
-        [](rtems_task_argument arg) {
-            TimerTaskContext* ctx = reinterpret_cast<TimerTaskContext*>(arg);
-            GR740TimerDriver* driver = ctx->driver;
-            
-            printf("GR740TimerDriver: Timer task started\n");
-            
-            while (driver->m_running) {
-                // Get current time
-                Os::RawTime currentTime;
-                currentTime.now();
-                
-                // Generate a tick
-                driver->CycleOut_out(0, currentTime);
-                printf("GR740TimerDriver: Generated tick #%u\n", driver->m_cycleCount);
-                
-                // Update count
-                driver->m_cycleCount++;
-                driver->tlmWrite_TimerCycles(driver->m_cycleCount);
-                
-                // Sleep for one cycle period
-                rtems_task_wake_after(driver->m_ticksPerCycle);
-            }
-            
-            delete ctx;
-            rtems_task_delete(RTEMS_SELF);
-        },
-        reinterpret_cast<rtems_task_argument>(context)
-    );
-    
-    if (status != RTEMS_SUCCESSFUL) {
-        printf("GR740TimerDriver: Failed to start timer task: %d\n", status);
-        delete context;
-        m_running = false;
-        return false;
-    }
-    
     this->log_ACTIVITY_HI_TimerStarted();
     return true;
 }
@@ -167,8 +99,8 @@ bool GR740TimerDriver::checkTick() {
         return false;
     }
     
-    Os::RawTime currentTime;
-    currentTime.now();
+    // Os::RawTime currentTime;
+    // currentTime.now();
     
     // Get time difference in RTEMS ticks by using the rtems_clock functions directly
     rtems_interval current_ticks = rtems_clock_get_ticks_since_boot();

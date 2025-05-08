@@ -22,7 +22,6 @@ void system_init();
 #endif
 
 extern "C" {
-#include "Drv/RTEMS/GR740/Timer/GR740TimerDriver.hpp"
 #include "RTEMSInit/network_init.h"
 
 // // In Main.cpp, at various points:
@@ -65,42 +64,33 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // signal(SIGTERM, signalHandler);
     // (void)printf("Hit Ctrl-C to quit\n");
 
-    printf("Entering F' main infinite loop\n");
-
-    // checkResources();
+    // In LedBlinker/Main.cpp main loop:
     volatile bool keep_running = true;
-    rtems_id task_id;
-    rtems_task_ident(RTEMS_SELF, RTEMS_SEARCH_LOCAL_NODE, &task_id);
-    printf("Main task ID: %lu\n", (unsigned long)task_id);
-
-    // In the main loop
-    extern Drv::GR740TimerDriver timerDriver;
-
-    // In the main loop:
     unsigned int counter = 0;
-    rtems_interval lastTickTime = rtems_clock_get_ticks_since_boot();
-    rtems_interval tickInterval = rtems_clock_get_ticks_per_second();  // 1 second = 1Hz
+
+    printf("Entering F' main infinite loop with periodic timer ticks\n");
+
+    // Critical: Don't exit the loop until explicitly told to
     while (keep_running) {
-        // Print heartbeat every 10 iterations
-        if (counter % 1000 == 0) {
-            printf("F' style main heartbeat2: %u\n", counter / 10);
+        // Print heartbeat occasionally
+        if (counter % 100 == 0) {
+            printf("F' style main heartbeat: %u\n", counter / 100);
         }
         counter++;
 
-        // Check if time for a tick (1Hz)
-        // Check if time for a tick (1Hz)
-        rtems_interval currentTime = rtems_clock_get_ticks_since_boot();
-        if (currentTime - lastTickTime >= tickInterval) {
-            lastTickTime = currentTime;
-
-            // Generate a timer tick using the public method
-            printf("[MAIN] Calling timer tick generator\n");
-            timerDriver.generateTick();
+        // Generate a tick every second (approximately)
+        if (counter % 10 == 0) {  
+            printf("[MAIN] Calling LedBlinker::checkAndProcessTimerTick()\n");
+            LedBlinker::checkAndProcessTimerTick();
         }
 
-        // Sleep for a short period - much shorter than timer interval
-        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 100);  // 10ms
+        // Sleep for a short period
+        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 10);  
     }
+
+    // If we somehow exit the loop, don't exit immediately
+    printf("Main loop exited, suspending main task\n");
+    rtems_task_suspend(RTEMS_SELF);  // Keep the task alive
 
     // We should never reach here
     printf("Tearing down topology");
