@@ -43,9 +43,25 @@ Svc::RateGroupDriver::DividerSet rateGroupDivisorsSet{{{1, 0}, {2, 0}, {4, 0}}};
 
 // Rate groups may supply a context token to each of the attached children whose purpose is set by the project. The
 // reference topology sets each token to zero as these contexts are unused in this project.
-NATIVE_INT_TYPE rateGroup1Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
-NATIVE_INT_TYPE rateGroup2Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
-NATIVE_INT_TYPE rateGroup3Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {};
+// Rate groups may supply a context token to each of the attached children whose purpose is set by the project. The
+// reference topology sets each token to meaningful values for debugging.
+NATIVE_INT_TYPE rateGroup1Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {
+    10, // Context for tlmSend.Run (RateGroupMemberOut[0])
+    11, // Context for fileDownlink.Run (RateGroupMemberOut[1])
+    12, // Context for systemResources.run (RateGroupMemberOut[2]) - when added
+    13, // Context for led.run (RateGroupMemberOut[3])
+    0, 0, 0, 0, 0, 0 // Rest initialized to 0
+};
+NATIVE_INT_TYPE rateGroup2Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {
+    20, // Context for cmdSeq.schedIn (RateGroupMemberOut[0])
+    0, 0, 0, 0, 0, 0, 0, 0, 0 // Rest initialized to 0
+};
+NATIVE_INT_TYPE rateGroup3Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {
+    30, // Context for health.Run (RateGroupMemberOut[0])
+    31, // Context for blockDrv.Sched (RateGroupMemberOut[1]) - when added
+    32, // Context for bufferManager.schedIn (RateGroupMemberOut[2])
+    0, 0, 0, 0, 0, 0, 0 // Rest initialized to 0
+};
 
 // A number of constants are needed for construction of the topology. These are specified here.
 enum TopologyConstants {

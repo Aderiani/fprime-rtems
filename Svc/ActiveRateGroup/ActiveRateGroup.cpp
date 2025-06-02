@@ -1,131 +1,132 @@
 /*
-* \author: Tim Canham
-* \file:
-* \brief
-*
-* This file implements the ActiveRateGroup component,
-* which invokes a set of components the comprise the rate group.
-*
-*   Copyright 2014-2015, by the California Institute of Technology.
-*   ALL RIGHTS RESERVED. United States Government Sponsorship
-*   acknowledged.
-*
-*/
+ * \author: Tim Canham
+ * \file:
+ * \brief
+ *
+ * This file implements the ActiveRateGroup component,
+ * which invokes a set of components the comprise the rate group.
+ *
+ *   Copyright 2014-2015, by the California Institute of Technology.
+ *   ALL RIGHTS RESERVED. United States Government Sponsorship
+ *   acknowledged.
+ *
+ */
 
-#include <Svc/ActiveRateGroup/ActiveRateGroup.hpp>
 #include <ActiveRateGroupCfg.hpp>
 #include <FpConfig.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <Os/Console.hpp>
+#include <Svc/ActiveRateGroup/ActiveRateGroup.hpp>
 #define DEBUG_RATEGROUP 1  // Set to 0 to disable debug prints
 
 namespace Svc {
 
-    ActiveRateGroup::ActiveRateGroup(const char* compName) :
-            ActiveRateGroupComponentBase(compName),
-            m_cycles(0),
-            m_maxTime(0),
-            m_cycleStarted(false),
-            m_numContexts(0),
-            m_overrunThrottle(0),
-            m_cycleSlips(0) {
+ActiveRateGroup::ActiveRateGroup(const char* compName)
+    : ActiveRateGroupComponentBase(compName),
+      m_cycles(0),
+      m_maxTime(0),
+      m_cycleStarted(false),
+      m_numContexts(0),
+      m_overrunThrottle(0),
+      m_cycleSlips(0) {}
+
+void ActiveRateGroup::configure(NATIVE_INT_TYPE contexts[], NATIVE_INT_TYPE numContexts) {
+    FW_ASSERT(contexts);
+    FW_ASSERT(numContexts == this->getNum_RateGroupMemberOut_OutputPorts(), numContexts,
+              this->getNum_RateGroupMemberOut_OutputPorts());
+    FW_ASSERT(FW_NUM_ARRAY_ELEMENTS(this->m_contexts) == this->getNum_RateGroupMemberOut_OutputPorts(),
+              FW_NUM_ARRAY_ELEMENTS(this->m_contexts), this->getNum_RateGroupMemberOut_OutputPorts());
+
+    this->m_numContexts = numContexts;
+    // copy context values
+    for (NATIVE_INT_TYPE entry = 0; entry < this->m_numContexts; entry++) {
+        this->m_contexts[entry] = contexts[entry];
     }
-
-    void ActiveRateGroup::configure( NATIVE_INT_TYPE contexts[], NATIVE_INT_TYPE numContexts) {
-        FW_ASSERT(contexts);
-        FW_ASSERT(numContexts == this->getNum_RateGroupMemberOut_OutputPorts(),numContexts,this->getNum_RateGroupMemberOut_OutputPorts());
-        FW_ASSERT(FW_NUM_ARRAY_ELEMENTS(this->m_contexts) == this->getNum_RateGroupMemberOut_OutputPorts(),
-                FW_NUM_ARRAY_ELEMENTS(this->m_contexts),
-                this->getNum_RateGroupMemberOut_OutputPorts());
-
-        this->m_numContexts = numContexts;
-        // copy context values
-        for (NATIVE_INT_TYPE entry = 0; entry < this->m_numContexts; entry++) {
-            this->m_contexts[entry] = contexts[entry];
-        }
-    }
-
-    ActiveRateGroup::~ActiveRateGroup() {
-
-    }
-
-    void ActiveRateGroup::preamble() {
-        this->log_DIAGNOSTIC_RateGroupStarted();
-    }
-
-    void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleStart) {
-
-        #if DEBUG_RATEGROUP
-        printf("[RATEGROUP%d] Cycle handler called\n", portNum);
-        #endif
-
-        // Make sure it's been configured
-        FW_ASSERT(this->m_numContexts);
-
-        Os::RawTime endTime;
-
-        this->m_cycleStarted = false;
-
-        // invoke any members of the rate group
-        for (NATIVE_INT_TYPE port = 0; port < this->m_numContexts; port++) {
-            if (this->isConnected_RateGroupMemberOut_OutputPort(port)) {
-                this->RateGroupMemberOut_out(port, static_cast<U32>(this->m_contexts[port]));
-            }
-        }
-
-        // grab timer for endTime of cycle
-        endTime.now();
-
-        // get rate group execution time
-        U32 cycleTime;
-        // Cast to void as the only possible error is overflow, which we can't handle other
-        // than capping cycleTime to max value of U32 (which is done in getDiffUsec anyways)
-        (void) endTime.getDiffUsec(cycleStart, cycleTime);
-
-        // check to see if the time has exceeded the previous maximum
-        if (cycleTime > this->m_maxTime) {
-            this->m_maxTime = cycleTime;
-        }
-
-        // update cycle telemetry
-        this->tlmWrite_RgMaxTime(this->m_maxTime);
-
-        // check for cycle slip. That will happen if new cycle message has been received
-        // which will cause flag will be set again.
-        if (this->m_cycleStarted) {
-            this->m_cycleSlips++;
-            if (this->m_overrunThrottle < ACTIVE_RATE_GROUP_OVERRUN_THROTTLE) {
-                this->log_WARNING_HI_RateGroupCycleSlip(this->m_cycles);
-                this->m_overrunThrottle++;
-            }
-            // update cycle slips
-            this->tlmWrite_RgCycleSlips(this->m_cycleSlips);
-        } else { // if cycle is okay start decrementing throttle value
-            if (this->m_overrunThrottle > 0) {
-                this->m_overrunThrottle--;
-            }
-        }
-
-        // increment cycle
-        this->m_cycles++;
-
-        printf("DEBUG: RateGroup%d cycle complete in %d cycles.\n", portNum, this->m_cycles);
-        #if DEBUG_RATEGROUP
-        printf("[RATEGROUP%d] Cycle complete in %d us\n", 
-               portNum, cycleTime);
-        #endif
-
-    }
-
-    void ActiveRateGroup::CycleIn_preMsgHook(FwIndexType portNum, Os::RawTime& cycleStart) {
-        // set flag to indicate cycle has started. Check in thread for overflow.
-        this->m_cycleStarted = true;
-    }
-
-    void ActiveRateGroup::PingIn_handler(FwIndexType portNum, U32 key) {
-        // return the key to health
-        this->PingOut_out(0,key);
-    }
-
-
 }
+
+ActiveRateGroup::~ActiveRateGroup() {}
+
+void ActiveRateGroup::preamble() {
+    this->log_DIAGNOSTIC_RateGroupStarted();
+}
+
+void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleStart) {
+#if DEBUG_RATEGROUP
+    printf("[RATEGROUP%d] Cycle handler called\n", portNum);
+#endif
+    
+
+    static U32 activeRateGroupCalls = 0;
+    printf("[ACTIVE-RG] CycleIn_handler called: %u, numContexts=%d\n", ++activeRateGroupCalls, this->m_numContexts);
+
+
+    // Make sure it's been configured
+    FW_ASSERT(this->m_numContexts);
+
+    Os::RawTime endTime;
+
+    this->m_cycleStarted = false;
+
+    // Call each output port in succession with its associated context
+    for (NATIVE_INT_TYPE port = 0; port < this->m_numContexts; port++) {
+        if (this->isConnected_RateGroupMemberOut_OutputPort(port)) {
+            printf("[ACTIVE-RG] Calling RateGroupMemberOut[%d] with context=%d\n", port, this->m_contexts[port]);
+            this->RateGroupMemberOut_out(port, static_cast<U32>(this->m_contexts[port]));
+        } else {
+            printf("[ACTIVE-RG] RateGroupMemberOut[%d] not connected\n", port);
+        }
+    }
+
+    // grab timer for endTime of cycle
+    endTime.now();
+
+    // get rate group execution time
+    U32 cycleTime;
+    // Cast to void as the only possible error is overflow, which we can't handle other
+    // than capping cycleTime to max value of U32 (which is done in getDiffUsec anyways)
+    (void)endTime.getDiffUsec(cycleStart, cycleTime);
+
+    // check to see if the time has exceeded the previous maximum
+    if (cycleTime > this->m_maxTime) {
+        this->m_maxTime = cycleTime;
+    }
+
+    // update cycle telemetry
+    this->tlmWrite_RgMaxTime(this->m_maxTime);
+
+    // check for cycle slip. That will happen if new cycle message has been received
+    // which will cause flag will be set again.
+    if (this->m_cycleStarted) {
+        this->m_cycleSlips++;
+        if (this->m_overrunThrottle < ACTIVE_RATE_GROUP_OVERRUN_THROTTLE) {
+            this->log_WARNING_HI_RateGroupCycleSlip(this->m_cycles);
+            this->m_overrunThrottle++;
+        }
+        // update cycle slips
+        this->tlmWrite_RgCycleSlips(this->m_cycleSlips);
+    } else {  // if cycle is okay start decrementing throttle value
+        if (this->m_overrunThrottle > 0) {
+            this->m_overrunThrottle--;
+        }
+    }
+
+    // increment cycle
+    this->m_cycles++;
+
+    printf("DEBUG: RateGroup%d cycle complete in %d cycles.\n", portNum, this->m_cycles);
+#if DEBUG_RATEGROUP
+    printf("[RATEGROUP%d] Cycle complete in %d us\n", portNum, cycleTime);
+#endif
+}
+
+void ActiveRateGroup::CycleIn_preMsgHook(FwIndexType portNum, Os::RawTime& cycleStart) {
+    // set flag to indicate cycle has started. Check in thread for overflow.
+    this->m_cycleStarted = true;
+}
+
+void ActiveRateGroup::PingIn_handler(FwIndexType portNum, U32 key) {
+    // return the key to health
+    this->PingOut_out(0, key);
+}
+
+}  // namespace Svc
