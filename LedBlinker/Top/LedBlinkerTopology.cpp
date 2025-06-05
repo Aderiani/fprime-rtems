@@ -169,6 +169,15 @@ void configureTopology() {
     comQueue.configure(configurationTable, 0, mallocator);
 
     tcpServer.configure("192.168.0.67", 50000, 0, 100, 16 * 1024);  // 16KB buffer
+
+
+    // Initialize GPIO driver
+    if (!gpioDriver.initialize()) {
+        Fw::Logger::log("[ERROR] Failed to initialize GPIO driver\n");
+    }
+    
+    // Configure LED pin (port 0 = LED7)
+    gpioDriver.configurePin(0, Drv::GR740GpioDriver::GPIO_DIRECTION_OUTPUT, Fw::Logic::LOW);
 }
 
 bool checkAndProcessTimerTick() {
