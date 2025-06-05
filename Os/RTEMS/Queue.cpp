@@ -159,8 +159,8 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
                                            FwSizeType& actualSize,
                                            FwQueuePriorityType& priority) {
     
-    printf("[RTEMS-QUEUE] Receive for '%s' with capacity=%d, msgSize=%d\n", 
-           m_handle.name, (int)capacity, (int)m_handle.msgSize);
+    // printf("[RTEMS-QUEUE] Receive for '%s' with capacity=%d, msgSize=%d\n", 
+    //        m_handle.name, (int)capacity, (int)m_handle.msgSize);
     
     if (m_handle.queue_id == 0) {
         printf("[RTEMS-QUEUE] Receive error - queue not initialized\n");
@@ -204,7 +204,7 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
         return QueueInterface::Status::EMPTY;
     }
 
-    printf("[RTEMS-QUEUE] Queue has %u pending messages\n", pending);
+    // printf("[RTEMS-QUEUE] Queue has %u pending messages\n", pending);
 
     rtems_option wait_option = (block == BlockingType::BLOCKING) ? RTEMS_WAIT : RTEMS_NO_WAIT;
     size_t msg_size = 0;
@@ -217,14 +217,14 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
                                                            RTEMS_NO_TIMEOUT);
 
     if (status == RTEMS_SUCCESSFUL) {
-        printf("[RTEMS-QUEUE] Successfully received %zu bytes\n", msg_size);
+        // printf("[RTEMS-QUEUE] Successfully received %zu bytes\n", msg_size);
         
-        // Debug: Print first few bytes of received message
-        printf("[RTEMS-QUEUE] Message data: ");
-        for (size_t i = 0; i < (msg_size > 8 ? 8 : msg_size); i++) {
-            printf("%02X ", destination[i]);
-        }
-        printf("\n");
+        // // Debug: Print first few bytes of received message
+        // printf("[RTEMS-QUEUE] Message data: ");
+        // for (size_t i = 0; i < (msg_size > 8 ? 8 : msg_size); i++) {
+        //     printf("%02X ", destination[i]);
+        // }
+        // printf("\n");
         
         actualSize = static_cast<FwSizeType>(msg_size);
         priority = 0;  // RTEMS doesn't use priority for message queues by default

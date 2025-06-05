@@ -10,40 +10,40 @@
 // ======================================================================
 
 #include <Drv/Ip/TcpServerSocket.hpp>
+#include <FpConfig.hpp>
 #include <Fw/Logger/Logger.hpp>
 #include <Fw/Types/Assert.hpp>
-#include <FpConfig.hpp>
 // In TcpServerSocket.cpp, add these includes at the top
 #ifdef __rtems__
-#include <fcntl.h>         // For fcntl, F_GETFL, F_SETFL, O_NONBLOCK
-#include <sys/select.h>     // For select, fd_set, FD_ZERO, FD_SET
-#include <sys/time.h>       // For struct timeval
-#include <netinet/tcp.h>    // For TCP_NODELAY
-#include <errno.h>          // For errno
+#include <errno.h>        // For errno
+#include <fcntl.h>        // For fcntl, F_GETFL, F_SETFL, O_NONBLOCK
+#include <netinet/tcp.h>  // For TCP_NODELAY
+#include <sys/select.h>   // For select, fd_set, FD_ZERO, FD_SET
+#include <sys/time.h>     // For struct timeval
 #endif
 #ifdef TGT_OS_TYPE_VXWORKS
-    #include <socket.h>
-    #include <inetLib.h>
-    #include <fioLib.h>
-    #include <hostLib.h>
-    #include <ioLib.h>
-    #include <vxWorks.h>
-    #include <sockLib.h>
-    #include <taskLib.h>
-    #include <sysLib.h>
-    #include <errnoLib.h>
-    #include <cstring>
+#include <errnoLib.h>
+#include <fioLib.h>
+#include <hostLib.h>
+#include <inetLib.h>
+#include <ioLib.h>
+#include <sockLib.h>
+#include <socket.h>
+#include <sysLib.h>
+#include <taskLib.h>
+#include <vxWorks.h>
+#include <cstring>
 #elif defined TGT_OS_TYPE_LINUX || defined TGT_OS_TYPE_DARWIN || defined __rtems__
-    #include <sys/socket.h>
-    #include <unistd.h>
-    #include <arpa/inet.h>
-    #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
 #else
-    #error OS not supported for IP Socket Communications
+#error OS not supported for IP Socket Communications
 #endif
 
-#include <cstring>
 #include <cerrno>
+#include <cstring>
 namespace Drv {
 
 TcpServerSocket::TcpServerSocket() : IpSocket() {}
@@ -91,12 +91,12 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
         ::memset(&address, 0, sizeof(address));
         address.sin_family = AF_INET;
         address.sin_port = htons(this->m_port);
-        
+
         // Use inet_addr to convert "127.0.0.1" to network byte order
         address.sin_addr.s_addr = inet_addr("127.0.0.1");
-        
+
         Fw::Logger::log("First bind attempt failed, trying loopback interface...\n");
-        
+
         if (::bind(serverFd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
             Fw::Logger::log("[ERROR] Failed to bind to port %hu: %d\n", m_port, errno);
             ::close(serverFd);
@@ -122,14 +122,12 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
     char addrStr[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(address.sin_addr), addrStr, INET_ADDRSTRLEN);
     Fw::Logger::log("Listening for single client at %s:%hu\n", addrStr, ntohs(address.sin_port));
-    
+
     FW_ASSERT(serverFd != -1);
     socketDescriptor.serverFd = serverFd;
-    this->m_port = ntohs(address.sin_port); // Update port if dynamically assigned
+    this->m_port = ntohs(address.sin_port);  // Update port if dynamically assigned
     return SOCK_SUCCESS;
 }
-
-
 
 void TcpServerSocket::terminate(const SocketDescriptor& socketDescriptor) {
     if (socketDescriptor.serverFd != -1) {
@@ -152,25 +150,36 @@ SocketIpStatus TcpServerSocket::openProtocol(SocketDescriptor& socketDescriptor)
     // Accept a client connection
     struct sockaddr_in clientAddr;
     socklen_t addrLen = sizeof(clientAddr);
-    
+
     clientFd = ::accept(serverFd, reinterpret_cast<struct sockaddr*>(&clientAddr), &addrLen);
-    
+
     if (clientFd < 0) {
         Fw::Logger::log("[ERROR] Failed to accept client: %d\n", errno);
         return SOCK_FAILED_TO_ACCEPT;
     }
 
-    #ifdef __rtems__
-    // For RTEMS, set socket buffer sizes to reasonable values
-    int rcvbuf_size = 4096;  // 4KB receive buffer
-    int sndbuf_size = 4096;  // 4KB send buffer
-    setsockopt(clientFd, SOL_SOCKET, SO_RCVBUF, &rcvbuf_size, sizeof(rcvbuf_size));
-    setsockopt(clientFd, SOL_SOCKET, SO_SNDBUF, &sndbuf_size, sizeof(sndbuf_size));
-    
-    // For RTEMS, set some socket options to avoid buffering issues
+#ifdef __rtems__
+    int rcvbuf_size = 4096;
+    int sndbuf_size = 4096;
+    if (setsockopt(clientFd, SOL_SOCKET, SO_RCVBUF, &rcvbuf_size, sizeof(rcvbuf_size)) < 0) {
+        Fw::Logger::log("[WARNING] RTEMS: Failed to set SO_RCVBUF on clientFd %d, errno: %d (%s)\n", clientFd, errno,
+                           strerror(errno));
+    }
+    if (setsockopt(clientFd, SOL_SOCKET, SO_SNDBUF, &sndbuf_size, sizeof(sndbuf_size)) < 0) {
+        Fw::Logger::log("[WARNING] RTEMS: Failed to set SO_SNDBUF on clientFd %d, errno: %d (%s)\n", clientFd, errno,
+                           strerror(errno));
+    }
     int optval = 1;
-    setsockopt(clientFd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval));
-    #endif
+    if (setsockopt(clientFd, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval)) < 0) {
+        Fw::Logger::log("[WARNING] RTEMS: Failed to set SO_KEEPALIVE on clientFd %d, errno: %d (%s)\n", clientFd,
+                           errno, strerror(errno));
+    }
+// You might also want to check TCP_NODELAY if it's important for your application:
+// if (setsockopt(clientFd, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(optval)) < 0) {
+//     Fw::Logger::logMsg("[WARNING] RTEMS: Failed to set TCP_NODELAY on clientFd %d, errno: %d (%s)\n", clientFd,
+// errno, strerror(errno));
+// }
+#endif
 
     // Setup client send timeouts
     if (IpSocket::setupTimeouts(clientFd) != SOCK_SUCCESS) {
@@ -195,4 +204,4 @@ I32 TcpServerSocket::recvProtocol(const SocketDescriptor& socketDescriptor, U8* 
     return size_buf;
 }
 
-} // namespace Drv
+}  // namespace Drv

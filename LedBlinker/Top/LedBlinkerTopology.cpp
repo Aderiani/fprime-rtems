@@ -46,21 +46,21 @@ Svc::RateGroupDriver::DividerSet rateGroupDivisorsSet{{{1, 0}, {2, 0}, {4, 0}}};
 // Rate groups may supply a context token to each of the attached children whose purpose is set by the project. The
 // reference topology sets each token to meaningful values for debugging.
 NATIVE_INT_TYPE rateGroup1Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {
-    10, // Context for tlmSend.Run (RateGroupMemberOut[0])
-    11, // Context for fileDownlink.Run (RateGroupMemberOut[1])
-    12, // Context for systemResources.run (RateGroupMemberOut[2]) - when added
-    13, // Context for led.run (RateGroupMemberOut[3])
-    0, 0, 0, 0, 0, 0 // Rest initialized to 0
+    10,                // Context for tlmSend.Run (RateGroupMemberOut[0])
+    11,                // Context for fileDownlink.Run (RateGroupMemberOut[1])
+    12,                // Context for systemResources.run (RateGroupMemberOut[2]) - when added
+    13,                // Context for led.run (RateGroupMemberOut[3])
+    0,  0, 0, 0, 0, 0  // Rest initialized to 0
 };
 NATIVE_INT_TYPE rateGroup2Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {
-    20, // Context for cmdSeq.schedIn (RateGroupMemberOut[0])
-    0, 0, 0, 0, 0, 0, 0, 0, 0 // Rest initialized to 0
+    20,                         // Context for cmdSeq.schedIn (RateGroupMemberOut[0])
+    0,  0, 0, 0, 0, 0, 0, 0, 0  // Rest initialized to 0
 };
 NATIVE_INT_TYPE rateGroup3Context[Svc::ActiveRateGroup::CONNECTION_COUNT_MAX] = {
-    30, // Context for health.Run (RateGroupMemberOut[0])
-    31, // Context for blockDrv.Sched (RateGroupMemberOut[1]) - when added
-    32, // Context for bufferManager.schedIn (RateGroupMemberOut[2])
-    0, 0, 0, 0, 0, 0, 0 // Rest initialized to 0
+    30,                   // Context for health.Run (RateGroupMemberOut[0])
+    31,                   // Context for blockDrv.Sched (RateGroupMemberOut[1]) - when added
+    32,                   // Context for bufferManager.schedIn (RateGroupMemberOut[2])
+    0,  0, 0, 0, 0, 0, 0  // Rest initialized to 0
 };
 
 // A number of constants are needed for construction of the topology. These are specified here.
@@ -68,7 +68,7 @@ enum TopologyConstants {
     CMD_SEQ_BUFFER_SIZE = 64 * 1024,      // 64KB
     FILE_DOWNLINK_TIMEOUT = 1000,         // 1 second
     FILE_DOWNLINK_COOLDOWN = 1000,        // 1 second
-    FILE_DOWNLINK_CYCLE_TIME = 10000,      // 10 second
+    FILE_DOWNLINK_CYCLE_TIME = 10000,     // 10 second
     FILE_DOWNLINK_FILE_QUEUE_DEPTH = 10,  // 10 files
     HEALTH_WATCHDOG_CODE = 0x123,         // Watchdog code for health component
     COMM_PRIORITY = 49,                   // Communication task priority
@@ -129,7 +129,6 @@ void configureTopology() {
     // Rate group driver needs a divisor list
     rateGroupDriver.configure(rateGroupDivisorsSet);
 
-
     printf("DEBUG: Watchdog initialization DISABLED for testing\n");
     // watchdogDriver.initialize(40);  // Initialize the watchdog driver with a timeout of 40ms
 
@@ -141,17 +140,15 @@ void configureTopology() {
     // File downlink requires some project-derived properties.
     fileDownlink.configure(FILE_DOWNLINK_TIMEOUT, FILE_DOWNLINK_COOLDOWN, FILE_DOWNLINK_CYCLE_TIME,
                            FILE_DOWNLINK_FILE_QUEUE_DEPTH);
-    
 
     // Fix the Parameter database file
     prmDb.configure("PrmDb.dat");
-    
+
     // Set default parameters before reading from file
     U32 defaultBlinkInterval = 1;
-    
+
     // Then try to read from file
     prmDb.readParamFile();
-
 
     // Health is supplied a set of ping entires.
     health.setPingEntries(pingEntries, FW_NUM_ARRAY_ELEMENTS(pingEntries), HEALTH_WATCHDOG_CODE);
@@ -160,22 +157,19 @@ void configureTopology() {
     // tlmSend.setPacketList(LedBlinkerPacketsPkts, LedBlinkerPacketsIgnore, 1);
 
     // Use reasonable values that won't cause memory issues
-    configurationTable.entries[0].depth = 100;  // Events
-    configurationTable.entries[0].priority = 2;
+    configurationTable.entries[0].depth = 200;  // Events
+    configurationTable.entries[0].priority = 0;
 
-    configurationTable.entries[1].depth = 100;  // Telemetry
+    configurationTable.entries[1].depth = 200;  // Telemetry
     configurationTable.entries[1].priority = 1;
 
-    configurationTable.entries[2].depth = 50;  // File Downlink
-    configurationTable.entries[2].priority = 0;
+    configurationTable.entries[2].depth = 100;  // File Downlink
+    configurationTable.entries[2].priority = 2;
     // Command - increase depth significantly
     comQueue.configure(configurationTable, 0, mallocator);
 
     tcpServer.configure("192.168.0.67", 50000, 0, 100, 16 * 1024);  // 16KB buffer
-
-
 }
-
 
 bool checkAndProcessTimerTick() {
     // Instead of checkTick() which might not work as expected,
@@ -185,13 +179,12 @@ bool checkAndProcessTimerTick() {
     return true;
 }
 
-
-
 void setupTopology(const TopologyState& state) {
     // Initialize components one by one
     initComponents(state);
     setBaseIds();
     connectComponents();
+
     configComponents(state);
     // Deployment-specific component configuration. Function provided above. May be inlined, if desired.
     configureTopology();
@@ -216,7 +209,6 @@ void setupTopology(const TopologyState& state) {
     timerDriver.initialize(TIMER_HZ);
     timerDriver.start();
     Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
-
 
 }
 

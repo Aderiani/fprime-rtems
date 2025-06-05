@@ -20,7 +20,8 @@
 		"files.associations": {
 			"cstdlib": "c",
 			"string.h": "c",
-			"strings.h": "c"
+			"strings.h": "c",
+			"cerrno": "cpp"
 		}
 	}
 }

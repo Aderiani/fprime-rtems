@@ -17,7 +17,7 @@
 #include <Fw/Types/Assert.hpp>
 #include <Os/Console.hpp>
 #include <Svc/ActiveRateGroup/ActiveRateGroup.hpp>
-#define DEBUG_RATEGROUP 1  // Set to 0 to disable debug prints
+#define DEBUG_RATEGROUP 0  // Set to 0 to disable debug prints
 
 namespace Svc {
 
@@ -56,8 +56,8 @@ void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleSta
 #endif
     
 
-    static U32 activeRateGroupCalls = 0;
-    printf("[ACTIVE-RG] CycleIn_handler called: %u, numContexts=%d\n", ++activeRateGroupCalls, this->m_numContexts);
+    // static U32 activeRateGroupCalls = 0;
+    // printf("[ACTIVE-RG] CycleIn_handler called: %u, numContexts=%d\n", ++activeRateGroupCalls, this->m_numContexts);
 
 
     // Make sure it's been configured
@@ -70,10 +70,10 @@ void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleSta
     // Call each output port in succession with its associated context
     for (NATIVE_INT_TYPE port = 0; port < this->m_numContexts; port++) {
         if (this->isConnected_RateGroupMemberOut_OutputPort(port)) {
-            printf("[ACTIVE-RG] Calling RateGroupMemberOut[%d] with context=%d\n", port, this->m_contexts[port]);
+            // printf("[ACTIVE-RG] Calling RateGroupMemberOut[%d] with context=%d\n", port, this->m_contexts[port]);
             this->RateGroupMemberOut_out(port, static_cast<U32>(this->m_contexts[port]));
         } else {
-            printf("[ACTIVE-RG] RateGroupMemberOut[%d] not connected\n", port);
+            // printf("[ACTIVE-RG] RateGroupMemberOut[%d] not connected\n", port);
         }
     }
 

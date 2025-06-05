@@ -10,6 +10,7 @@
 // ======================================================================
 
 #include <cstring>
+#include <cerrno>
 #include <Drv/Ip/IpSocket.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <FpConfig.hpp>
@@ -146,12 +147,14 @@ SocketIpStatus IpSocket::send(const SocketDescriptor& socketDescriptor, const U8
         } else if ((sent == -1) && ((errno == EBADF) || (errno == ECONNRESET))) {
             return SOCK_DISCONNECTED;
         } else if (sent == -1) {
+            Fw::Logger::log("[IpSocket::send] SOCK_SEND_ERROR, fd: %d, errno: %d (%s)\n", socketDescriptor.fd, errno, strerror(errno));
             return SOCK_SEND_ERROR;
         }
         FW_ASSERT(sent > 0, sent);
         total += static_cast<U32>(sent);
     }
     if (total < size) {
+        Fw::Logger::log("[IpSocket::send] SOCK_INTERRUPTED_TRY_AGAIN after max iterations, fd: %d, sent %u of %u bytes, last errno during loop: %d (%s)\n", socketDescriptor.fd, total, size, errno, strerror(errno)); // Added strerror
         return SOCK_INTERRUPTED_TRY_AGAIN;
     }
     FW_ASSERT(total == size, static_cast<FwAssertArgType>(total), static_cast<FwAssertArgType>(size));

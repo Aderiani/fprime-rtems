@@ -96,7 +96,7 @@ void TcpServerComponentImpl::sendBuffer(Fw::Buffer buffer, SocketIpStatus status
 }
 
 TcpServerComponentImpl::~TcpServerComponentImpl() {}
-
+ 
 // ----------------------------------------------------------------------
 // Implementations for socket read task virtual methods
 // ----------------------------------------------------------------------

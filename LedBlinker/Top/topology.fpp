@@ -72,7 +72,6 @@ module LedBlinker {
     # Direct graph specifiers
     # ----------------------------------------------------------------------
 
-    
 
     connections Downlink {
 

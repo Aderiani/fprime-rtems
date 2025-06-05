@@ -134,9 +134,6 @@ void TlmChan::TlmRecv_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& ti
     entryToUse->buffer = val;
 }
 
-// Add this SIMPLE debug version to Svc/TlmChan/TlmChan.cpp
-// Replace the entire Run_handler function with this minimal version for testing:
-// Replace the Run_handler in Svc/TlmChan/TlmChan.cpp with this ENHANCED debug version:
 
 void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
     printf("*** TLMCHAN RUN HANDLER CALLED! portNum=%u, context=%u ***\n", portNum, context);
@@ -222,9 +219,10 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
     printf("[TLMCHAN] Run handler completed successfully\n");
 }
 
-// Add this to Svc/TlmChan/TlmChan.cpp - Override the async port handler and task methods
 
-
+void TlmChan::preamble() {
+    printf("[TLMCHAN] Thread started! Component: %s\n", this->getObjName());
+}
 
 
 // void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
@@ -325,5 +323,8 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
     
 //     printf("[TLMCHAN] Run handler completed - sent packets with total %u updated entries\n", updatedCount);
 // }  // end run handler
+
+
+
 
 }  // namespace Svc

@@ -29,13 +29,17 @@ class TlmChan final : public TlmChanComponentBase {
     virtual NATIVE_UINT_TYPE doHash(FwChanIdType id);
     
   PRIVATE:
+
+
     // Port functions
     void TlmRecv_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val);
     void TlmGet_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val);
     
-    //! Handler implementation for Run - MOVED BACK TO PRIVATE
+    //! Handler implementation for Run
     void Run_handler(FwIndexType portNum, U32 context);
-    
+    void preamble() override;
+
+
     //! Handler implementation for pingIn
     void pingIn_handler(const FwIndexType portNum, /*!< The port number*/
                         U32 key                        /*!< Value to return to pinger*/
