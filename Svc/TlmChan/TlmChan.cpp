@@ -81,11 +81,6 @@ void TlmChan::TlmGet_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& tim
 }
 
 void TlmChan::TlmRecv_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& timeTag, Fw::TlmBuffer& val) {
-#if DEBUG_TLMCHAN
-    //printf("[TLMCHAN] Received telemetry: id=0x%X, size=%llu\n", id, val.getBuffLength());
-#endif
-
-    // Compute index for entry
 
     NATIVE_UINT_TYPE index = this->doHash(id);
     TlmEntry* entryToUse = nullptr;
@@ -134,28 +129,19 @@ void TlmChan::TlmRecv_handler(FwIndexType portNum, FwChanIdType id, Fw::Time& ti
     entryToUse->buffer = val;
 }
 
-
 void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
-    //printf("*** TLMCHAN RUN HANDLER CALLED! portNum=%u, context=%u ***\n", portNum, context);
-    //printf("*** THIS MESSAGE PROVES THE CONNECTION WORKS! ***\n");
-    fflush(stdout);
-    
     static U32 run_count = 0;
-    //printf("[TLMCHAN] Run handler called: count=%u, portNum=%u, context=%u\n", ++run_count, portNum, context);
 
     // Check if PktSend port is connected
     if (not this->isConnected_PktSend_OutputPort(0)) {
-        //printf("[TLMCHAN] ERROR: PktSend port not connected!\n");
+        printf("[TLMCHAN] ERROR: PktSend port not connected!\n");
         return;
     }
 
-    //printf("[TLMCHAN] PktSend port IS connected, proceeding...\n");
-
     // Lock mutex and switch buffers
-    //printf("[TLMCHAN] Locking mutex and switching buffers...\n");
     this->lock();
     this->m_activeBuffer = 1 - this->m_activeBuffer;
-    
+
     // Count updated entries
     U32 updatedCount = 0;
     for (U32 entry = 0; entry < TLMCHAN_HASH_BUCKETS; entry++) {
@@ -166,60 +152,33 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
         }
     }
     this->unLock();
-    
-    //printf("[TLMCHAN] Found %u updated telemetry entries to process\n", updatedCount);
 
-    if (updatedCount == 0) {
-        //printf("[TLMCHAN] No telemetry to send - sending empty test packet\n");
-        
-        // Send a test packet to verify the pipeline works
-        Fw::ComBuffer testBuffer;
-        testBuffer.resetSer();
-        
-        // Serialize a simple test packet
-        U32 testData = 0x12345678;
-        Fw::SerializeStatus stat = testBuffer.serialize(testData);
-        if (stat == Fw::FW_SERIALIZE_OK) {
-            //printf("[TLMCHAN] Sending test ComBuffer to PktSend_out\n");
-            this->PktSend_out(0, testBuffer, 99); // Context = 99 for test
-            //printf("[TLMCHAN] Test packet sent successfully\n");
-        } else {
-            //printf("[TLMCHAN] Failed to serialize test data: %d\n", stat);
-        }
-    } else {
-        // Process real telemetry (simplified for now)
-        //printf("[TLMCHAN] Processing real telemetry entries...\n");
-        Fw::TlmPacket pkt;
-        pkt.resetPktSer();
-        
-        U32 processedCount = 0;
-        for (U32 entry = 0; entry < TLMCHAN_HASH_BUCKETS && processedCount < 3; entry++) {
-            TlmEntry* p_entry = &this->m_tlmEntries[1 - this->m_activeBuffer].buckets[entry];
-            if ((p_entry->updated) && (p_entry->used)) {
-                //printf("[TLMCHAN] Processing entry: id=0x%X\n", p_entry->id);
-                
-                Fw::SerializeStatus stat = pkt.addValue(p_entry->id, p_entry->lastUpdate, p_entry->buffer);
-                if (stat == Fw::FW_SERIALIZE_OK) {
-                    processedCount++;
-                    p_entry->updated = false;
-                } else {
-                    //printf("[TLMCHAN] Failed to add telemetry entry: %d\n", stat);
-                    break;
-                }
+    Fw::TlmPacket pkt;
+    pkt.resetPktSer();
+
+    U32 processedCount = 0;
+    for (U32 entry = 0; entry < TLMCHAN_HASH_BUCKETS && processedCount < 3; entry++) {
+        TlmEntry* p_entry = &this->m_tlmEntries[1 - this->m_activeBuffer].buckets[entry];
+        if ((p_entry->updated) && (p_entry->used)) {
+            // printf("[TLMCHAN] Processing entry: id=0x%X\n", p_entry->id);
+
+            Fw::SerializeStatus stat = pkt.addValue(p_entry->id, p_entry->lastUpdate, p_entry->buffer);
+            if (stat == Fw::FW_SERIALIZE_OK) {
+                processedCount++;
+                p_entry->updated = false;
+            } else {
+                // printf("[TLMCHAN] Failed to add telemetry entry: %d\n", stat);
+                break;
             }
         }
-        
-        if (pkt.getNumEntries() > 0) {
-            //printf("[TLMCHAN] Sending telemetry packet with %llu entries\n", pkt.getNumEntries());
-            this->PktSend_out(0, pkt.getBuffer(), 0);
-            //printf("[TLMCHAN] Telemetry packet sent successfully\n");
-        }
     }
-    
-    //printf("[TLMCHAN] Run handler completed successfully\n");
+
+    if (pkt.getNumEntries() > 0) {
+        // printf("[TLMCHAN] Sending telemetry packet with %llu entries\n", pkt.getNumEntries());
+        this->PktSend_out(0, pkt.getBuffer(), 0);
+        // printf("[TLMCHAN] Telemetry packet sent successfully\n");
+    }
 }
-
-
 
 // void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
 //     static U32 run_count = 0;
@@ -261,14 +220,15 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
 //     for (U32 entry = 0; entry < TLMCHAN_HASH_BUCKETS; entry++) {
 //         TlmEntry* p_entry = &this->m_tlmEntries[1 - this->m_activeBuffer].buckets[entry];
 //         if ((p_entry->updated) && (p_entry->used)) {
-//             printf("[TLMCHAN] Processing updated entry: id=0x%X, size=%llu\n", 
+//             printf("[TLMCHAN] Processing updated entry: id=0x%X, size=%llu\n",
 //                    p_entry->id, p_entry->buffer.getBuffLength());
-            
+
 //             Fw::SerializeStatus stat = pkt.addValue(p_entry->id, p_entry->lastUpdate, p_entry->buffer);
 
 //             // check to see if this packet is full, if so, send it
 //             if (Fw::FW_SERIALIZE_NO_ROOM_LEFT == stat) {
-//                 printf("[TLMCHAN] Packet full, sending packet with %llu entries to PktSend_out\n", pkt.getNumEntries());
+//                 printf("[TLMCHAN] Packet full, sending packet with %llu entries to PktSend_out\n",
+//                 pkt.getNumEntries());
 //                 // Hexdump first few bytes of buffer for debugging
 //                 printf("[TLMCHAN] Packet data: ");
 //                 const U8* bufAddr = pkt.getBuffer().getBuffAddr();
@@ -311,16 +271,13 @@ void TlmChan::Run_handler(FwIndexType portNum, U32 context) {
 //             printf("%02X ", bufAddr[i]);
 //         }
 //         printf("\n");
-        
+
 //         this->PktSend_out(0, pkt.getBuffer(), 0);
 //     } else {
 //         printf("[TLMCHAN] No telemetry entries to send\n");
 //     }
-    
+
 //     printf("[TLMCHAN] Run handler completed - sent packets with total %u updated entries\n", updatedCount);
 // }  // end run handler
-
-
-
 
 }  // namespace Svc

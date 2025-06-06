@@ -126,8 +126,8 @@ void ActiveLoggerImpl::loqQueue_internalInterfaceHandler(FwEventIdType id,
         printf("ERROR: Failed to serialize event 0x%X\n", id);
         return;
     }
-    //TODO: uncomment this when working!
-    // FW_ASSERT(Fw::FW_SERIALIZE_OK == stat, static_cast<FwAssertArgType>(stat));
+
+    FW_ASSERT(Fw::FW_SERIALIZE_OK == stat, static_cast<FwAssertArgType>(stat));
 
     if (this->isConnected_PktSend_OutputPort(0)) {
         this->PktSend_out(0, this->m_comBuffer, 0);

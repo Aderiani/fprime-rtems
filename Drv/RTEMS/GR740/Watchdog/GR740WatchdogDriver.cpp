@@ -32,9 +32,6 @@ void GR740WatchdogDriver::StrokeWatchdog_handler(const FwIndexType portNum, U32 
     static U32 counter = 0;
     bsp_watchdog_reload(0, 0x1fffff); 
 
-    if (++counter % 100 == 0) {
-        this->log_DIAGNOSTIC_WatchdogStroked();
-    }
 }
 
 }  // namespace Drv

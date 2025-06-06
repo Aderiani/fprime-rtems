@@ -129,8 +129,7 @@ void configureTopology() {
     // Rate group driver needs a divisor list
     rateGroupDriver.configure(rateGroupDivisorsSet);
 
-    printf("DEBUG: Watchdog initialization DISABLED for testing\n");
-    // watchdogDriver.initialize(40);  // Initialize the watchdog driver with a timeout of 40ms
+    watchdogDriver.initialize(40);  // Initialize the watchdog driver with a timeout of 40ms
 
     // // Rate groups require context arrays.
     rateGroup1.configure(rateGroup1Context, FW_NUM_ARRAY_ELEMENTS(rateGroup1Context));
@@ -160,7 +159,7 @@ void configureTopology() {
     configurationTable.entries[0].depth = 200;  // Events
     configurationTable.entries[0].priority = 0;
 
-    configurationTable.entries[1].depth = 200;  // Telemetry
+    configurationTable.entries[1].depth = 500;  // Telemetry
     configurationTable.entries[1].priority = 1;
 
     configurationTable.entries[2].depth = 100;  // File Downlink

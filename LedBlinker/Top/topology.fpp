@@ -33,14 +33,14 @@ module LedBlinker {
     instance fileUplink
     instance bufferManager
     instance framer
-    # instance chronoTime
+    instance chronoTime
     instance prmDb
     instance rateGroup1
     instance rateGroup2
     instance rateGroup3
     instance rateGroupDriver
-    # instance textLogger
-    # instance systemResources
+    instance textLogger
+    instance systemResources
     instance led
     instance gpioDriver
     instance uartDriver
@@ -62,9 +62,9 @@ module LedBlinker {
 
     telemetry connections instance tlmSend
 
-    # text event connections instance textLogger
+    text event connections instance textLogger
 
-    # time connections instance chronoTime
+    time connections instance chronoTime
 
     health connections instance $health
 
@@ -101,8 +101,8 @@ module LedBlinker {
 
     connections RateGroups {
       
-        # Add watchdog servicing to the highest priority rate group
-      # rateGroup1.RateGroupMemberOut[4] -> watchdogDriver.StrokeWatchdog
+      # Add watchdog servicing to the highest priority rate group
+      rateGroup1.RateGroupMemberOut[4] -> watchdogDriver.StrokeWatchdog
       
       # Block driver
       timerDriver.CycleOut -> rateGroupDriver.CycleIn
@@ -111,8 +111,7 @@ module LedBlinker {
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
       rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1.RateGroupMemberOut[1] -> fileDownlink.Run
-     #TODO uncomment when systemResources is added
-    #  rateGroup1.RateGroupMemberOut[2] -> systemResources.run
+      rateGroup1.RateGroupMemberOut[2] -> systemResources.run
 
       # Rate group 2
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup2] -> rateGroup2.CycleIn
@@ -121,7 +120,6 @@ module LedBlinker {
       # Rate group 3
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup3] -> rateGroup3.CycleIn
       rateGroup3.RateGroupMemberOut[0] -> $health.Run
-      #TODO: uncomment when a driver with isr is added. 
       # rateGroup3.RateGroupMemberOut[1] -> blockDrv.Sched
       rateGroup3.RateGroupMemberOut[2] -> bufferManager.schedIn
     }

@@ -23,11 +23,7 @@ Memory& Memory::getSingleton() {
     static Memory* _singleton = nullptr;
     if (!_singleton) {
         _singleton = new Memory();
-        printf("Memory singleton created at %p\n", static_cast<void*>(_singleton));
-        fflush(stdout);
     }
-    printf("Memory singleton returning at %p\n", static_cast<void*>(_singleton));
-    fflush(stdout);
     return *_singleton;
 }
 

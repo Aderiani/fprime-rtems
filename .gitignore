@@ -1,6 +1,6 @@
 build/
 build-fprime-*/
-build-artifacts/
+# build-artifacts/
 gtest/
 docs-cache/
 CMakePresets.json

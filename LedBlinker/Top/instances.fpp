@@ -114,15 +114,15 @@ module LedBlinker {
 
   instance bufferManager: Svc.BufferManager base id 0x4400
 
-#  instance chronoTime: Svc.ChronoTime base id 0x4500
+  instance chronoTime: Svc.ChronoTime base id 0x4500
 
   instance rateGroupDriver: Svc.RateGroupDriver base id 0x4600
 
-  # instance textLogger: Svc.PassiveTextLogger base id 0x4800
+  instance textLogger: Svc.PassiveTextLogger base id 0x4800
 
   instance deframer: Svc.Deframer base id 0x4900
 
-  # instance systemResources: Svc.SystemResources base id 0x4A00
+  instance systemResources: Svc.SystemResources base id 0x4A00
 
   instance comStub: Svc.ComStub base id 0x4B00
 

@@ -20,15 +20,11 @@ namespace Os {
 
     void init() {
 
-        printf("OS Init: Initializing Console\n");
-        fflush(stdout);
         Os::Console::init();
         Os::FileSystem::init();
         Os::Cpu::init();
         Os::Memory::init();
         Os::Task::init();
-        printf("OS Init:initialization complete\n");
-        fflush(stdout);
     }
 
 }  // namespace Os

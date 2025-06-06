@@ -71,12 +71,7 @@ void FileSystem::init() {
         static FileSystem* s_singleton = nullptr;
         if (!s_singleton) {
             s_singleton = new FileSystem();
-            printf("FileSystem singleton created at %p\n", static_cast<void*>(s_singleton));
-            fflush(stdout);
-            // Add any initialization if needed, e.g., Fw::Logger::registerLogger(s_singleton);
         }
-        printf("FileSystem singleton returning at %p\n", static_cast<void*>(s_singleton));
-        fflush(stdout);
         return *s_singleton;
     }
 
