@@ -25,10 +25,10 @@ namespace Svc {
     }
 
     void CommandDispatcherImpl::compCmdReg_handler(FwIndexType portNum, FwOpcodeType opCode) {
-        printf("DEBUG: cmdDisp registration - port %d, opcode 0x%X\n", portNum, opCode);
+        //printf("DEBUG: cmdDisp registration - port %d, opcode 0x%X\n", portNum, opCode);
         if (portNum >= this->getNum_compCmdSend_OutputPorts()) {
-            printf("ERROR: Invalid port num %d (max %d)\n", 
-                   portNum, this->getNum_compCmdSend_OutputPorts()-1);
+            //printf("ERROR: Invalid port num %d (max %d)\n", 
+                //    portNum, this->getNum_compCmdSend_OutputPorts()-1);
             return; // Skip processing to avoid crash
         }
         // search for an empty slot
@@ -55,7 +55,7 @@ namespace Svc {
 
     void CommandDispatcherImpl::compCmdStat_handler(FwIndexType portNum, FwOpcodeType opCode, U32 cmdSeq, const Fw::CmdResponse &response) {
         // check response and log
-        printf("DEBUG: cmdDisp handler called in compCmdStat_handler\n");
+        //printf("DEBUG: cmdDisp handler called in compCmdStat_handler\n");
 
         if (Fw::CmdResponse::OK == response.e) {
             this->log_COMMAND_OpCodeCompleted(opCode);
@@ -91,7 +91,7 @@ namespace Svc {
     }
 
     void CommandDispatcherImpl::seqCmdBuff_handler(FwIndexType portNum, Fw::ComBuffer &data, U32 context) {
-        printf("DEBUG: cmdDisp handler called in seqCmdBuff_handler\n");
+        //printf("DEBUG: cmdDisp handler called in seqCmdBuff_handler\n");
         Fw::CmdPacket cmdPkt;
         Fw::SerializeStatus stat = cmdPkt.deserialize(data);
 

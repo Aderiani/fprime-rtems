@@ -250,7 +250,7 @@ namespace Svc {
               }
           }
           // return the buffer
-          printf("Returning buffer %d\n",entry);
+          //printf("Returning buffer %d\n",entry);
           this->invoke_to_bufferSendIn(0,buffs[entry]);
           // check allocation state
           ASSERT_FALSE(this->component.m_buffers[entry].allocated);

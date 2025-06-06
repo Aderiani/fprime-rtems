@@ -187,7 +187,7 @@ Fw::Buffer TcpServerComponentImpl::getBuffer() {
 void TcpServerComponentImpl::readLoop() {
     // Simplified RTEMS implementation with direct buffer handling
     #if DEBUG_TCP_SERVER
-    printf("[TCP-SERVER] Starting read loop\n");
+    // printf("[TCP-SERVER] Starting read loop\n");
     #endif
 
     Drv::SocketIpStatus status = Drv::SocketIpStatus::SOCK_NOT_STARTED;
@@ -223,11 +223,11 @@ void TcpServerComponentImpl::readLoop() {
         if (status == SOCK_SUCCESS && size > 0) {
 
             #if DEBUG_TCP_SERVER
-            printf("[TCP-SERVER] Received data: size=%u\n", size);
+            // printf("[TCP-SERVER] Received data: size=%u\n", size);
             // Print the first few bytes to see what's coming in
             if (size >= 4) {
-                printf("[TCP-SERVER] Received header: 0x%02X 0x%02X 0x%02X 0x%02X\n", 
-                       recv_buffer[0], recv_buffer[1], recv_buffer[2], recv_buffer[3]);
+                // printf("[TCP-SERVER] Received header: 0x%02X 0x%02X 0x%02X 0x%02X\n", 
+                    //    recv_buffer[0], recv_buffer[1], recv_buffer[2], recv_buffer[3]);
             }
             #endif
             // Create buffer with correct manager ID
@@ -276,25 +276,25 @@ void TcpServerComponentImpl::readLoop() {
 // In Drv/TcpServer/TcpServerComponentImpl.cpp, enhance send_handler:
 
 Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer) {
-    printf("[TCP-SERVER] Send handler called: size=%u, data=%p, context=0x%X\n", 
-           fwBuffer.getSize(), fwBuffer.getData(), fwBuffer.getContext());
+    // printf("[TCP-SERVER] Send handler called: size=%u, data=%p, context=0x%X\n", 
+        //    fwBuffer.getSize(), fwBuffer.getData(), fwBuffer.getContext());
     
     // Print first few bytes of packet for debugging
     if (fwBuffer.getSize() >= 4) {
-        printf("[TCP-SERVER] Packet header: 0x%02X 0x%02X 0x%02X 0x%02X\n", 
-               fwBuffer.getData()[0], fwBuffer.getData()[1], 
-               fwBuffer.getData()[2], fwBuffer.getData()[3]);
+        // printf("[TCP-SERVER] Packet header: 0x%02X 0x%02X 0x%02X 0x%02X\n", 
+            //    fwBuffer.getData()[0], fwBuffer.getData()[1], 
+            //    fwBuffer.getData()[2], fwBuffer.getData()[3]);
     }
     
     // Check if socket is opened
     if (!this->isOpened()) {
-        printf("[TCP-SERVER] Socket not opened, returning SEND_RETRY\n");
+        // printf("[TCP-SERVER] Socket not opened, returning SEND_RETRY\n");
         return SendStatus::SEND_RETRY;
     }
     
     // Ensure buffer has valid data
     if (fwBuffer.getData() == nullptr || fwBuffer.getSize() == 0) {
-        printf("[TCP-SERVER] Invalid buffer (NULL or zero size)\n");
+        // printf("[TCP-SERVER] Invalid buffer (NULL or zero size)\n");
         return SendStatus::SEND_ERROR;
     }
     
@@ -304,18 +304,18 @@ Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, 
     bool isInternalBuffer = (mgrId == 0xDEAD);
     
     // Try to send data
-    printf("[TCP-SERVER] Sending %u bytes to socket\n", fwBuffer.getSize());
+    // printf("[TCP-SERVER] Sending %u bytes to socket\n", fwBuffer.getSize());
     Drv::SocketIpStatus status = this->send(fwBuffer.getData(), fwBuffer.getSize());
-    printf("[TCP-SERVER] Send returned status: %d\n", status);
+    // printf("[TCP-SERVER] Send returned status: %d\n", status);
     
     if (status == SOCK_INTERRUPTED_TRY_AGAIN) {
-        printf("[TCP-SERVER] Send interrupted, returning SEND_RETRY\n");
+        // printf("[TCP-SERVER] Send interrupted, returning SEND_RETRY\n");
         return SendStatus::SEND_RETRY;
     } else if (status != SOCK_SUCCESS) {
-        printf("[TCP-SERVER] Send error: %d\n", status);
+        // printf("[TCP-SERVER] Send error: %d\n", status);
         // Only deallocate if not an internal buffer
         if (!isInternalBuffer && this->isConnected_deallocate_OutputPort(0)) {
-            printf("[TCP-SERVER] Deallocating buffer after error\n");
+            // printf("[TCP-SERVER] Deallocating buffer after error\n");
             deallocate_out(0, fwBuffer);
         }
         return SendStatus::SEND_ERROR;
@@ -323,11 +323,11 @@ Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, 
     
     // Only deallocate if not an internal buffer
     if (!isInternalBuffer && this->isConnected_deallocate_OutputPort(0)) {
-        printf("[TCP-SERVER] Deallocating buffer after successful send\n");
+        // printf("[TCP-SERVER] Deallocating buffer after successful send\n");
         deallocate_out(0, fwBuffer);
     }
     
-    printf("[TCP-SERVER] Send successful\n");
+    // printf("[TCP-SERVER] Send successful\n");
     return SendStatus::SEND_OK;
 }
 

@@ -163,25 +163,25 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
     //        m_handle.name, (int)capacity, (int)m_handle.msgSize);
     
     if (m_handle.queue_id == 0) {
-        printf("[RTEMS-QUEUE] Receive error - queue not initialized\n");
+        // printf("[RTEMS-QUEUE] Receive error - queue not initialized\n");
         return QueueInterface::Status::UNINITIALIZED;
     }
 
     if (destination == nullptr) {
-        printf("[RTEMS-QUEUE] Receive error - null destination\n");
+        // printf("[RTEMS-QUEUE] Receive error - null destination\n");
         return QueueInterface::Status::UNKNOWN_ERROR;
     }
 
     if (capacity == 0) {
-        printf("[RTEMS-QUEUE] Critical error - zero capacity buffer\n");
+        // printf("[RTEMS-QUEUE] Critical error - zero capacity buffer\n");
         actualSize = 0;
         priority = 0;
         return QueueInterface::Status::SIZE_MISMATCH;
     }
 
     if (capacity < m_handle.msgSize) {
-        printf("[RTEMS-QUEUE] Receive error - capacity too small: %d < %d\n", 
-               (int)capacity, (int)m_handle.msgSize);
+        // printf("[RTEMS-QUEUE] Receive error - capacity too small: %d < %d\n", 
+            //    (int)capacity, (int)m_handle.msgSize);
         return QueueInterface::Status::SIZE_MISMATCH;
     }
 
@@ -190,7 +190,7 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
     rtems_status_code check_status = rtems_message_queue_get_number_pending(m_handle.queue_id, &pending);
 
     if (check_status != RTEMS_SUCCESSFUL) {
-        printf("[RTEMS-QUEUE] Receive error - queue check failed: %d\n", check_status);
+        // printf("[RTEMS-QUEUE] Receive error - queue check failed: %d\n", check_status);
         if (check_status == RTEMS_INVALID_ID || check_status == RTEMS_OBJECT_WAS_DELETED) {
             m_handle.queue_id = 0;
             return QueueInterface::Status::UNINITIALIZED;
@@ -200,7 +200,7 @@ QueueInterface::Status RTEMSQueue::receive(U8* destination,
 
     // Special case for non-blocking: if empty, return immediately
     if (block == BlockingType::NONBLOCKING && pending == 0) {
-        printf("[RTEMS-QUEUE] Queue empty for non-blocking receive\n");
+        // printf("[RTEMS-QUEUE] Queue empty for non-blocking receive\n");
         return QueueInterface::Status::EMPTY;
     }
 

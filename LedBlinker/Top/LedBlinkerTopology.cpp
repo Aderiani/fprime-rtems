@@ -183,7 +183,7 @@ void configureTopology() {
 bool checkAndProcessTimerTick() {
     // Instead of checkTick() which might not work as expected,
     // always generate a tick when called
-    printf("[TICK] Manually calling timerDriver.generateTick()\n");
+    // printf("[TICK] Manually calling timerDriver.generateTick()\n");
     timerDriver.generateTick();
     return true;
 }

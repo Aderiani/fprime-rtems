@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     while ((c = getopt (argc, argv, "hd:a:")) != -1) {
         switch (c) {
             case 'h':
-                printf("test_ut %s\n",argv[0],help);
+                // printf("test_ut %s\n",argv[0],help);
                 return 0;
             case 'a':
                 addr = strtoul(optarg,0,0);
@@ -33,18 +33,18 @@ int main(int argc, char* argv[]) {
                 (void) Fw::StringUtils::string_copy(device, optarg, sizeof(device));
                 break;
             default:
-                printf("test_ut %s\n",argv[0],help);
+                // printf("test_ut %s\n",argv[0],help);
                 return -1;
         }
     }
 
-    printf("Address: %d (0x%02X) Device: %s\n",addr,addr,device);
+    // printf("Address: %d (0x%02X) Device: %s\n",addr,addr,device);
 
     U8 data[12];
 
     for (int i = optind; i < argc; i++) {
     	data[optind-i] = strtoul(argv[i],0,0);
-        printf("Data: %s 0x%02X\n",argv[i],data[optind-i]);
+        // printf("Data: %s 0x%02X\n",argv[i],data[optind-i]);
     }
 
     Drv::LinuxI2cDriverTester tester;

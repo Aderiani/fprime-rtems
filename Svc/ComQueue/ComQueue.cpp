@@ -142,35 +142,22 @@ void ComQueue::buffQueueIn_handler(const FwIndexType portNum, Fw::Buffer& fwBuff
 }
 
 void ComQueue::comStatusIn_handler(const FwIndexType portNum, Fw::Success& condition) {
-    // printf("[COMQUEUE] comStatusIn_handler called with state=%d, status=%d\n", this->m_state, condition.e);
 
-    if (condition.e == Fw::Success::SUCCESS) {
-        // printf("[COMQUEUE] Received SUCCESS, changing to READY state\n");
-        this->m_state = READY;
-        // Add this to see if processQueue is being called
-        // printf("[COMQUEUE] About to call processQueue()\n");
-        this->processQueue();
-        // Add this after processQueue returns
-        // printf("[COMQUEUE] processQueue() completed\n");
-    }
-
-    switch (this->m_state) {
+        switch (this->m_state) {
         case WAITING:
             if (condition.e == Fw::Success::SUCCESS) {
-                // printf("[COMQUEUE] Received SUCCESS, changing to READY state\n");
                 this->m_state = READY;
                 this->processQueue();
             } else {
-                // printf("[COMQUEUE] Received FAILURE, remaining in WAITING state\n");
                 this->m_state = WAITING;
             }
             break;
         default:
-            // printf("[COMQUEUE] Unexpected state: %d\n", this->m_state);
             FW_ASSERT(0, this->m_state);
             break;
     }
 }
+
 
 void ComQueue::run_handler(const FwIndexType portNum, U32 context) {
     // Downlink the high-water marks for the Fw::ComBuffer array types
@@ -308,7 +295,7 @@ void ComQueue::processQueue() {
 
     // Add a check after the loop
     if (priorityIndex >= TOTAL_PORT_COUNT) {
-        printf("[COMQUEUE] No data was sent from any queue\n");
+        // printf("[COMQUEUE] No data was sent from any queue\n");
     }
 }
 }  // end namespace Svc

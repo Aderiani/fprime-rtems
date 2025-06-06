@@ -25,8 +25,8 @@ ComStub::~ComStub() {}
 
 Drv::SendStatus ComStub::comDataIn_handler(const FwIndexType portNum, Fw::Buffer& sendBuffer) {
     // Add debug logs
-    printf("[COMSTUB] comDataIn called: size=%u, data=%p\n", 
-           sendBuffer.getSize(), sendBuffer.getData());
+    //printf("[COMSTUB] comDataIn called: size=%u, data=%p\n", 
+        //    sendBuffer.getSize(), sendBuffer.getData());
     
     FW_ASSERT(!this->m_reinitialize || !this->isConnected_comStatus_OutputPort(0));
     
@@ -35,7 +35,7 @@ Drv::SendStatus ComStub::comDataIn_handler(const FwIndexType portNum, Fw::Buffer
     
     Drv::SendStatus driverStatus = Drv::SendStatus::SEND_RETRY;
     for (NATIVE_UINT_TYPE i = 0; driverStatus == Drv::SendStatus::SEND_RETRY && i < RETRY_LIMIT; i++) {
-        printf("[COMSTUB] Attempting to send data to driver (try %u)\n", i+1);
+        //printf("[COMSTUB] Attempting to send data to driver (try %u)\n", i+1);
         driverStatus = this->drvDataOut_out(0, sendBuffer);
         
         // If retry, add a small delay to avoid overwhelming RTEMS
@@ -44,20 +44,20 @@ Drv::SendStatus ComStub::comDataIn_handler(const FwIndexType portNum, Fw::Buffer
         }
     }
     
-    printf("[COMSTUB] Driver returned status: %d\n", driverStatus.e);
+    //printf("[COMSTUB] Driver returned status: %d\n", driverStatus.e);
     
     // Always report status regardless of connection state for debugging
     Fw::Success comSuccess = (driverStatus.e == Drv::SendStatus::SEND_OK) ? 
                              Fw::Success::SUCCESS : Fw::Success::FAILURE;
     
-    printf("[COMSTUB] Reporting status to framer: %d\n", comSuccess.e);
+    //printf("[COMSTUB] Reporting status to framer: %d\n", comSuccess.e);
     if (this->isConnected_comStatus_OutputPort(0)) {
         this->comStatus_out(0, comSuccess);
     } else {
-        printf("[COMSTUB] comStatus port not connected!\n");
+        //printf("[COMSTUB] comStatus port not connected!\n");
     }
     
-    printf("[COMSTUB-DEBUG] Sent status=%d to framer\n", comSuccess.e);
+    //printf("[COMSTUB-DEBUG] Sent status=%d to framer\n", comSuccess.e);
 
 
     // Restore initialization state
@@ -68,31 +68,31 @@ Drv::SendStatus ComStub::comDataIn_handler(const FwIndexType portNum, Fw::Buffer
 }
 
 void ComStub::drvConnected_handler(const FwIndexType portNum) {
-    printf("[COMSTUB] drvConnected called\n");
+    //printf("[COMSTUB] drvConnected called\n");
     
     Fw::Success radioSuccess = Fw::Success::SUCCESS;
     if (this->isConnected_comStatus_OutputPort(0) && m_reinitialize) {
         this->m_reinitialize = false;
-        printf("[COMSTUB] Sending SUCCESS status to framer after connection\n");
+        //printf("[COMSTUB] Sending SUCCESS status to framer after connection\n");
         this->comStatus_out(0, radioSuccess);
     } else if (!this->isConnected_comStatus_OutputPort(0)) {
-        printf("[COMSTUB] comStatus port not connected in drvConnected_handler!\n");
+        //printf("[COMSTUB] comStatus port not connected in drvConnected_handler!\n");
     } else if (!m_reinitialize) {
-        printf("[COMSTUB] Not re-initializing in drvConnected_handler\n");
+        //printf("[COMSTUB] Not re-initializing in drvConnected_handler\n");
     }
 }
 
 void ComStub::drvDataIn_handler(const FwIndexType portNum,
                                 Fw::Buffer& recvBuffer,
                                 const Drv::RecvStatus& recvStatus) {
-    printf("[COMSTUB] drvDataIn called: status=%d, size=%u, data=%p\n", 
-           recvStatus.e, recvBuffer.getSize(), recvBuffer.getData());
+    //printf("[COMSTUB] drvDataIn called: status=%d, size=%u, data=%p\n", 
+        //    recvStatus.e, recvBuffer.getSize(), recvBuffer.getData());
     
     if (this->isConnected_comDataOut_OutputPort(0)) {
-        printf("[COMSTUB] Forwarding data to deframer\n");
+        //printf("[COMSTUB] Forwarding data to deframer\n");
         this->comDataOut_out(0, recvBuffer, recvStatus);
     } else {
-        printf("[COMSTUB] comDataOut port not connected!\n");
+        //printf("[COMSTUB] comDataOut port not connected!\n");
     }
 }
 

@@ -15,7 +15,7 @@
 #include "Fw/Logger/Logger.hpp"
 #include "Utils/Hash/Hash.hpp"
 
-#define DEBUG_FRAMER 1  // Set to 0 to disable debug prints
+#define DEBUG_FRAMER 0  // Set to 0 to disable debug prints
 
 
 namespace Svc {
@@ -38,7 +38,7 @@ void Framer ::setup(FramingProtocol& protocol) {
 void Framer ::handle_framing(const U8* const data, const U32 size, Fw::ComPacket::ComPacketType packet_type) {
 
     #if DEBUG_FRAMER
-    printf("[FRAMER] Handling frame: size=%u, type=%d\n", size, packet_type);
+    //printf("[FRAMER] Handling frame: size=%u, type=%d\n", size, packet_type);
     #endif
 
     FW_ASSERT(this->m_protocol != nullptr);
@@ -56,8 +56,8 @@ void Framer ::handle_framing(const U8* const data, const U32 size, Fw::ComPacket
 // ----------------------------------------------------------------------
 
 void Framer::comIn_handler(const FwIndexType portNum, Fw::ComBuffer& data, U32 context) {
-    printf("[FRAMER] comIn_handler called: size=%lu, context=%u\n", 
-           static_cast<unsigned long>(data.getBuffLength()), context);
+    //printf("[FRAMER] comIn_handler called: size=%lu, context=%u\n", 
+        //    static_cast<unsigned long>(data.getBuffLength()), context);
     
     FW_ASSERT(data.getBuffLength() < std::numeric_limits<U32>::max(), 
               static_cast<FwAssertArgType>(data.getBuffLength()));
@@ -85,28 +85,28 @@ void Framer ::comStatusIn_handler(const FwIndexType portNum, Fw::Success& condit
 
 
 void Framer::send(Fw::Buffer& outgoing) {
-    printf("[FRAMER] send called: size=%u, data=%p\n", 
-           outgoing.getSize(), outgoing.getData());
+    //printf("[FRAMER] send called: size=%u, data=%p\n", 
+        //    outgoing.getSize(), outgoing.getData());
     
     // Print header bytes for debugging
     if (outgoing.getSize() >= 4) {
-        printf("[FRAMER] Buffer header: 0x%02X 0x%02X 0x%02X 0x%02X\n",
-               outgoing.getData()[0], outgoing.getData()[1],
-               outgoing.getData()[2], outgoing.getData()[3]);
+        //printf("[FRAMER] Buffer header: 0x%02X 0x%02X 0x%02X 0x%02X\n",
+            //    outgoing.getData()[0], outgoing.getData()[1],
+            //    outgoing.getData()[2], outgoing.getData()[3]);
     }
     
     FW_ASSERT(!this->m_frame_sent); // Prevent multiple sends per-packet
-    printf("[FRAMER] Calling framedOut_out port\n");
+    //printf("[FRAMER] Calling framedOut_out port\n");
     
     const Drv::SendStatus sendStatus = this->framedOut_out(0, outgoing);
-    printf("[FRAMER] framedOut returned status: %d\n", sendStatus.e);
+    //printf("[FRAMER] framedOut returned status: %d\n", sendStatus.e);
     
     if (sendStatus.e != Drv::SendStatus::SEND_OK) {
-        printf("[FRAMER] ERROR: Failed to send framed data: %d\n", sendStatus.e);
+        //printf("[FRAMER] ERROR: Failed to send framed data: %d\n", sendStatus.e);
     }
     this->m_frame_sent = true;
     
-    printf("[FRAMER] send complete, frame_sent=true\n");
+    //printf("[FRAMER] send complete, frame_sent=true\n");
 }
 
 Fw::Buffer Framer ::allocate(const U32 size) {

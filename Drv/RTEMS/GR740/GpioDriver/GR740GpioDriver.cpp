@@ -65,48 +65,69 @@ GpioStatus GR740GpioDriver::gpioWrite_handler(const FwIndexType portNum, const F
         return GpioStatus::INVALID_MODE;
     }
 
-    // Determine which GPIO controller and bit to use based on portNum
-    volatile uint32_t* data_reg = nullptr;
-    volatile uint32_t* dir_reg = nullptr;
+    // For LED7 and LED8, we need to write to BOTH controllers as shown in gpio_test.c
     uint32_t pin_mask = 0;
-
-    // Map portNum to specific GPIO pin
-    // LED7 is GPIO2[5], LED8 is GPIO2[6]
+    
+    // Map portNum to LED pin mask
     switch (portNum) {
-        case 0: // LED7 (GPIO2[5])
-            data_reg = m_gpio1_data_reg;  // Second controller (GPIO1)
-            dir_reg = m_gpio1_dir_reg;
+        case 0: // LED7
             pin_mask = LED7_BIT;
             break;
-        case 1: // LED8 (GPIO2[6])
-            data_reg = m_gpio1_data_reg;  // Second controller (GPIO1)
-            dir_reg = m_gpio1_dir_reg;
+        case 1: // LED8
             pin_mask = LED8_BIT;
             break;
         default:
-            // Try to use original pin mapping for other pins
+            // For other pins, use original mapping
             if (portNum < 4) {
-                // For pins 0-3, use GPIO1 controller
-                data_reg = m_gpio1_data_reg;
-                dir_reg = m_gpio1_dir_reg;
                 pin_mask = (1U << portNum);
             } else {
-                // For pins 4+, use GPIO0 controller
-                data_reg = m_gpio0_data_reg;
-                dir_reg = m_gpio0_dir_reg;
                 pin_mask = (1U << (portNum - 4));
             }
             break;
     }
 
-    // Ensure pin is configured as output
-    *dir_reg |= pin_mask;
-
-    // Set or clear the appropriate bit based on state
-    if (state == Fw::Logic::HIGH) {
-        *data_reg |= pin_mask;  // Set bit
+    // For LEDs, write to BOTH GPIO controllers (matching gpio_test.c behavior)
+    if (portNum == 0 || portNum == 1) {
+        // Set direction bits on both controllers
+        *m_gpio0_dir_reg |= pin_mask;
+        *m_gpio1_dir_reg |= pin_mask;
+        
+        // Set or clear the LED bit on both controllers
+        if (state == Fw::Logic::HIGH) {
+            *m_gpio0_data_reg |= pin_mask;  // Set bit on GPIO0
+            *m_gpio1_data_reg |= pin_mask;  // Set bit on GPIO1
+            
+            Fw::Logger::log("LED%d ON - GPIO0 data: 0x%08x, GPIO1 data: 0x%08x\n", 
+                           (portNum == 0) ? 7 : 8, *m_gpio0_data_reg, *m_gpio1_data_reg);
+        } else {
+            *m_gpio0_data_reg &= ~pin_mask; // Clear bit on GPIO0
+            *m_gpio1_data_reg &= ~pin_mask; // Clear bit on GPIO1
+            
+            Fw::Logger::log("LED%d OFF - GPIO0 data: 0x%08x, GPIO1 data: 0x%08x\n", 
+                           (portNum == 0) ? 7 : 8, *m_gpio0_data_reg, *m_gpio1_data_reg);
+        }
     } else {
-        *data_reg &= ~pin_mask; // Clear bit
+        // For non-LED pins, use the original logic
+        volatile uint32_t* data_reg = nullptr;
+        volatile uint32_t* dir_reg = nullptr;
+        
+        if (portNum < 4) {
+            data_reg = m_gpio1_data_reg;
+            dir_reg = m_gpio1_dir_reg;
+        } else {
+            data_reg = m_gpio0_data_reg;
+            dir_reg = m_gpio0_dir_reg;
+        }
+        
+        // Ensure pin is configured as output
+        *dir_reg |= pin_mask;
+        
+        // Set or clear the bit
+        if (state == Fw::Logic::HIGH) {
+            *data_reg |= pin_mask;
+        } else {
+            *data_reg &= ~pin_mask;
+        }
     }
 
     // Store current state
@@ -130,55 +151,65 @@ bool GR740GpioDriver::configurePin(NATIVE_UINT_TYPE pin, GpioDirection direction
         return false;
     }
 
-    // Determine which controller to use based on pin number
-    volatile uint32_t* data_reg = nullptr;
-    volatile uint32_t* dir_reg = nullptr;
-    uint32_t pin_mask = 0;
-
-    // Map pin to specific GPIO
-    switch (pin) {
-        case 0: // LED7 (GPIO2[5])
-            data_reg = m_gpio1_data_reg;
-            dir_reg = m_gpio1_dir_reg;
-            pin_mask = LED7_BIT;
-            break;
-        case 1: // LED8 (GPIO2[6])
-            data_reg = m_gpio1_data_reg;
-            dir_reg = m_gpio1_dir_reg;
-            pin_mask = LED8_BIT;
-            break;
-        default:
-            // Try to use original pin mapping for other pins
-            if (pin < 4) {
-                // For pins 0-3, use GPIO1 controller
-                data_reg = m_gpio1_data_reg;
-                dir_reg = m_gpio1_dir_reg;
-                pin_mask = (1U << pin);
+    // For LED pins, configure both controllers
+    if (pin == 0 || pin == 1) {
+        uint32_t pin_mask = (pin == 0) ? LED7_BIT : LED8_BIT;
+        
+        if (direction == GpioDirection::GPIO_DIRECTION_OUTPUT) {
+            // Set as output on both controllers
+            *m_gpio0_dir_reg |= pin_mask;
+            *m_gpio1_dir_reg |= pin_mask;
+            
+            // Set initial value on both controllers
+            if (initialValue == Fw::Logic::HIGH) {
+                *m_gpio0_data_reg |= pin_mask;
+                *m_gpio1_data_reg |= pin_mask;
+                m_outputState[pin] = Fw::Logic::HIGH;
             } else {
-                // For pins 4+, use GPIO0 controller
-                data_reg = m_gpio0_data_reg;
-                dir_reg = m_gpio0_dir_reg;
-                pin_mask = (1U << (pin - 4));
+                *m_gpio0_data_reg &= ~pin_mask;
+                *m_gpio1_data_reg &= ~pin_mask;
+                m_outputState[pin] = Fw::Logic::LOW;
             }
-            break;
-    }
-
-    // Configure pin direction
-    if (direction == GpioDirection::GPIO_DIRECTION_OUTPUT) {
-        // Set as GPIO_OUTPUT
-        *dir_reg |= pin_mask;
-
-        // Set initial value
-        if (initialValue == Fw::Logic::HIGH) {
-            *data_reg |= pin_mask;
-            m_outputState[pin] = Fw::Logic::HIGH;
+            
+            Fw::Logger::log("Configured LED%d as OUTPUT - GPIO0 dir: 0x%08x, GPIO1 dir: 0x%08x\n",
+                           (pin == 0) ? 7 : 8, *m_gpio0_dir_reg, *m_gpio1_dir_reg);
         } else {
-            *data_reg &= ~pin_mask;
-            m_outputState[pin] = Fw::Logic::LOW;
+            // Set as input on both controllers
+            *m_gpio0_dir_reg &= ~pin_mask;
+            *m_gpio1_dir_reg &= ~pin_mask;
         }
     } else {
-        // Set as input - clear direction bit
-        *dir_reg &= ~pin_mask;
+        // For non-LED pins, use original logic
+        volatile uint32_t* data_reg = nullptr;
+        volatile uint32_t* dir_reg = nullptr;
+        uint32_t pin_mask = 0;
+        
+        if (pin < 4) {
+            data_reg = m_gpio1_data_reg;
+            dir_reg = m_gpio1_dir_reg;
+            pin_mask = (1U << pin);
+        } else {
+            data_reg = m_gpio0_data_reg;
+            dir_reg = m_gpio0_dir_reg;
+            pin_mask = (1U << (pin - 4));
+        }
+        
+        // Configure pin direction
+        if (direction == GpioDirection::GPIO_DIRECTION_OUTPUT) {
+            *dir_reg |= pin_mask;
+            
+            // Set initial value
+            if (initialValue == Fw::Logic::HIGH) {
+                *data_reg |= pin_mask;
+                m_outputState[pin] = Fw::Logic::HIGH;
+            } else {
+                *data_reg &= ~pin_mask;
+                m_outputState[pin] = Fw::Logic::LOW;
+            }
+        } else {
+            // Set as input
+            *dir_reg &= ~pin_mask;
+        }
     }
 
     // Store pin direction
@@ -203,28 +234,25 @@ GpioStatus GR740GpioDriver::gpioRead_handler(const FwIndexType portNum, Fw::Logi
         return GpioStatus::INVALID_MODE;
     }
 
-    // Determine which GPIO controller and bit to use based on portNum
+    // For LEDs, read from GPIO0 (primary controller)
     volatile uint32_t* data_reg = nullptr;
     uint32_t pin_mask = 0;
 
-    // Map portNum to specific GPIO
     switch (portNum) {
-        case 0: // LED7 (GPIO2[5])
-            data_reg = m_gpio1_data_reg;
+        case 0: // LED7
+            data_reg = m_gpio0_data_reg;  // Read from GPIO0
             pin_mask = LED7_BIT;
             break;
-        case 1: // LED8 (GPIO2[6])
-            data_reg = m_gpio1_data_reg;
+        case 1: // LED8
+            data_reg = m_gpio0_data_reg;  // Read from GPIO0
             pin_mask = LED8_BIT;
             break;
         default:
-            // Try to use original pin mapping for other pins
+            // For other pins, use original mapping
             if (portNum < 4) {
-                // For pins 0-3, use GPIO1 controller
                 data_reg = m_gpio1_data_reg;
                 pin_mask = (1U << portNum);
             } else {
-                // For pins 4+, use GPIO0 controller
                 data_reg = m_gpio0_data_reg;
                 pin_mask = (1U << (portNum - 4));
             }

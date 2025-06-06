@@ -113,9 +113,9 @@ void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleSta
     // increment cycle
     this->m_cycles++;
 
-    printf("DEBUG: RateGroup%d cycle complete in %d cycles.\n", portNum, this->m_cycles);
+    // printf("DEBUG: RateGroup%d cycle complete in %d cycles.\n", portNum, this->m_cycles);
 #if DEBUG_RATEGROUP
-    printf("[RATEGROUP%d] Cycle complete in %d us\n", portNum, cycleTime);
+    // printf("[RATEGROUP%d] Cycle complete in %d us\n", portNum, cycleTime);
 #endif
 }
 

@@ -37,7 +37,6 @@ class TlmChan final : public TlmChanComponentBase {
     
     //! Handler implementation for Run
     void Run_handler(FwIndexType portNum, U32 context);
-    void preamble() override;
 
 
     //! Handler implementation for pingIn

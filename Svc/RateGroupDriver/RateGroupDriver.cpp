@@ -10,12 +10,12 @@ RateGroupDriver::RateGroupDriver(const char* compName)
     : RateGroupDriverComponentBase(compName), m_ticks(0), m_rollover(1), m_configured(false) {}
 
 void RateGroupDriver::configure(const DividerSet& dividerSet) {
-    printf("RateGroupDriver: Configuring with %lu dividers\n",
-           (unsigned long)FW_NUM_ARRAY_ELEMENTS(dividerSet.dividers));
+    //printf("RateGroupDriver: Configuring with %lu dividers\n",
+        //    (unsigned long)FW_NUM_ARRAY_ELEMENTS(dividerSet.dividers));
 
     for (NATIVE_INT_TYPE i = 0; i < static_cast<NATIVE_INT_TYPE>(FW_NUM_ARRAY_ELEMENTS(dividerSet.dividers)); i++) {
-        printf("RateGroupDriver: Divider[%d] = {div:%d, offset:%d}\n", i, dividerSet.dividers[i].divisor,
-               dividerSet.dividers[i].offset);
+        //printf("RateGroupDriver: Divider[%d] = {div:%d, offset:%d}\n", i, dividerSet.dividers[i].divisor,
+            //    dividerSet.dividers[i].offset);
     }
 
     // check arguments
@@ -43,7 +43,7 @@ void RateGroupDriver::configure(const DividerSet& dividerSet) {
 RateGroupDriver::~RateGroupDriver() {}
 
 void RateGroupDriver::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleStart) {
-    printf("[RG-DRIVER] CycleIn called, portNum=%d, tick=%u\n", portNum, this->m_ticks);
+    //printf("[RG-DRIVER] CycleIn called, portNum=%d, tick=%u\n", portNum, this->m_ticks);
 
     // For each divider entry
     for (NATIVE_INT_TYPE entry = 0; entry < static_cast<NATIVE_INT_TYPE>(FW_NUM_ARRAY_ELEMENTS(this->m_dividers));
@@ -54,10 +54,10 @@ void RateGroupDriver::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleSta
 
             if (outputTriggered) {
                 if (this->isConnected_CycleOut_OutputPort(entry)) {
-                    printf("[RG-DRIVER] Triggering CycleOut port %d\n", entry);
+                    //printf("[RG-DRIVER] Triggering CycleOut port %d\n", entry);
                     this->CycleOut_out(entry, cycleStart);
                 } else {
-                    printf("[RG-DRIVER] Port %d not connected\n", entry);
+                    //printf("[RG-DRIVER] Port %d not connected\n", entry);
                 }
             }
         }
@@ -65,7 +65,7 @@ void RateGroupDriver::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleSta
 
     // Rollover the tick value when the tick count reaches the rollover value
     this->m_ticks = (this->m_ticks + 1) % this->m_rollover;
-    printf("RateGroupDriver: CycleIn_handler completed\n");
+    //printf("RateGroupDriver: CycleIn_handler completed\n");
 }
 
 }  // namespace Svc

@@ -41,7 +41,7 @@ void ActiveLoggerImpl::LogRecv_handler(FwIndexType portNum,
                                        Fw::Time& timeTag,
                                        const Fw::LogSeverity& severity,
                                        Fw::LogBuffer& args) {
-    printf("DEBUG: Received event ID %u with severity %d\n", id, severity.e);
+    // printf("DEBUG: Received event ID %u with severity %d\n", id, severity.e);
     // make sure ID is not zero. Zero is reserved for ID filter.
     FW_ASSERT(id != 0);
 
@@ -106,7 +106,7 @@ void ActiveLoggerImpl::loqQueue_internalInterfaceHandler(FwEventIdType id,
                                                          const Fw::LogSeverity& severity,
                                                          const Fw::LogBuffer& args) {
     // debugging output
-    printf("DEBUG: Processing event ID 0x%X with severity %d in queue handler\n", id, severity.e);
+    // printf("DEBUG: Processing event ID 0x%X with severity %d in queue handler\n", id, severity.e);
 
     // Serialize event
     this->m_logPacket.setId(id);
@@ -119,7 +119,7 @@ void ActiveLoggerImpl::loqQueue_internalInterfaceHandler(FwEventIdType id,
     Fw::SerializeStatus stat = this->m_logPacket.serialize(this->m_comBuffer);
     FwSizeType afterSize = this->m_comBuffer.getBuffLength();
 
-    printf("DEBUG: Event serialization: status=%d, before=%llu, after=%llu\n", stat, beforeSize, afterSize);
+    // printf("DEBUG: Event serialization: status=%d, before=%llu, after=%llu\n", stat, beforeSize, afterSize);
 
     // Only proceed if serialization was successful
     if (stat != Fw::FW_SERIALIZE_OK) {

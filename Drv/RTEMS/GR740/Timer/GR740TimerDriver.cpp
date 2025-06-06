@@ -39,7 +39,7 @@ bool GR740TimerDriver::initialize(U32 timerHz) {
         // A one-time test call to make sure the port is connected
         Os::RawTime testTime;
         testTime.now();
-        printf("GR740TimerDriver: Testing CycleOut port connection\n");
+        // printf("GR740TimerDriver: Testing CycleOut port connection\n");
         this->CycleOut_out(0, testTime);
 
 
@@ -58,8 +58,8 @@ bool GR740TimerDriver::start() {
         return true; // Already running
     }
     
-    printf("GR740TimerDriver: Starting timer with %u ticks per interval\n", 
-           static_cast<unsigned int>(m_ticksPerCycle));
+    // printf("GR740TimerDriver: Starting timer with %u ticks per interval\n", 
+        //    static_cast<unsigned int>(m_ticksPerCycle));
     
     // Set running flag
     m_running = true;
@@ -125,7 +125,7 @@ void GR740TimerDriver::generateTick() {
     Os::RawTime currentTime;
     currentTime.now();
     
-    printf("[TIMER] Manually generating timer tick #%u\n", m_cycleCount);
+    // printf("[TIMER] Manually generating timer tick #%u\n", m_cycleCount);
     this->CycleOut_out(0, currentTime);
     
     m_cycleCount++;
