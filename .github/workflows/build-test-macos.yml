@@ -5,16 +5,17 @@ name: macOS-CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
-  push:
-    branches: [ devel, release/** ]
-  pull_request:
+  workflow_dispatch:  # Manual trigger only during GR740 development
+  # push:
+  # branches: [ devel, release/** ]
+  # pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ devel, release/** ]
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - '.github/actions/spelling/**'
-      - '.github/ISSUE_TEMPLATE/**'
+  # branches: [ devel, release/** ]
+  # paths-ignore:
+  #   - 'docs/**'
+  #   - '**.md'
+  #   - '.github/actions/spelling/**'
+  #   - '.github/ISSUE_TEMPLATE/**'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

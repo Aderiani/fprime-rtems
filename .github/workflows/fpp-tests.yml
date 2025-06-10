@@ -1,16 +1,17 @@
 name: "FppTest"
 
 on:
-  push:
-    branches: [ devel, release/** ]
-  pull_request:
+  workflow_dispatch:  # Manual trigger only during GR740 development
+  # push:
+  # branches: [ devel, release/** ]
+  # pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ devel, release/** ]
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - '.github/actions/spelling/**'
-      - '.github/ISSUE_TEMPLATE/**'
+  # branches: [ devel, release/** ]
+  # paths-ignore:
+  #   - 'docs/**'
+  #   - '**.md'
+  #   - '.github/actions/spelling/**'
+  #   - '.github/ISSUE_TEMPLATE/**'
 
 jobs:
   fpptest:

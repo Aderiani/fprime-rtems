@@ -18,10 +18,11 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # Native Linux builds
   Framework:
     runs-on: ubuntu-22.04
     steps:
-    - name: "Checkout F´ Repository"
+    - name: "Checkout F´ Repository"
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -41,7 +42,7 @@ jobs:
   Ref:
     runs-on: ubuntu-22.04
     steps:
-    - name: "Checkout F´ Repository"
+    - name: "Checkout F´ Repository"
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -58,10 +59,11 @@ jobs:
         path: ci-logs.tar.gz
         retention-days: 5
 
+  # Integration tests - Native only
   Integration:
     runs-on: ubuntu-22.04
     steps:
-    - name: "Checkout F´ Repository"
+    - name: "Checkout F´ Repository"
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -82,10 +84,68 @@ jobs:
         path: ci-logs.tar.gz
         retention-days: 5
 
+  # Cross-compilation test for RTEMS/GR740
+  CrossCompile-RTEMS:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        target: [gr740-rtems5]
+    steps:
+    - name: "Checkout F´ Repository"
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+    
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install F´ tools
+      run: |
+        pip install -U setuptools setuptools_scm wheel pip
+        pip install -r requirements.txt
+    
+    - name: Check for RTEMS toolchain
+      id: check-rtems
+      run: |
+        RTEMS_PATH="/opt/rtems/rcc-1.3.2-gcc"
+        if [ -d "$RTEMS_PATH" ]; then
+          echo "has_rtems=true" >> $GITHUB_OUTPUT
+          echo "RTEMS toolchain found"
+        else
+          echo "has_rtems=false" >> $GITHUB_OUTPUT
+          echo "::warning::RTEMS toolchain not found at $RTEMS_PATH"
+          echo "::notice::Skipping RTEMS cross-compilation test"
+        fi
+    
+    - name: Build for GR740/RTEMS
+      if: steps.check-rtems.outputs.has_rtems == 'true'
+      run: |
+        # Framework build
+        fprime-util generate -DCMAKE_TOOLCHAIN_FILE="${PWD}/cmake/toolchain/${{ matrix.target }}.cmake"
+        fprime-util build --all -j4
+        
+        # Ref build
+        cd Ref
+        fprime-util generate -DCMAKE_TOOLCHAIN_FILE="${PWD}/../cmake/toolchain/${{ matrix.target }}.cmake"
+        fprime-util build -j4
+        
+    - name: 'Archive Cross-Compile Artifacts'
+      if: steps.check-rtems.outputs.has_rtems == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: cross-compile-${{ matrix.target }}
+        path: |
+          build-fprime-automatic-*/bin/
+          Ref/build-fprime-automatic-*/bin/
+        retention-days: 5
+
   Quality:
     runs-on: ubuntu-22.04
     steps:
-    - name: "Checkout F´ Repository"
+    - name: "Checkout F´ Repository"
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -105,4 +165,3 @@ jobs:
       run: |
         fprime-util generate -DCMAKE_C_COMPILER=gcc-10 -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_CXX_CLANG_TIDY="clang-tidy-12;--config-file=$PWD/release.clang-tidy"
         fprime-util build --all -j4
-
