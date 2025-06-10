@@ -113,19 +113,8 @@ void ActiveLoggerImpl::loqQueue_internalInterfaceHandler(FwEventIdType id,
     this->m_logPacket.setTimeTag(timeTag);
     this->m_logPacket.setLogBuffer(args);
     this->m_comBuffer.resetSer();
-
-    // Serialize the event and check buffer state
-    FwSizeType beforeSize = this->m_comBuffer.getBuffLength();
     Fw::SerializeStatus stat = this->m_logPacket.serialize(this->m_comBuffer);
-    FwSizeType afterSize = this->m_comBuffer.getBuffLength();
 
-    // printf("DEBUG: Event serialization: status=%d, before=%llu, after=%llu\n", stat, beforeSize, afterSize);
-
-    // Only proceed if serialization was successful
-    if (stat != Fw::FW_SERIALIZE_OK) {
-        printf("ERROR: Failed to serialize event 0x%X\n", id);
-        return;
-    }
 
     FW_ASSERT(Fw::FW_SERIALIZE_OK == stat, static_cast<FwAssertArgType>(stat));
 

@@ -54,10 +54,8 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     inputs.port = 50000;  // Default port
 
     // Setup topology
-    printf("Setting up topology");
+
     LedBlinker::setupTopology(inputs);
-    printf("Topology setup complete");
-    fflush(stdout);
 
     // // Setup program shutdown via Ctrl-C
     // signal(SIGINT, signalHandler);

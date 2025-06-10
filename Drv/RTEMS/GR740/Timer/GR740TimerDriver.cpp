@@ -28,7 +28,7 @@ bool GR740TimerDriver::initialize(U32 timerHz) {
     }
     
     m_timerHz = timerHz;
-    Fw::Logger::log("GR740TimerDriver: Initializing timer with frequency %u Hz", timerHz);
+
     
     // Calculate ticks per cycle
     m_ticksPerCycle = rtems_clock_get_ticks_per_second() / m_timerHz;

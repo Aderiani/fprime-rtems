@@ -5,8 +5,8 @@
 // ======================================================================
 
 #include "Components/Led/Led.hpp"
-#include "Fw/Logger/Logger.hpp"
 #include "FpConfig.hpp"
+#include "Fw/Logger/Logger.hpp"
 
 namespace Components {
 
@@ -22,26 +22,17 @@ void Led::parameterUpdated(FwPrmIdType id) {
     Fw::ParamValid isValid = Fw::ParamValid::INVALID;
     switch (id) {
         case PARAMID_BLINK_INTERVAL: {
-            // Use a local variable with proper alignment
-            U32 interval = 0;
-            
-            // Ensure we're reading into an aligned memory location
-            interval = this->paramGet_BLINK_INTERVAL(isValid);
-            
-            // Check validity explicitly
-            if (isValid == Fw::ParamValid::VALID) {
-                // Emit the blink interval set event only if valid
-                this->log_ACTIVITY_HI_BlinkIntervalSet(interval);
-            } else {
-                // Use a safe default if parameter is invalid
-                interval = 1; // Default to 1
-                Fw::Logger::log("WARNING: Invalid BLINK_INTERVAL parameter\n");
-            }
+            // Read back the parameter value
+            const U32 interval = this->paramGet_BLINK_INTERVAL(isValid);
+            // NOTE: isValid is always VALID in parameterUpdated as it was just properly set
+            FW_ASSERT(isValid == Fw::ParamValid::VALID, static_cast<FwAssertArgType>(isValid));
+
+            // Emit the blink interval set event
+            this->log_ACTIVITY_HI_BlinkIntervalSet(interval);
             break;
         }
         default:
-            // Just log error without asserting
-            Fw::Logger::log("WARNING: Unknown parameter ID %d\n", id);
+            FW_ASSERT(0, static_cast<FwAssertArgType>(id));
             break;
     }
 }

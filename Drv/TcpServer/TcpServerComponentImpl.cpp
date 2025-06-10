@@ -58,12 +58,10 @@ SocketIpStatus TcpServerComponentImpl::configure(const char* hostname,
 }
 
 void TcpServerComponentImpl::sendBuffer(Fw::Buffer buffer, SocketIpStatus status) {
-    Fw::Logger::log("TcpServer: sendBuffer called with status=%d, size=%u, data=%p, context=0x%X", status,
-                    buffer.getSize(), buffer.getData(), buffer.getContext());
+
 
     // For RTEMS, handle potential null buffer cases
     if (buffer.getData() == nullptr) {
-        Fw::Logger::log("[WARNING] Null buffer in sendBuffer, skipping");
         return;
     }
 
@@ -73,7 +71,6 @@ void TcpServerComponentImpl::sendBuffer(Fw::Buffer buffer, SocketIpStatus status
 
     // Special marker for our internal buffers (0xDEAD)
     if (mgrId == 0xDEAD) {
-        Fw::Logger::log("TcpServer: Internal buffer detected, not requiring normal processing");
         // Just pass the buffer to recv_out without special handling
         Drv::RecvStatus recvStatus = (status == SOCK_SUCCESS)             ? RecvStatus::RECV_OK
                                      : (status == SOCK_NO_DATA_AVAILABLE) ? RecvStatus::RECV_NO_DATA
@@ -334,7 +331,6 @@ Drv::SendStatus TcpServerComponentImpl::send_handler(const FwIndexType portNum, 
 bool TcpServerComponentImpl::verifyNetworkReady() {
     // Try up to 5 times with increasing delays
     for (int attempt = 1; attempt <= 5; attempt++) {
-        Fw::Logger::log("[INFO] Checking network readiness (attempt %d/5)", attempt);
 
         // Create socket and try to bind
         int test_socket = ::socket(AF_INET, SOCK_DGRAM, 0);
@@ -351,13 +347,12 @@ bool TcpServerComponentImpl::verifyNetworkReady() {
         addr.sin_port = 0;
 
         if (::bind(test_socket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) == 0) {
-            Fw::Logger::log("[INFO] Network is ready");
+
             ::close(test_socket);
             return true;
         }
 
         ::close(test_socket);
-        Fw::Logger::log("[INFO] Network not ready yet, waiting...");
         Os::Task::delay(Fw::TimeInterval(attempt, 0));  // Increasing delay
     }
 

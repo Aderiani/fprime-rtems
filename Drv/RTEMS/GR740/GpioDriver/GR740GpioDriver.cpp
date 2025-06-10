@@ -38,11 +38,6 @@ bool GR740GpioDriver::initialize() {
     m_gpio1_data_reg = reinterpret_cast<volatile uint32_t*>(GPIO1_BASE_ADDR + GPIO_DATA_OUT_OFFSET);
     m_gpio1_dir_reg = reinterpret_cast<volatile uint32_t*>(GPIO1_BASE_ADDR + GPIO_DIRECTION_OFFSET);
 
-    // Read and log current register values for debugging
-    Fw::Logger::log("GPIO0 direction register initial value: 0x%08x\n", *m_gpio0_dir_reg);
-    Fw::Logger::log("GPIO1 direction register initial value: 0x%08x\n", *m_gpio1_dir_reg);
-    Fw::Logger::log("GPIO0 data register initial value: 0x%08x\n", *m_gpio0_data_reg);
-    Fw::Logger::log("GPIO1 data register initial value: 0x%08x\n", *m_gpio1_data_reg);
 
     // Initialize success
     m_initialized = true;
@@ -97,14 +92,10 @@ GpioStatus GR740GpioDriver::gpioWrite_handler(const FwIndexType portNum, const F
             *m_gpio0_data_reg |= pin_mask;  // Set bit on GPIO0
             *m_gpio1_data_reg |= pin_mask;  // Set bit on GPIO1
             
-            Fw::Logger::log("LED%d ON - GPIO0 data: 0x%08x, GPIO1 data: 0x%08x\n", 
-                           (portNum == 0) ? 7 : 8, *m_gpio0_data_reg, *m_gpio1_data_reg);
         } else {
             *m_gpio0_data_reg &= ~pin_mask; // Clear bit on GPIO0
             *m_gpio1_data_reg &= ~pin_mask; // Clear bit on GPIO1
             
-            Fw::Logger::log("LED%d OFF - GPIO0 data: 0x%08x, GPIO1 data: 0x%08x\n", 
-                           (portNum == 0) ? 7 : 8, *m_gpio0_data_reg, *m_gpio1_data_reg);
         }
     } else {
         // For non-LED pins, use the original logic
@@ -171,8 +162,7 @@ bool GR740GpioDriver::configurePin(NATIVE_UINT_TYPE pin, GpioDirection direction
                 m_outputState[pin] = Fw::Logic::LOW;
             }
             
-            Fw::Logger::log("Configured LED%d as OUTPUT - GPIO0 dir: 0x%08x, GPIO1 dir: 0x%08x\n",
-                           (pin == 0) ? 7 : 8, *m_gpio0_dir_reg, *m_gpio1_dir_reg);
+
         } else {
             // Set as input on both controllers
             *m_gpio0_dir_reg &= ~pin_mask;
