@@ -147,7 +147,6 @@ add_named_os_module(RawTime Fw_Buffer)
 
 
 
-target_compile_options(Os_FileSystem_RTEMS PRIVATE -Wno-shadow)
 ### UTS ### Note: 3 separate UTs registered here.
 set(UT_SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/test/ut/OsTestMain.cpp"
