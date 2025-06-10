@@ -16,7 +16,6 @@ KEEP_ACTIVE = [
     "python-format.yml",
     "cppcheck-scan.yml",
     "cpplint-scan.yml",
-    "spelling.yml",
     "pip-check.yml",
 ]
 
@@ -24,6 +23,7 @@ KEEP_ACTIVE = [
 DISABLE_TEMP = [
     "ext-build-examples-repo.yml",
     "ext-build-hello-world.yml",
+    "spelling.yml",
     "ext-build-led-blinker.yml",
     "ext-build-math-comp.yml",
     "ext-raspberry-led-blinker.yml",
