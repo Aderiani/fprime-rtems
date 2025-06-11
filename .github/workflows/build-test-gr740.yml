@@ -44,7 +44,8 @@ jobs:
     - name: Create repository artifact
       run: |
         # Create a tar file excluding .git to reduce size
-        tar --exclude='.git' -czf fprime-repo.tar.gz .
+        tar --exclude='.git' -czf /tmp/fprime-repo.tar.gz .
+        mv /tmp/fprime-repo.tar.gz .
     
     - name: Upload repository artifact
       uses: actions/upload-artifact@v4
