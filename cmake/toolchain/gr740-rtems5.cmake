@@ -7,8 +7,7 @@ include_guard()
 set(CMAKE_SYSTEM_NAME         "RTEMS")
 set(CMAKE_SYSTEM_VERSION      5)
 set(CMAKE_SYSTEM_PROCESSOR    sparc)
-set(FPRIME_PLATFORM           RTEMS)
-
+set(FPRIME_PLATFORM "RTEMS" CACHE STRING "Platform for the build" FORCE)
 
 # Define RTEMS as the target OS type
 add_definitions(-DCMAKE_SYSTEM_NAME_RTEMS=1)
