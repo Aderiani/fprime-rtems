@@ -90,7 +90,6 @@ jobs:
       run: |
         fprime-util generate --verbose \
           -DCMAKE_TOOLCHAIN_FILE="${PWD}/cmake/toolchain/gr740-rtems5.cmake" \
-          -DFPRIME_PLATFORM=RTEMS
     
     - name: Build Framework for GR740
       run: |
