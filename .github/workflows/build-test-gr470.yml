@@ -143,8 +143,7 @@ jobs:
       working-directory: ./Ref
       run: |
         fprime-util generate --verbose \
-          -DCMAKE_TOOLCHAIN_FILE="${PWD}/../cmake/toolchain/gr740-rtems5.cmake" \
-          -DFPRIME_PLATFORM=RTEMS
+          -DCMAKE_TOOLCHAIN_FILE="${PWD}/../cmake/toolchain/gr740-rtems5.cmake"
     
     - name: Build Ref for GR740
       working-directory: ./Ref
