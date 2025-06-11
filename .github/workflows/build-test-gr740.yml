@@ -58,13 +58,19 @@ jobs:
       run: |
         pip install -U setuptools setuptools_scm wheel pip
         pip install -r requirements.txt
-    
-    - name: Setup RTEMS Environment
+        
+    - name: Setup RTEMS Environment and Verify
       run: |
+        # Set for future steps
         echo "RTEMS_PATH=${{ env.RTEMS_PATH }}" >> $GITHUB_ENV
         echo "PATH=${{ env.RTEMS_PATH }}/bin:$PATH" >> $GITHUB_ENV
-        # Verify toolchain in PATH
+        
+        # Also set for current step
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
+        
+        # Now verify
         which ${{ env.CROSS_PREFIX }}-gcc
+        ${{ env.CROSS_PREFIX }}-gcc --version
     
     - name: Generate GR740 Build Cache
       run: |
