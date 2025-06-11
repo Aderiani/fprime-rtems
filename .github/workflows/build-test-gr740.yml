@@ -18,206 +18,376 @@ env:
   RTEMS_BSP: gr740
   CROSS_PREFIX: sparc-gaisler-rtems5
   RTEMS_DOWNLOAD_URL: https://download.gaisler.com/anonftp/rcc/rcc-1.3/1.3.2/sparc-rtems-5-gcc-10.5.0-1.3.2-linux.txz
+  PYTHON_VERSION: '3.11'
 
 jobs:
-  # GR740/RTEMS Framework build
-  Framework-GR740:
+  # Setup job: prepare all cached resources once
+  Setup-Environment:
     runs-on: ubuntu-22.04
+    outputs:
+      cache-key-rtems: ${{ steps.cache-keys.outputs.rtems }}
+      cache-key-python: ${{ steps.cache-keys.outputs.python }}
     steps:
-    - name: "Checkout F´ Repository"
+    - name: Generate cache keys
+      id: cache-keys
+      run: |
+        echo "rtems=rtems-toolchain-1.3.2-gcc-${{ runner.os }}" >> $GITHUB_OUTPUT
+        echo "python=python-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements.txt') }}" >> $GITHUB_OUTPUT
+
+    # Checkout repository once and upload as artifact
+    - name: Checkout F´ Repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
         submodules: true
     
-    - name: "Download and Install RTEMS Toolchain"
+    - name: Create repository artifact
+      run: |
+        # Create a tar file excluding .git to reduce size
+        tar --exclude='.git' -czf fprime-repo.tar.gz .
+    
+    - name: Upload repository artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: fprime-repository
+        path: fprime-repo.tar.gz
+        retention-days: 1
+
+    # Cache RTEMS Toolchain
+    - name: Cache RTEMS Toolchain
+      id: cache-rtems
+      uses: actions/cache@v4
+      with:
+        path: /opt/rtems/rcc-1.3.2-gcc
+        key: ${{ steps.cache-keys.outputs.rtems }}
+    
+    - name: Download and Install RTEMS Toolchain
+      if: steps.cache-rtems.outputs.cache-hit != 'true'
       run: |
         echo "Downloading RTEMS toolchain..."
         wget -q ${{ env.RTEMS_DOWNLOAD_URL }} -O rtems-toolchain.txz
-        echo "Creating directory structure..."
-        sudo mkdir -p ${{ env.RTEMS_PATH }}
-        echo "Extracting toolchain..."
+        sudo mkdir -p $(dirname ${{ env.RTEMS_PATH }})
         sudo tar -Jxf rtems-toolchain.txz -C /opt/rtems/
-        echo "Verifying installation..."
-        ls -la /opt/rtems/
-        # Verify the toolchain executable exists
-        if [ -f "${{ env.RTEMS_PATH }}/bin/${{ env.CROSS_PREFIX }}-gcc" ]; then
-          echo "Toolchain installed successfully"
-          ${{ env.RTEMS_PATH }}/bin/${{ env.CROSS_PREFIX }}-gcc --version
-        else
-          echo "Error: Toolchain not found at expected location"
-          exit 1
-        fi
-    
+        ${{ env.RTEMS_PATH }}/bin/${{ env.CROSS_PREFIX }}-gcc --version
+
+    # Setup Python with caching
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Cache Python packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ steps.cache-keys.outputs.python }}
+        restore-keys: |
+          python-${{ env.PYTHON_VERSION }}-
     
     - name: Install F´ Python Dependencies
       run: |
         pip install -U setuptools setuptools_scm wheel pip
         pip install -r requirements.txt
-        
-    - name: Setup RTEMS Environment and Verify
+
+  # Native build for comparison
+  Framework-Native:
+    runs-on: ubuntu-22.04
+    needs: Setup-Environment
+    steps:
+    - name: Download repository
+      uses: actions/download-artifact@v4
+      with:
+        name: fprime-repository
+    
+    - name: Extract repository
+      run: tar -xzf fprime-repo.tar.gz && rm fprime-repo.tar.gz
+    
+    - name: Setup Python with cache
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Restore Python packages cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ needs.Setup-Environment.outputs.cache-key-python }}
+    
+    - name: Install Python packages
       run: |
-        # Set for future steps
-        echo "RTEMS_PATH=${{ env.RTEMS_PATH }}" >> $GITHUB_ENV
-        echo "PATH=${{ env.RTEMS_PATH }}/bin:$PATH" >> $GITHUB_ENV
-        
-        # Also set for current step
-        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
-        
-        # Now verify
-        which ${{ env.CROSS_PREFIX }}-gcc
-        ${{ env.CROSS_PREFIX }}-gcc --version
+        pip install -U setuptools setuptools_scm wheel pip
+        pip install -r requirements.txt
+    
+    - name: F prime Native CI step
+      run: ./ci/tests/Framework.bash
+    
+    - name: Archive Logs
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ci-framework-native-logs
+        path: ci-logs.tar.gz
+        retention-days: 5
+
+  # GR740/RTEMS Framework build
+  Framework-GR740:
+    runs-on: ubuntu-22.04
+    needs: Setup-Environment
+    steps:
+    - name: Download repository
+      uses: actions/download-artifact@v4
+      with:
+        name: fprime-repository
+    
+    - name: Extract repository
+      run: tar -xzf fprime-repo.tar.gz && rm fprime-repo.tar.gz
+    
+    - name: Restore RTEMS Toolchain from Cache
+      uses: actions/cache@v4
+      with:
+        path: /opt/rtems/rcc-1.3.2-gcc
+        key: ${{ needs.Setup-Environment.outputs.cache-key-rtems }}
+    
+    - name: Setup Python with cache
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Restore Python packages cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ needs.Setup-Environment.outputs.cache-key-python }}
+    
+    - name: Install Python packages
+      run: |
+        pip install -U setuptools setuptools_scm wheel pip
+        pip install -r requirements.txt
+    
+    - name: Cache CMake build files
+      uses: actions/cache@v4
+      with:
+        path: |
+          build-*/CMakeCache.txt
+          build-*/CMakeFiles/
+        key: cmake-gr740-framework-${{ github.sha }}
+        restore-keys: |
+          cmake-gr740-framework-
     
     - name: Generate GR740 Build Cache
       run: |
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
         fprime-util generate --verbose \
           -DCMAKE_TOOLCHAIN_FILE="${PWD}/cmake/toolchain/gr740-rtems5.cmake" \
+          -DCMAKE_VERBOSE_MAKEFILE=ON
     
     - name: Build Framework for GR740
       run: |
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
         fprime-util build --all -j4
     
-    - name: 'Archive Build Artifacts'
+    - name: Archive Build Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: gr740-framework-build
         path: |
-          build-fprime-automatic-gr740/
-          !build-fprime-automatic-gr740/**/*.o
+          build-*/
+          !build-*/**/*.o
         retention-days: 5
 
   # GR740/RTEMS Ref Application build
   Ref-GR740:
     runs-on: ubuntu-22.04
+    needs: Setup-Environment
     steps:
-    - name: "Checkout F´ Repository"
-      uses: actions/checkout@v4
+    - name: Download repository
+      uses: actions/download-artifact@v4
       with:
-        fetch-depth: 0
-        submodules: true
+        name: fprime-repository
     
-    - name: "Download and Install RTEMS Toolchain"
-      run: |
-        echo "Downloading RTEMS toolchain..."
-        wget -q ${{ env.RTEMS_DOWNLOAD_URL }} -O rtems-toolchain.txz
-        echo "Creating directory structure..."
-        sudo mkdir -p ${{ env.RTEMS_PATH }}
-        echo "Extracting toolchain..."
-        sudo tar -Jxf rtems-toolchain.txz -C /opt/rtems/
-        echo "Verifying installation..."
-        ${{ env.RTEMS_PATH }}/bin/${{ env.CROSS_PREFIX }}-gcc --version
+    - name: Extract repository
+      run: tar -xzf fprime-repo.tar.gz && rm fprime-repo.tar.gz
     
-    - name: Setup Python
+    - name: Restore RTEMS Toolchain from Cache
+      uses: actions/cache@v4
+      with:
+        path: /opt/rtems/rcc-1.3.2-gcc
+        key: ${{ needs.Setup-Environment.outputs.cache-key-rtems }}
+    
+    - name: Setup Python with cache
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
     
-    - name: Install F´ Python Dependencies
+    - name: Restore Python packages cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ needs.Setup-Environment.outputs.cache-key-python }}
+    
+    - name: Install Python packages
       run: |
         pip install -U setuptools setuptools_scm wheel pip
         pip install -r requirements.txt
     
-    - name: Setup RTEMS Environment
-      run: |
-        echo "PATH=${{ env.RTEMS_PATH }}/bin:$PATH" >> $GITHUB_ENV
+    - name: Cache CMake build files for Ref
+      uses: actions/cache@v4
+      with:
+        path: |
+          Ref/build-*/CMakeCache.txt
+          Ref/build-*/CMakeFiles/
+        key: cmake-gr740-ref-${{ github.sha }}
+        restore-keys: |
+          cmake-gr740-ref-
     
     - name: Generate Ref Build for GR740
       working-directory: ./Ref
       run: |
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
         fprime-util generate --verbose \
-          -DCMAKE_TOOLCHAIN_FILE="${PWD}/../cmake/toolchain/gr740-rtems5.cmake"
+          -DCMAKE_TOOLCHAIN_FILE="../cmake/toolchain/gr740-rtems5.cmake" \
+          -DCMAKE_VERBOSE_MAKEFILE=ON
     
     - name: Build Ref for GR740
       working-directory: ./Ref
       run: |
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
         fprime-util build -j4
     
     - name: Check Binary Info
       working-directory: ./Ref
       run: |
-        ${{ env.CROSS_PREFIX }}-size build-fprime-automatic-gr740/bin/Ref.exe
-        ${{ env.CROSS_PREFIX }}-objdump -h build-fprime-automatic-gr740/bin/Ref.exe | head -20
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
+        BUILD_DIR=$(find . -name "build-*" -type d | head -1)
+        if [ -f "$BUILD_DIR/bin/Ref.exe" ]; then
+          ${{ env.CROSS_PREFIX }}-size "$BUILD_DIR/bin/Ref.exe"
+          ${{ env.CROSS_PREFIX }}-objdump -h "$BUILD_DIR/bin/Ref.exe" | head -20
+        fi
     
-    - name: 'Archive Ref Artifacts'
+    - name: Archive Ref Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: gr740-ref-build
         path: |
-          Ref/build-fprime-automatic-gr740/bin/
-          Ref/build-fprime-automatic-gr740/dict/
+          Ref/build-*/bin/
+          Ref/build-*/dict/
         retention-days: 5
 
-  # Unit tests - compile only for RTEMS
+  # Unit tests
   UnitTests-GR740:
     runs-on: ubuntu-22.04
+    needs: Setup-Environment
     steps:
-    - name: "Checkout F´ Repository"
-      uses: actions/checkout@v4
+    - name: Download repository
+      uses: actions/download-artifact@v4
       with:
-        fetch-depth: 0
-        submodules: true
+        name: fprime-repository
     
-    - name: "Download and Install RTEMS Toolchain"
-      run: |
-        echo "Downloading RTEMS toolchain..."
-        wget -q ${{ env.RTEMS_DOWNLOAD_URL }} -O rtems-toolchain.txz
-        echo "Creating directory structure..."
-        sudo mkdir -p ${{ env.RTEMS_PATH }}
-        echo "Extracting toolchain..."
-        sudo tar -Jxf rtems-toolchain.txz -C /opt/rtems/
-        echo "Verifying installation..."
-        ${{ env.RTEMS_PATH }}/bin/${{ env.CROSS_PREFIX }}-gcc --version
+    - name: Extract repository
+      run: tar -xzf fprime-repo.tar.gz && rm fprime-repo.tar.gz
     
-    - name: Setup Python
+    - name: Restore RTEMS Toolchain from Cache
+      uses: actions/cache@v4
+      with:
+        path: /opt/rtems/rcc-1.3.2-gcc
+        key: ${{ needs.Setup-Environment.outputs.cache-key-rtems }}
+    
+    - name: Setup Python with cache
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
     
-    - name: Install F´ Python Dependencies
+    - name: Restore Python packages cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ needs.Setup-Environment.outputs.cache-key-python }}
+    
+    - name: Install Python packages
       run: |
         pip install -U setuptools setuptools_scm wheel pip
         pip install -r requirements.txt
     
-    - name: Setup RTEMS Environment
-      run: |
-        echo "PATH=${{ env.RTEMS_PATH }}/bin:$PATH" >> $GITHUB_ENV
-    
     - name: Generate UT Build for GR740
       run: |
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
         fprime-util generate --ut --verbose \
-          -DCMAKE_TOOLCHAIN_FILE="${PWD}/cmake/toolchain/gr740-rtems5.cmake"
+          -DCMAKE_TOOLCHAIN_FILE="${PWD}/cmake/toolchain/gr740-rtems5.cmake" \
+          -DCMAKE_VERBOSE_MAKEFILE=ON
     
     - name: Build Unit Tests for GR740
       run: |
+        export PATH="${{ env.RTEMS_PATH }}/bin:$PATH"
         fprime-util build --ut -j4
     
     - name: List Built Tests
       run: |
         echo "Built unit test executables:"
-        find build-fprime-automatic-gr740-ut -name "*.exe" -type f | sort
+        find build-*-ut -name "*.exe" -type f | sort
+    
+    - name: Archive Unit Test Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: gr740-unittest-build
+        path: |
+          build-*-ut/bin/
+        retention-days: 5
 
-  # Code quality checks remain the same
+  # Code quality checks
   Quality:
     runs-on: ubuntu-22.04
+    needs: Setup-Environment
     steps:
-    - name: "Checkout F´ Repository"
-      uses: actions/checkout@v4
+    - name: Download repository
+      uses: actions/download-artifact@v4
       with:
-        fetch-depth: 0
-        submodules: true
-    - uses: ./.github/actions/setup
+        name: fprime-repository
+    
+    - name: Extract repository
+      run: tar -xzf fprime-repo.tar.gz && rm fprime-repo.tar.gz
+    
+    - name: Setup Python with cache
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Restore Python packages cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ needs.Setup-Environment.outputs.cache-key-python }}
+    
+    - name: Install Python packages
+      run: |
+        pip install -U setuptools setuptools_scm wheel pip
+        pip install -r requirements.txt
+    
     - name: Setup Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install clang-tidy-12
+    
+    - name: Cache CMake files for quality checks
+      uses: actions/cache@v4
+      with:
+        path: |
+          build-*/CMakeCache.txt
+          build-*/CMakeFiles/
+        key: cmake-quality-${{ github.sha }}
+        restore-keys: |
+          cmake-quality-
+    
     - name: General Static Analysis
       run: |
         fprime-util generate --ut -DCMAKE_C_COMPILER=gcc-10 -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_CXX_CLANG_TIDY=clang-tidy-12
         fprime-util build --all --ut -j4
+    
     - name: Flight Code Static Analysis
       run: |
         fprime-util generate -DCMAKE_C_COMPILER=gcc-10 -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_CXX_CLANG_TIDY="clang-tidy-12;--config-file=$PWD/release.clang-tidy"
