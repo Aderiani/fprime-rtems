@@ -16,7 +16,6 @@ KEEP_ACTIVE = [
     "python-format.yml",
     "cppcheck-scan.yml",
     "cpplint-scan.yml",
-    "spelling.yml",
     "pip-check.yml",
 ]
 
@@ -31,6 +30,7 @@ DISABLE_TEMP = [
     "build-test-macos.yml",
     "codeql-jpl-standard.yml",
     "cookiecutters-test.yml",
+    "spelling.yml",
     "fpp-tests.yml",  # May need RTEMS adjustments
 ]
 
