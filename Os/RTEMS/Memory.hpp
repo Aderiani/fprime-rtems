@@ -24,6 +24,12 @@ class RtemsMemory : public MemoryInterface {
     //! Destructor
     ~RtemsMemory() override = default;
 
+    //! Copy constructor - deleted
+    RtemsMemory(const RtemsMemory& other) = delete;
+
+    //! Assignment operator - deleted (this fixes the error)
+    RtemsMemory& operator=(const MemoryInterface& other) override = delete;
+
     //! Get memory usage
     Status _getUsage(Os::Memory::Usage& memory_usage) override;
 

@@ -25,6 +25,12 @@ class RtemsCpu : public CpuInterface {
     //! Destructor
     ~RtemsCpu() override = default;
 
+    //! Copy constructor - deleted
+    RtemsCpu(const RtemsCpu& other) = delete;
+
+    //! Assignment operator - deleted (this fixes the error)
+    RtemsCpu& operator=(const CpuInterface& other) override = delete;
+
     //! Get CPU count
     Status _getCount(FwSizeType& cpu_count) override;
 

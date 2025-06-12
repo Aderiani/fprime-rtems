@@ -94,6 +94,11 @@ function(add_fprime_supplied_os_module NAMES SUFFIX)
     register_fprime_implementation("Os_${FIRST_ITEM}" "${OS_MODULE_NAME}" "${CMAKE_CURRENT_LIST_DIR}/Default${FIRST_ITEM}.cpp")
 endfunction()
 
+
+# Add RTEMS-specific stubs when building for RTEMS
+if(CMAKE_SYSTEM_NAME STREQUAL "rtems")
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/RTEMS/stubs.c")
+endif()
 ####
 # WARNING: not for use outside of fprime/Os
 #
@@ -121,6 +126,10 @@ add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Linux")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Darwin")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/RTEMS")
 
+
+
+
+
 # Basic source files used in every OSAL layer.  Contains common code and helpers.
 set(SOURCE_FILES
     "${CMAKE_CURRENT_LIST_DIR}/ValidateFileCommon.cpp"
@@ -134,6 +143,12 @@ set(SOURCE_HEADERS
     "${CMAKE_CURRENT_LIST_DIR}/Os.hpp"
 )
 set(MOD_DEPS Fw_Types)
+
+
+
+
+
+
 register_fprime_module()
 
 add_named_os_module(Console Fw_Logger)
@@ -144,6 +159,10 @@ add_named_os_module(Queue)
 add_named_os_module(Cpu)
 add_named_os_module(Memory)
 add_named_os_module(RawTime Fw_Buffer)
+
+
+
+
 
 
 
@@ -163,3 +182,8 @@ if (BUILD_TESTING)
     set(MOD_DEPS config)
     register_fprime_module(Os_Test_File_SyntheticFileSystem)
 endif()
+
+
+
+
+

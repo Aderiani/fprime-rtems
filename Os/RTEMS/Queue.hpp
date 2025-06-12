@@ -40,6 +40,16 @@ class RTEMSQueue : public QueueInterface {
     ~RTEMSQueue() override;
 
     /**
+     * Copy constructor - deleted
+     */
+    RTEMSQueue(const RTEMSQueue& other) = delete;
+
+    /**
+     * Assignment operator - deleted (this fixes the first error)
+     */
+    RTEMSQueue& operator=(const QueueInterface& other) override = delete;
+
+    /**
      * Create a queue
      * @param name Queue name
      * @param depth Maximum number of messages the queue can hold
@@ -91,7 +101,12 @@ class RTEMSQueue : public QueueInterface {
      */
     QueueHandle* getHandle() override;
 
-    FwSizeType getMinBufferSize() const { return m_handle.msgSize; }
+    /**
+     * Get minimum buffer size (fixed the sign conversion error)
+     */
+    FwSizeType getMinBufferSize() const { 
+        return static_cast<FwSizeType>(m_handle.msgSize); 
+    }
 
   private:
     RTEMSQueueHandle m_handle;  ///< RTEMS queue handle
