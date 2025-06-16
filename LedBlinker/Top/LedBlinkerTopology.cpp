@@ -157,7 +157,7 @@ void configureTopology() {
     // tlmSend.setPacketList(LedBlinkerPacketsPkts, LedBlinkerPacketsIgnore, 1);
 
     if (!comQueueConfigured) {
-        configurationTable.entries[0].depth = 2000;
+        configurationTable.entries[0].depth = 100;
         configurationTable.entries[0].priority = 1;
         configurationTable.entries[1].depth = 500;
         configurationTable.entries[1].priority = 2;
