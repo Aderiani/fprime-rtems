@@ -16,7 +16,7 @@ RtemsRawTime::RtemsRawTime() {
 }
 
 RawTimeInterface::Status RtemsRawTime::now() {
-    if (clock_gettime(CLOCK_MONOTONIC, &m_handle.time) != 0) {
+    if (clock_gettime(CLOCK_REALTIME, &m_handle.time) != 0) {
         return Status::OTHER_ERROR;
     }
     return RawTimeInterface::Status::OP_OK;

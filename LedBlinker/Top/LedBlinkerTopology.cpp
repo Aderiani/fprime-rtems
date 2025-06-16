@@ -155,26 +155,28 @@ void configureTopology() {
     // Note: Uncomment when using Svc:TlmPacketizer
     // tlmSend.setPacketList(LedBlinkerPacketsPkts, LedBlinkerPacketsIgnore, 1);
 
-    // Use reasonable values that won't cause memory issues
-    configurationTable.entries[0].depth = 200;  // Events
-    configurationTable.entries[0].priority = 0;
+    configurationTable.entries[0].depth = 500;  // Events
+    configurationTable.entries[0].priority = 10;
 
     configurationTable.entries[1].depth = 500;  // Telemetry
     configurationTable.entries[1].priority = 1;
 
-    configurationTable.entries[2].depth = 100;  // File Downlink
+    configurationTable.entries[2].depth = 200;  // File Downlink
     configurationTable.entries[2].priority = 2;
     // Command - increase depth significantly
     comQueue.configure(configurationTable, 0, mallocator);
 
-    tcpServer.configure("192.168.0.67", 50000, 0, 100, 16 * 1024);  // 16KB buffer
+    // In your topology setup
+    printf("Configuring ComQueue port 0 with depth=%lld, priority=%d\n", configurationTable.entries[0].depth,
+           configurationTable.entries[0].priority);
 
+    tcpServer.configure("192.168.0.67", 50000, 0, 100, 16 * 1024);  // 16KB buffer
 
     // Initialize GPIO driver
     if (!gpioDriver.initialize()) {
         Fw::Logger::log("[ERROR] Failed to initialize GPIO driver\n");
     }
-    
+
     // Configure LED pin (port 0 = LED7)
     gpioDriver.configurePin(0, Drv::GR740GpioDriver::GPIO_DIRECTION_OUTPUT, Fw::Logic::LOW);
 }
@@ -217,7 +219,6 @@ void setupTopology(const TopologyState& state) {
     timerDriver.initialize(TIMER_HZ);
     timerDriver.start();
     Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
-
 }
 
 void teardownTopology(const TopologyState& state) {

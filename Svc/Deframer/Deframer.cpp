@@ -142,8 +142,20 @@ void Deframer ::route(Fw::Buffer& packetBuffer) {
                 }
                 break;
             }
-            // Take no action for other packet types
+            case Fw::ComPacket::FW_PACKET_LOG: {
+                // Allocate a com buffer for the event
+                Fw::ComBuffer com;
+                // Copy the packet data into the com buffer
+                status = com.setBuff(packetData, packetSize);
+                if (status == Fw::FW_SERIALIZE_OK) {
+                    // Send to the event output port (if you have one)
+                    // Or send through the same comOut port
+                    comOut_out(0, com, 0);
+                }
+                break;
+            }
             default:
+                Fw::Logger::log("[WARNING] Unhandled packet type: %d\n", packetType);
                 break;
         }
     } else {
@@ -168,11 +180,11 @@ void Deframer ::processBuffer(Fw::Buffer& buffer) {
     // Remaining data in buffer
     FwSizeType remaining = bufferSize;
 
-    //printf("[PROTOCOL] Raw data (first 16 bytes): ");
+    // printf("[PROTOCOL] Raw data (first 16 bytes): ");
     for (int i = 0; i < 16 && i < bufferSize; i++) {
-        //printf("%02X ", bufferData[i]);
+        // printf("%02X ", bufferData[i]);
     }
-    //printf("\n");
+    // printf("\n");
 
     for (FwSizeType i = 0; i < bufferSize; ++i) {
         // If there is no data left, exit the loop
@@ -180,22 +192,22 @@ void Deframer ::processBuffer(Fw::Buffer& buffer) {
             break;
         }
 
-        //printf("[DEFRAMER-PROTOCOL] Received header: ");
+        // printf("[DEFRAMER-PROTOCOL] Received header: ");
         for (int i = 0; i < 8 && i < bufferSize; i++) {
-            //printf("%02X ", bufferData[i]);
+            // printf("%02X ", bufferData[i]);
         }
-        //printf(" | ASCII: ");
+        // printf(" | ASCII: ");
         for (int i = 0; i < 8 && i < bufferSize; i++) {
-            //printf("%c", isprint(bufferData[i]) ? bufferData[i] : '.');
+            // printf("%c", isprint(bufferData[i]) ? bufferData[i] : '.');
         }
-        //printf("\n");
-        // Compute the size of data to serialize
+        // printf("\n");
+        //  Compute the size of data to serialize
         const FwSizeType ringFreeSize = m_inRing.get_free_size();
         const FwSizeType serSize = (ringFreeSize <= remaining) ? ringFreeSize : static_cast<FwSizeType>(remaining);
         // Serialize data into the ring buffer
         const Fw::SerializeStatus status = m_inRing.serialize(&bufferData[offset], serSize);
-        //printf("[DEFRAMER-DEBUG] Added %llu bytes to ring buffer\n", serSize);
-        // If data does not fit, there is a coding error
+        // printf("[DEFRAMER-DEBUG] Added %llu bytes to ring buffer\n", serSize);
+        //  If data does not fit, there is a coding error
         FW_ASSERT(status == Fw::FW_SERIALIZE_OK, static_cast<FwAssertArgType>(status),
                   static_cast<FwAssertArgType>(offset), static_cast<FwAssertArgType>(serSize));
         // Process the data
@@ -212,7 +224,7 @@ void Deframer ::processBuffer(Fw::Buffer& buffer) {
 }
 
 void Deframer ::processRing() {
-    //printf("[DEFRAMER-DEBUG] processRing called with %llu bytes\n", m_inRing.get_allocated_size());
+    // printf("[DEFRAMER-DEBUG] processRing called with %llu bytes\n", m_inRing.get_allocated_size());
 
     FW_ASSERT(m_protocol != nullptr);
 

@@ -11,6 +11,8 @@
 #include <cstring>  // For strcmp
 
 #include <rtems.h>
+#include <rtems/rtems/clock.h>
+#include <time.h>
 // Add this for direct console output that doesn't rely on OS services
 #include <stdio.h>
 
@@ -23,8 +25,8 @@ void system_init();
 
 extern "C" {
 #include "RTEMSInit/network_init.h"
+void initialize_rtems_clock(void);
 
-// // In Main.cpp, at various points:
 // void checkResources() {
 //     rtems_resource_snapshot snapshot;
 //     rtems_resource_snapshot_take(&snapshot);
@@ -41,6 +43,8 @@ extern "C" {
 extern "C" int fprime_main(int argc, char* argv[]) {
     // Existing F' initialization code...
     Os::init();
+
+    initialize_rtems_clock();
 
     // Initialize network
     if (initialize_fprime_network() != 0) {
