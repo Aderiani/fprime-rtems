@@ -70,13 +70,13 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     volatile bool keep_running = true;
     unsigned int counter = 0;
 
-    printf("Entering F' main infinite loop with periodic timer ticks\n");
+    // printf("Entering F' main infinite loop with periodic timer ticks\n");
 
     // Critical: Don't exit the loop until explicitly told to
     while (keep_running) {
         // Print heartbeat occasionally
         if (counter % 500 == 0) {
-            printf("F' style main heartbeat: %u\n", counter / 500);
+            // printf("F' style main heartbeat: %u\n", counter / 500);
         }
         counter++;
 

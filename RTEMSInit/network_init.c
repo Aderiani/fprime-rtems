@@ -15,7 +15,7 @@
 // Reference to board initialization
 extern int board_initialize(void);
 int initialize_fprime_network(void) {
-    printf("Initializing RTEMS networking for GR740...\n");
+    // printf("Initializing RTEMS networking for GR740...\n");
 
 #ifdef RTEMS_DRVMGR_STARTUP
     printf("Using RTEMS_DRVMGR_STARTUP mode\n");
@@ -30,18 +30,18 @@ int initialize_fprime_network(void) {
     }
 
     // Initialize network directly using rtems_bsdnet_initialize_network
-    printf("Starting network stack with explicit initialization...\n");
+    // printf("Starting network stack with explicit initialization...\n");
 
 
 
-    printf("Checking if GRETH driver is available...\n");
+    // printf("Checking if GRETH driver is available...\n");
     struct drvmgr_drv *drv = drvmgr_drv_by_name("GRETH_DRV");
     if (drv == NULL) {
         printf("ERROR: GRETH driver not available in BSP\n");
         // Try forcing registration if not available
         printf("Attempting to initialize networking without GRETH driver...\n");
     } else {
-        printf("GRETH driver found, initializing network interfaces\n");
+        // printf("GRETH driver found, initializing network interfaces\n");
     }
 
 
@@ -52,14 +52,14 @@ int initialize_fprime_network(void) {
     }
 
     // Add significant delay and display network configuration
-    printf("Network initialized, waiting for interfaces...\n");
+    // printf("Network initialized, waiting for interfaces...\n");
     rtems_task_wake_after(rtems_clock_get_ticks_per_second() * 2);
 
     // Show network interfaces and routes
-    printf("NETWORK CONFIGURATION:\n");
-    rtems_bsdnet_show_inet_routes();
-    rtems_bsdnet_show_if_stats();
-    rtems_bsdnet_show_mbuf_stats();
+    // printf("NETWORK CONFIGURATION:\n");
+    // rtems_bsdnet_show_inet_routes();
+    // rtems_bsdnet_show_if_stats();
+    // rtems_bsdnet_show_mbuf_stats();
 
     return 0;
 }

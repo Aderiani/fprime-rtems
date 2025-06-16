@@ -18,7 +18,7 @@ void initialize_rtems_clock(void) {
     // Check current time first
     struct timespec current_time;
     clock_gettime(CLOCK_REALTIME, &current_time);
-    printf("RTEMS clock BEFORE set: %ld.%09ld\n", current_time.tv_sec, current_time.tv_nsec);
+    // printf("RTEMS clock BEFORE set: %ld.%09ld\n", current_time.tv_sec, current_time.tv_nsec);
     
     // Method 1: Use RTEMS Time of Day API
     rtems_time_of_day tod;
@@ -32,8 +32,8 @@ void initialize_rtems_clock(void) {
     tod.second = 0;
     tod.ticks  = 0;
     
-    printf("Setting RTEMS TOD to: %d-%02d-%02d %02d:%02d:%02d\n",
-           tod.year, tod.month, tod.day, tod.hour, tod.minute, tod.second);
+    // printf("Setting RTEMS TOD to: %d-%02d-%02d %02d:%02d:%02d\n",
+    //        tod.year, tod.month, tod.day, tod.hour, tod.minute, tod.second);
     
     rtems_status_code status = rtems_clock_set(&tod);
     
@@ -53,7 +53,7 @@ void initialize_rtems_clock(void) {
         printf("WARNING: Could not set RTEMS clock - no alternative method available\n");
         #endif
     } else {
-        printf("rtems_clock_set succeeded\n");
+        // printf("rtems_clock_set succeeded\n");
     }
     
     // Verify the time was set

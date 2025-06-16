@@ -142,16 +142,16 @@ void ComQueue::comQueueIn_handler(const FwIndexType portNum, Fw::ComBuffer& data
     // }
     // printf("\n");
 #endif
-    bool success = false;
+    // bool success = false;
     // Ensure that the port number of comQueueIn is consistent with the expectation
     FW_ASSERT(portNum >= 0 && portNum < COM_PORT_COUNT, portNum);
-    // (void)this->enqueue(portNum, QueueType::COM_QUEUE, reinterpret_cast<const U8*>(&data), sizeof(Fw::ComBuffer));
-    success = this->enqueue(portNum, QueueType::COM_QUEUE, reinterpret_cast<const U8*>(&data), sizeof(Fw::ComBuffer));
-    if (success) {
-        printf("[ComQueue] Successfully queued message on port %d\n", portNum);
-    } else {
-        printf("[ComQueue] ERROR: Failed to queue message on port %d - queue full?\n", portNum);
-    }
+    (void)this->enqueue(portNum, QueueType::COM_QUEUE, reinterpret_cast<const U8*>(&data), sizeof(Fw::ComBuffer));
+    // success = this->enqueue(portNum, QueueType::COM_QUEUE, reinterpret_cast<const U8*>(&data), sizeof(Fw::ComBuffer));
+    // if (success) {
+    //     printf("[ComQueue] Successfully queued message on port %d\n", portNum);
+    // } else {
+    //     printf("[ComQueue] ERROR: Failed to queue message on port %d - queue full?\n", portNum);
+    // }
 }
 
 void ComQueue::buffQueueIn_handler(const FwIndexType portNum, Fw::Buffer& fwBuffer) {

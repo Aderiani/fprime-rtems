@@ -107,30 +107,24 @@ void ActiveLoggerImpl::loqQueue_internalInterfaceHandler(FwEventIdType id,
                                                          const Fw::LogBuffer& args) {
     // Clear buffer
     this->m_comBuffer.resetSer();
-    
-    // CRITICAL: Add packet type descriptor FIRST
-    // The value for FW_PACKET_LOG is typically 2
-    FwPacketDescriptorType packetType = 2;  // Or Fw::ComPacket::FW_PACKET_LOG if defined
-    Fw::SerializeStatus stat = this->m_comBuffer.serialize(packetType);
-    if (stat != Fw::FW_SERIALIZE_OK) {
-        printf("[ActiveLogger] ERROR: Failed to serialize packet type\n");
-        return;
-    }
-    
+
     // Then serialize the log packet
     this->m_logPacket.setId(id);
     this->m_logPacket.setTimeTag(timeTag);
     this->m_logPacket.setLogBuffer(args);
-    stat = this->m_logPacket.serialize(this->m_comBuffer);
-    
+    this->m_logPacket.serialize(this->m_comBuffer);
+
+    // Serialize the log packet (this will add the packet type automatically)
+    Fw::SerializeStatus stat = this->m_logPacket.serialize(this->m_comBuffer);
+
     if (stat != Fw::FW_SERIALIZE_OK) {
         printf("[ActiveLogger] ERROR: Failed to serialize log packet\n");
         return;
     }
 
-    printf("[ActiveLogger] Sending event packet with type descriptor, total size=%llu\n", 
-           this->m_comBuffer.getBuffLength());
-    
+    // printf("[ActiveLogger] Sending event packet with type descriptor, total size=%llu\n",
+    //        this->m_comBuffer.getBuffLength());
+
     if (this->isConnected_PktSend_OutputPort(0)) {
         this->PktSend_out(0, this->m_comBuffer, 0);
     }
