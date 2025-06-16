@@ -30,7 +30,7 @@ RTEMSQueue::RTEMSQueue() {
     m_handle.msgSize = 0;
     memset(m_handle.name, 0, sizeof(m_handle.name));
 
-    Fw::Logger::log("RTEMSQueue: Initialized at %p\n", this);
+    // Fw::Logger::log("RTEMSQueue: Initialized at %p\n", this);
 }
 
 RTEMSQueue::~RTEMSQueue() {
@@ -51,12 +51,6 @@ QueueInterface::Status RTEMSQueue::create(const Fw::StringBase& name, FwSizeType
         return QueueInterface::Status::ALREADY_CREATED;
     }
 
-    if (msgSize > 10000) {
-        Fw::Logger::log("RTEMSQueue: WARNING - Suspiciously large msgSize %d for queue '%s', capping at 1024\n",
-                        (int)msgSize, name.toChar());
-        msgSize = 1024;  // Cap at a reasonable size
-    }
-
     // Store the ACTUAL depth and msgSize
     m_handle.depth = depth;
     m_handle.msgSize = msgSize;  
@@ -73,8 +67,8 @@ QueueInterface::Status RTEMSQueue::create(const Fw::StringBase& name, FwSizeType
 
     rtems_name queue_name = rtems_build_name(name_chars[0], name_chars[1], name_chars[2], name_chars[3]);
 
-    Fw::Logger::log("RTEMSQueue: Creating queue '%s' with depth %d, msgSize %d\n", name.toChar(), (int)depth,
-                    (int)m_handle.msgSize);
+    // Fw::Logger::log("RTEMSQueue: Creating queue '%s' with depth %d, msgSize %d\n", name.toChar(), (int)depth,
+    //                 (int)m_handle.msgSize);
 
     // PASS THE DEPTH PARAMETER TO THE RTEMS FUNCTION
     rtems_status_code status = rtems_message_queue_create(queue_name,
@@ -86,8 +80,8 @@ QueueInterface::Status RTEMSQueue::create(const Fw::StringBase& name, FwSizeType
         return QueueInterface::Status::UNKNOWN_ERROR;
     }
 
-    Fw::Logger::log("RTEMSQueue: Created queue '%s' with depth %d, msgSize %d, id=%d\n", name.toChar(), (int)depth,
-                    (int)m_handle.msgSize, m_handle.queue_id);
+    // Fw::Logger::log("RTEMSQueue: Created queue '%s' with depth %d, msgSize %d, id=%d\n", name.toChar(), (int)depth,
+    //                 (int)m_handle.msgSize, m_handle.queue_id);
 
     return QueueInterface::Status::OP_OK;
 }

@@ -42,13 +42,13 @@ SocketIpStatus TcpServerComponentImpl::configure(const char* hostname,
                                                  FwSizeType buffer_size) {
     // Use a smaller default buffer size for RTEMS
 
-    // For RTEMS, limit buffer size to avoid overwhelming the queue
-    const FwSizeType max_rtems_buffer = 1024;  // 1KB max for RTEMS
-    if (buffer_size > max_rtems_buffer) {
-        Fw::Logger::log("WARNING: Reducing buffer size from %lu to %lu for RTEMS compatibility",
-                        static_cast<unsigned long>(buffer_size), static_cast<unsigned long>(max_rtems_buffer));
-        buffer_size = max_rtems_buffer;
-    }
+    // // For RTEMS, limit buffer size to avoid overwhelming the queue
+    // const FwSizeType max_rtems_buffer = 1024;  // 1KB max for RTEMS
+    // if (buffer_size > max_rtems_buffer) {
+    //     Fw::Logger::log("WARNING: Reducing buffer size from %lu to %lu for RTEMS compatibility",
+    //                     static_cast<unsigned long>(buffer_size), static_cast<unsigned long>(max_rtems_buffer));
+    //     buffer_size = max_rtems_buffer;
+    // }
 
     FW_ASSERT(buffer_size <= std::numeric_limits<U32>::max(), static_cast<FwAssertArgType>(buffer_size));
     m_allocation_size = buffer_size;

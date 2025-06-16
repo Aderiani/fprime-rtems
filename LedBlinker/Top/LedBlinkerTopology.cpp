@@ -25,6 +25,7 @@ namespace LedBlinker {
 
 // Global variables to track simulated cycle
 static bool cycleHalt = false;
+static bool comQueueConfigured = false;
 static Fw::TimeInterval cycleInterval(1, 0);  // 1 Hz default, changed by startSimulatedCycle
 static Os::Task simulatedCycleTask;
 
@@ -155,16 +156,17 @@ void configureTopology() {
     // Note: Uncomment when using Svc:TlmPacketizer
     // tlmSend.setPacketList(LedBlinkerPacketsPkts, LedBlinkerPacketsIgnore, 1);
 
-    configurationTable.entries[0].depth = 500;  // Events
-    configurationTable.entries[0].priority = 10;
-
-    configurationTable.entries[1].depth = 500;  // Telemetry
-    configurationTable.entries[1].priority = 1;
-
-    configurationTable.entries[2].depth = 200;  // File Downlink
-    configurationTable.entries[2].priority = 2;
-    // Command - increase depth significantly
-    comQueue.configure(configurationTable, 0, mallocator);
+    if (!comQueueConfigured) {
+        configurationTable.entries[0].depth = 2000;
+        configurationTable.entries[0].priority = 1;
+        configurationTable.entries[1].depth = 500;
+        configurationTable.entries[1].priority = 2;
+        configurationTable.entries[2].depth = 200;
+        configurationTable.entries[2].priority = 3;
+        
+        comQueue.configure(configurationTable, 0, mallocator);
+        comQueueConfigured = true;
+    }
 
     // In your topology setup
     printf("Configuring ComQueue port 0 with depth=%lld, priority=%d\n", configurationTable.entries[0].depth,
@@ -192,8 +194,11 @@ bool checkAndProcessTimerTick() {
 void setupTopology(const TopologyState& state) {
     // Initialize components one by one
     initComponents(state);
+    Os::Task::delay(Fw::TimeInterval(1, 0)); 
+    
     setBaseIds();
     connectComponents();
+    Os::Task::delay(Fw::TimeInterval(1, 0)); 
 
     configComponents(state);
     // Deployment-specific component configuration. Function provided above. May be inlined, if desired.
@@ -206,7 +211,7 @@ void setupTopology(const TopologyState& state) {
     startTasks(state);
 
     // Delay before starting TCP server
-    Os::Task::delay(Fw::TimeInterval(0, 100000));  // 100ms delay
+    Os::Task::delay(Fw::TimeInterval(1, 0));
 
     // Start TCP server task
     Os::TaskString name("RTEMS_TcpServer");

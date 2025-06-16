@@ -274,7 +274,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the size of the buffer that contains a communications packet.
 #ifndef FW_COM_BUFFER_MAX_SIZE
-#define FW_COM_BUFFER_MAX_SIZE 1024 * 16
+#define FW_COM_BUFFER_MAX_SIZE 512
 #endif
 
 // Specifies the size of the buffer attached to state machine signals.
@@ -331,7 +331,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the maximum size of a string in a parameter
 #ifndef FW_PARAM_STRING_MAX_SIZE
-#define FW_PARAM_STRING_MAX_SIZE 512  //!< Max size of parameter string type
+#define FW_PARAM_STRING_MAX_SIZE 256  //!< Max size of parameter string type
 #endif
 
 // Specifies the maximum size of a file upload chunk
@@ -351,7 +351,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Define the size of the text log string buffer. Should be large enough for format string and arguments
 #ifndef FW_LOG_TEXT_BUFFER_SIZE
-#define FW_LOG_TEXT_BUFFER_SIZE 1024 *2 //!< Max size of string for text log message
+#define FW_LOG_TEXT_BUFFER_SIZE 512 //!< Max size of string for text log message
 #endif
 
 // Define if serializables have toString() method. Turning off will save code space and

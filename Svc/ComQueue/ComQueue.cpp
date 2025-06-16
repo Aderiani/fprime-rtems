@@ -55,8 +55,8 @@ void ComQueue::configure(QueueConfigurationTable queueConfig,
     this->m_allocation = nullptr;
     
         for (int i = 0; i < TOTAL_PORT_COUNT; i++) {
-        printf("[ComQueue] Configuring port %d: depth=%lld, priority=%d\n",
-               i, queueConfig.entries[i].depth, queueConfig.entries[i].priority);
+        // printf("[ComQueue] Configuring port %d: depth=%lld, priority=%d\n",
+        //        i, queueConfig.entries[i].depth, queueConfig.entries[i].priority);
         
         // Check if queue is actually allocated
         if (queueConfig.entries[i].depth != 0) {
@@ -261,74 +261,49 @@ void ComQueue::sendBuffer(Fw::Buffer& buffer) {
     // printf("[COMQUEUE] Sent Buffer and set state to WAITING\n");
 }
 
+
 void ComQueue::processQueue() {
-    // printf("[COMQUEUE] Process queue called, state=%d\n", this->m_state);
+    // Keep processing while we're in READY state
+    while (this->m_state == READY) {
+        FwIndexType priorityIndex = 0;
+        bool found = false;
+        
+        // Walk all the queues in priority order
+        for (priorityIndex = 0; priorityIndex < TOTAL_PORT_COUNT; priorityIndex++) {
+            QueueMetadata& entry = this->m_prioritizedList[priorityIndex];
+            Types::Queue& queue = this->m_queues[entry.index];
 
-    // printf("[ComQueue] ProcessQueue called, state=%s\n", m_state == READY ? "READY" : "WAITING");
+            FwSizeType queueSize = queue.getQueueSize();
+            if (queueSize == 0) {
+                continue;
+            }
 
-    FwIndexType priorityIndex = 0;
-        // Check each port
-    // for (int port = 0; port < 3; port++) {
-    //     printf("[ComQueue] Port %d: has messages=%s, priority=%d\n", 
-    //            port,
-    //            hasMessages(port) ? "YES" : "NO",
-    //            getPortPriority(port));
-    // }
-    
-    // Log which port is selected
-    // printf("[ComQueue] Selected port: %d\n", selectedPort);
-    // // Count active queues for debugging
-    // U32 nonEmptyQueues = 0;
-    // for (FwIndexType i = 0; i < TOTAL_PORT_COUNT; i++) {
-    //     if (this->m_queues[i].getQueueSize() > 0) {
-    //         nonEmptyQueues++;
-    //             printf("[COMQUEUE] Queue %u has %lu items\n", i,
-    //                    static_cast<unsigned long>(this->m_queues[i].getQueueSize()));
-    //     }
-    // }
-    // printf("[COMQUEUE] Found %u queues with data out of %u total\n", nonEmptyQueues, TOTAL_PORT_COUNT);
+            found = true;
+            
+            // Send out the message based on the type
+            if (entry.index < COM_PORT_COUNT) {
+                Fw::ComBuffer comBuffer;
+                queue.dequeue(reinterpret_cast<U8*>(&comBuffer), sizeof(comBuffer));
+                this->sendComBuffer(comBuffer);
+            } else {
+                Fw::Buffer buffer;
+                queue.dequeue(reinterpret_cast<U8*>(&buffer), sizeof(buffer));
+                this->sendBuffer(buffer);
+            }
 
-    // Walk all the queues in priority order
-    for (priorityIndex = 0; priorityIndex < TOTAL_PORT_COUNT; priorityIndex++) {
-        QueueMetadata& entry = this->m_prioritizedList[priorityIndex];
-        Types::Queue& queue = this->m_queues[entry.index];
-
-
-
-        FwSizeType queueSize = queue.getQueueSize();
-        if (queueSize == 0) {
-            continue;
+            this->m_throttle[entry.index] = false;
+            break; // Break inner loop to re-evaluate priorities
         }
-
-        // printf("[COMQUEUE] Found data in queue %u (priority %u), size: %lu\n", entry.index, entry.priority,
-        //        static_cast<unsigned long>(queueSize));
-
-        // Send out the message based on the type
-        if (entry.index < COM_PORT_COUNT) {
-            // printf("[COMQUEUE] Sending Com buffer from queue %u\n", entry.index);
-            Fw::ComBuffer comBuffer;
-            queue.dequeue(reinterpret_cast<U8*>(&comBuffer), sizeof(comBuffer));
-            // printf("[COMQUEUE] Dequeued buffer with size %lu\n", static_cast<unsigned
-            // long>(comBuffer.getBuffLength()));
-            this->sendComBuffer(comBuffer);
-        } else {
-            // printf("[COMQUEUE] Sending Buffer from queue %u\n", entry.index);
-            Fw::Buffer buffer;
-            queue.dequeue(reinterpret_cast<U8*>(&buffer), sizeof(buffer));
-            // printf("[COMQUEUE] Dequeued buffer with size %u\n", buffer.getSize());
-            this->sendBuffer(buffer);
+        
+        // If no messages found, exit
+        if (!found) {
+            break;
         }
-
-        this->m_throttle[entry.index] = false;
-
-        // printf("[COMQUEUE] Successfully sent data from queue %u\n", entry.index);
-        break;
-    }
-    // printf("[COMQUEUE] processQueue exiting, processed priorityIndex=%u\n", priorityIndex);
-
-    // Add a check after the loop
-    if (priorityIndex >= TOTAL_PORT_COUNT) {
-        // printf("[COMQUEUE] No data was sent from any queue\n");
+        
+        // If we sent a message and are now in WAITING state, exit
+        if (this->m_state == WAITING) {
+            break;
+        }
     }
 }
 }  // end namespace Svc

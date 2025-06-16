@@ -1,8 +1,8 @@
 {
   "metadata" : {
     "deploymentName" : "LedBlinker",
-    "projectVersion" : "v3.6.0-139-g7d6b1474d",
-    "frameworkVersion" : "v3.6.0-139-g7d6b1474d",
+    "projectVersion" : "v3.6.0-140-ga7ad7477c",
+    "frameworkVersion" : "v3.6.0-140-ga7ad7477c",
     "libraryVersions" : [
     ],
     "dictionarySpecVersion" : "1.0.0"
