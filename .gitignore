@@ -24,7 +24,7 @@ RemoteSystemsTempFiles
 *.hash
 .DS_Store
 *.stackdump
-Dict
+# Dict
 *.core
 
 *.gcov
@@ -58,12 +58,12 @@ core
 
 *.swp4
 
-*AppDictionary.xml
-*TopologyAppID.csv
-*TopologyAppAi_IDTableLog.txt
+# *AppDictionary.xml
+# *TopologyAppID.csv
+# *TopologyAppAi_IDTableLog.txt
 
 .vscode
-py_dict
+# py_dict
 .settings
 build-fprime-automatic*
 
@@ -75,7 +75,7 @@ build-fprime-automatic*
 /ci-Ref-logs*
 TesterBase.*
 GTestBase.*
-**/DefaultDict/serializable/*
+# **/DefaultDict/serializable/*
 
 fprime-venv
 xml

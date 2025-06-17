@@ -141,6 +141,7 @@ SocketIpStatus IpSocket::send(const SocketDescriptor& socketDescriptor, const U8
     I32 sent = 0;
     for (U32 i = 0; (i < SOCKET_MAX_ITERATIONS) && (total < size); i++) {
         errno = 0;
+
         sent = this->sendProtocol(socketDescriptor, data + total, size - total);
         if (((sent == -1) && (errno == EINTR)) || (sent == 0)) {
             continue;

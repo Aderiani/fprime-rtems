@@ -71,7 +71,12 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     unsigned int counter = 0;
 
     // printf("Entering F' main infinite loop with periodic timer ticks\n");
-
+        printf("=== Type Sizes Debug ===\n");
+    printf("Time serialized size: %u\n", Fw::Time::SERIALIZED_SIZE);
+    printf("FwPacketDescriptorType: %u\n", sizeof(FwPacketDescriptorType));
+    printf("FwEventIdType: %u\n", sizeof(FwEventIdType));
+    printf("LogSeverity: %u\n", sizeof(Fw::LogSeverity));
+    printf("=======================\n");
     // Critical: Don't exit the loop until explicitly told to
     while (keep_running) {
         // Print heartbeat occasionally

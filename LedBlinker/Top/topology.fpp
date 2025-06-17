@@ -77,7 +77,7 @@ module LedBlinker {
 
       eventLogger.PktSend -> comQueue.comQueueIn[0]
       tlmSend.PktSend -> comQueue.comQueueIn[1]
-      # fileDownlink.bufferSendOut -> comQueue.buffQueueIn[0]
+      fileDownlink.bufferSendOut -> comQueue.buffQueueIn[0]
 
       comQueue.comQueueSend -> framer.comIn
       comQueue.buffQueueSend -> framer.bufferIn

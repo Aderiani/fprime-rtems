@@ -25,8 +25,8 @@ ComStub::~ComStub() {}
 
 Drv::SendStatus ComStub::comDataIn_handler(const FwIndexType portNum, Fw::Buffer& sendBuffer) {
     // Add debug logs
-    //printf("[COMSTUB] comDataIn called: size=%u, data=%p\n", 
-        //    sendBuffer.getSize(), sendBuffer.getData());
+    // printf("[COMSTUB] comDataIn called: size=%u, data=%p\n", 
+    //        sendBuffer.getSize(), sendBuffer.getData());
     
     FW_ASSERT(!this->m_reinitialize || !this->isConnected_comStatus_OutputPort(0));
     

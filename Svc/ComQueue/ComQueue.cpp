@@ -54,17 +54,17 @@ void ComQueue::configure(QueueConfigurationTable queueConfig,
     this->m_allocationId = allocationId;
     this->m_allocation = nullptr;
     
-        for (int i = 0; i < TOTAL_PORT_COUNT; i++) {
-        // printf("[ComQueue] Configuring port %d: depth=%lld, priority=%d\n",
-        //        i, queueConfig.entries[i].depth, queueConfig.entries[i].priority);
+    // for (int i = 0; i < TOTAL_PORT_COUNT; i++) {
+    //     // printf("[ComQueue] Configuring port %d: depth=%lld, priority=%d\n",
+    //     //        i, queueConfig.entries[i].depth, queueConfig.entries[i].priority);
         
-        // Check if queue is actually allocated
-        if (queueConfig.entries[i].depth != 0) {
-            printf("[ComQueue] Port %d queue allocated successfully\n", i);
-        } else {
-            printf("[ComQueue] ERROR: Port %d queue allocation failed!\n", i);
-        }
-    }
+    //     // Check if queue is actually allocated
+    //     if (queueConfig.entries[i].depth != 0) {
+    //         printf("[ComQueue] Port %d queue allocated successfully\n", i);
+    //     } else {
+    //         printf("[ComQueue] ERROR: Port %d queue allocation failed!\n", i);
+    //     }
+    // }
     // Initializes the sorted queue metadata list in priority (sorted) order. This is accomplished by walking the
     // priority values in priority order from 0 to TOTAL_PORT_COUNT. At each priory value, the supplied queue
     // configuration table is walked and any entry matching the current priority values is used to add queue metadata to

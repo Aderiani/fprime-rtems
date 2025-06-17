@@ -122,7 +122,8 @@ void ActiveLoggerImpl::loqQueue_internalInterfaceHandler(FwEventIdType id,
         return;
     }
 
-    // printf("[ActiveLogger] Sending event packet with type descriptor, total size=%llu\n",
+    
+    // printf("[ActiveLogger] LogSeverity memory size: %u, serialized size=%llu\n", sizeof(Fw::LogSeverity::ACTIVITY_HI),
     //        this->m_comBuffer.getBuffLength());
 
     if (this->isConnected_PktSend_OutputPort(0)) {
