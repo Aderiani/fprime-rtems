@@ -70,13 +70,61 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     volatile bool keep_running = true;
     unsigned int counter = 0;
 
-    // printf("Entering F' main infinite loop with periodic timer ticks\n");
-        printf("=== Type Sizes Debug ===\n");
-    printf("Time serialized size: %u\n", Fw::Time::SERIALIZED_SIZE);
-    printf("FwPacketDescriptorType: %u\n", sizeof(FwPacketDescriptorType));
-    printf("FwEventIdType: %u\n", sizeof(FwEventIdType));
-    printf("LogSeverity: %u\n", sizeof(Fw::LogSeverity));
-    printf("=======================\n");
+    printf("\n=== Time Configuration Debug ===\n");
+    printf("Time serialized size: %d bytes\n", Fw::Time::SERIALIZED_SIZE);
+    printf("FwPacketDescriptorType: %zu bytes\n", sizeof(FwPacketDescriptorType));
+    printf("FwEventIdType: %zu bytes\n", sizeof(FwEventIdType));
+    printf("LogSeverity: %zu bytes\n", sizeof(Fw::LogSeverity));
+    
+    // Test time creation
+    Fw::Time testTime(TimeBase::TB_WORKSTATION_TIME, 0, 1750000000, 123456);
+    printf("\nTest time: base=%d, ctx=%d, sec=%u, usec=%u\n",
+           static_cast<int>(testTime.getTimeBase()), 
+           static_cast<int>(testTime.getContext()),
+           testTime.getSeconds(), 
+           testTime.getUSeconds());
+    
+    // Calculate expected event packet size
+    U32 minEventSize = sizeof(FwPacketDescriptorType) + 
+                       sizeof(FwEventIdType) + 
+                       Fw::Time::SERIALIZED_SIZE + 
+                       sizeof(I32);  // Severity as enum
+    
+    printf("\nMinimum event packet size: %u bytes\n", minEventSize);
+    printf("================================\n\n");
+
+
+        printf("\n=== Endianness Check ===\n");
+    
+    U32 testValue = 0x12345678;
+    U8* bytes = (U8*)&testValue;
+    
+    printf("Test value: 0x%08X\n", testValue);
+    printf("Byte order in memory: ");
+    for (int i = 0; i < 4; i++) {
+        printf("%02X ", bytes[i]);
+    }
+    printf("\n");
+    
+    if (bytes[0] == 0x12) {
+        printf("System is BIG-ENDIAN (correct for SPARC)\n");
+    } else if (bytes[0] == 0x78) {
+        printf("System is LITTLE-ENDIAN (unexpected for SPARC!)\n");
+    }
+    
+    // Test F' serialization
+    U8 buffer[16];
+    Fw::ExternalSerializeBuffer serBuf(buffer, sizeof(buffer));
+    serBuf.serialize(testValue);
+    
+    printf("\nF' serialized bytes: ");
+    for (U32 i = 0; i < 4; i++) {
+        printf("%02X ", buffer[i]);
+    }
+    printf("\n");
+    printf("========================\n\n");
+
+
     // Critical: Don't exit the loop until explicitly told to
     while (keep_running) {
         // Print heartbeat occasionally
@@ -86,13 +134,13 @@ extern "C" int fprime_main(int argc, char* argv[]) {
         counter++;
 
         // Generate a tick every second (approximately)
-        if (counter % 10 == 0) {  
+        if (counter % 10 == 0) {
             // printf("[MAIN] Calling LedBlinker::checkAndProcessTimerTick()\n");
             LedBlinker::checkAndProcessTimerTick();
         }
-        
+
         // Sleep for a short period
-        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 10);  
+        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 10);
     }
 
     // If we somehow exit the loop, don't exit immediately

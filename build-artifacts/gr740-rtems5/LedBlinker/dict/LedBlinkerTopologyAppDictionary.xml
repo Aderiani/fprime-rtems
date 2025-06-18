@@ -1,4 +1,4 @@
-<dictionary topology="LedBlinker" framework_version="3.6.0-143-g8d3455578" project_version="3.6.0-143-g8d3455578">
+<dictionary topology="LedBlinker" framework_version="3.6.0-144-gc8addf18b" project_version="3.6.0-144-gc8addf18b">
   <enums>
     <enum type="Fw::DeserialStatus" serialize_type="I32">
       <item name="OK" value="0" description=""/>
