@@ -47,7 +47,7 @@ void ActiveRateGroup::configure(NATIVE_INT_TYPE contexts[], NATIVE_INT_TYPE numC
 ActiveRateGroup::~ActiveRateGroup() {}
 
 void ActiveRateGroup::preamble() {
-    this->log_DIAGNOSTIC_RateGroupStarted();
+    // this->log_DIAGNOSTIC_RateGroupStarted();
 }
 
 void ActiveRateGroup::CycleIn_handler(FwIndexType portNum, Os::RawTime& cycleStart) {

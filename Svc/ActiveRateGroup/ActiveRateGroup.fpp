@@ -24,11 +24,7 @@ module Svc {
     # Events
     # ----------------------------------------------------------------------
 
-    @ Informational event that rate group has started
-    event RateGroupStarted \
-      severity diagnostic \
-      id 0 \
-      format "Rate group started."
+
 
     @ Warning event that rate group has had a cycle slip
     event RateGroupCycleSlip(

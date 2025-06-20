@@ -1,8 +1,8 @@
 {
   "metadata" : {
     "deploymentName" : "LedBlinker",
-    "projectVersion" : "v3.6.0-145-gf84fed879",
-    "frameworkVersion" : "v3.6.0-145-gf84fed879",
+    "projectVersion" : "v3.6.0-146-g569984e81",
+    "frameworkVersion" : "v3.6.0-146-g569984e81",
     "libraryVersions" : [
     ],
     "dictionarySpecVersion" : "1.0.0"
@@ -1173,13 +1173,63 @@
   ],
   "events" : [
     {
-      "name" : "LedBlinker.rateGroup3.RateGroupStarted",
-      "severity" : "DIAGNOSTIC",
+      "name" : "LedBlinker.fileManager.FileRemoveError",
+      "severity" : "WARNING_HI",
       "formalParams" : [
+        {
+          "name" : "fileName",
+          "type" : {
+            "name" : "string",
+            "kind" : "string",
+            "size" : 256
+          },
+          "ref" : false,
+          "annotation" : "The name of the file"
+        },
+        {
+          "name" : "status",
+          "type" : {
+            "name" : "U32",
+            "kind" : "integer",
+            "size" : 32,
+            "signed" : false
+          },
+          "ref" : false,
+          "annotation" : "The error status"
+        }
       ],
-      "id" : 1024,
-      "format" : "Rate group started.",
-      "annotation" : "Informational event that rate group has started"
+      "id" : 2307,
+      "format" : "Could not remove file {}, returned status {}",
+      "annotation" : "An error occurred while attempting to remove a file"
+    },
+    {
+      "name" : "LedBlinker.fileDownlink.DownlinkCanceled",
+      "severity" : "ACTIVITY_HI",
+      "formalParams" : [
+        {
+          "name" : "sourceFileName",
+          "type" : {
+            "name" : "string",
+            "kind" : "string",
+            "size" : 100
+          },
+          "ref" : false,
+          "annotation" : "The source file name"
+        },
+        {
+          "name" : "destFileName",
+          "type" : {
+            "name" : "string",
+            "kind" : "string",
+            "size" : 100
+          },
+          "ref" : false,
+          "annotation" : "The destination file name"
+        }
+      ],
+      "id" : 2051,
+      "format" : "Canceled downlink of file {} to file {}",
+      "annotation" : "The File Downlink component canceled downlink of a file"
     },
     {
       "name" : "LedBlinker.fileManager.FileMoveError",
@@ -2060,45 +2110,6 @@
       "format" : "Error writing UART device {}: {}",
       "annotation" : "UART write error",
       "throttle" : 5
-    },
-    {
-      "name" : "LedBlinker.rateGroup1.RateGroupStarted",
-      "severity" : "DIAGNOSTIC",
-      "formalParams" : [
-      ],
-      "id" : 512,
-      "format" : "Rate group started.",
-      "annotation" : "Informational event that rate group has started"
-    },
-    {
-      "name" : "LedBlinker.fileManager.FileRemoveError",
-      "severity" : "WARNING_HI",
-      "formalParams" : [
-        {
-          "name" : "fileName",
-          "type" : {
-            "name" : "string",
-            "kind" : "string",
-            "size" : 256
-          },
-          "ref" : false,
-          "annotation" : "The name of the file"
-        },
-        {
-          "name" : "status",
-          "type" : {
-            "name" : "U32",
-            "kind" : "integer",
-            "size" : 32,
-            "signed" : false
-          },
-          "ref" : false,
-          "annotation" : "The error status"
-        }
-      ],
-      "id" : 2307,
-      "format" : "Could not remove file {}, returned status {}",
-      "annotation" : "An error occurred while attempting to remove a file"
     },
     {
       "name" : "LedBlinker.fileUplink.BadChecksum",
@@ -3579,44 +3590,6 @@
       "id" : 769,
       "format" : "Rate group cycle slipped on cycle {}",
       "annotation" : "Warning event that rate group has had a cycle slip"
-    },
-    {
-      "name" : "LedBlinker.rateGroup2.RateGroupStarted",
-      "severity" : "DIAGNOSTIC",
-      "formalParams" : [
-      ],
-      "id" : 768,
-      "format" : "Rate group started.",
-      "annotation" : "Informational event that rate group has started"
-    },
-    {
-      "name" : "LedBlinker.fileDownlink.DownlinkCanceled",
-      "severity" : "ACTIVITY_HI",
-      "formalParams" : [
-        {
-          "name" : "sourceFileName",
-          "type" : {
-            "name" : "string",
-            "kind" : "string",
-            "size" : 100
-          },
-          "ref" : false,
-          "annotation" : "The source file name"
-        },
-        {
-          "name" : "destFileName",
-          "type" : {
-            "name" : "string",
-            "kind" : "string",
-            "size" : 100
-          },
-          "ref" : false,
-          "annotation" : "The destination file name"
-        }
-      ],
-      "id" : 2051,
-      "format" : "Canceled downlink of file {} to file {}",
-      "annotation" : "The File Downlink component canceled downlink of a file"
     },
     {
       "name" : "LedBlinker.fileDownlink.DownlinkPartialFail",

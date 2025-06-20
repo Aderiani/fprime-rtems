@@ -81,7 +81,7 @@ enum TopologyConstants {
     COM_DRIVER_BUFFER_SIZE = 64 * 1024,  // 64KB
     COM_DRIVER_BUFFER_COUNT = 200,       // Number of buffers for COM driver
     BUFFER_MANAGER_ID = 200,             // ID for buffer manager
-    TIMER_HZ = 1                         // Timer frequency (Hz)
+    TIMER_HZ = 10                         // Timer frequency (Hz)
 };
 
 void cycleComponentsFunc(void*) {

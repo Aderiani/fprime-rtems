@@ -47,9 +47,9 @@ module LedBlinker {
     priority 100
 
   instance comQueue: Svc.ComQueue base id 0x0700 \
-      queue size 50 \
+      queue size 800 \
       stack size Default.STACK_SIZE \
-      priority 100 \
+      priority 101 \
 
   instance fileDownlink: Svc.FileDownlink base id 0x0800 \
     queue size 30 \

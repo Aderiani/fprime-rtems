@@ -44,7 +44,7 @@ bool GR740TimerDriver::initialize(U32 timerHz) {
 
 
     m_initialized = true;
-    this->log_ACTIVITY_HI_TimerInitialized(m_timerHz);
+    // this->log_ACTIVITY_HI_TimerInitialized(m_timerHz);
     return true;
 }
 
@@ -65,7 +65,7 @@ bool GR740TimerDriver::start() {
     m_running = true;
     m_lastTickTime.now(); // Reset last tick time
     
-    this->log_ACTIVITY_HI_TimerStarted();
+    // this->log_ACTIVITY_HI_TimerStarted();
     return true;
 }
 
@@ -129,7 +129,7 @@ void GR740TimerDriver::generateTick() {
     this->CycleOut_out(0, currentTime);
     
     m_cycleCount++;
-    this->tlmWrite_TimerCycles(m_cycleCount);
+    // this->tlmWrite_TimerCycles(m_cycleCount);
     
     m_lastTickTime = currentTime;
 }

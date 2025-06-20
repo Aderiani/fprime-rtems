@@ -41,7 +41,7 @@ bool GR740GpioDriver::initialize() {
 
     // Initialize success
     m_initialized = true;
-    this->log_DIAGNOSTIC_GpioInitSuccess();
+    // this->log_DIAGNOSTIC_GpioInitSuccess();
     return true;
 }
 
@@ -124,7 +124,7 @@ GpioStatus GR740GpioDriver::gpioWrite_handler(const FwIndexType portNum, const F
     // Store current state
     m_outputState[portNum] = state;
 
-    this->log_DIAGNOSTIC_GpioPinWriteSuccess(portNum);
+    // this->log_DIAGNOSTIC_GpioPinWriteSuccess(portNum);
     return GpioStatus::OP_OK;
 }
 
@@ -205,7 +205,7 @@ bool GR740GpioDriver::configurePin(NATIVE_UINT_TYPE pin, GpioDirection direction
     // Store pin direction
     m_pinDirection[pin] = direction;
 
-    this->log_DIAGNOSTIC_GpioPinWriteSuccess(pin);
+    // this->log_DIAGNOSTIC_GpioPinWriteSuccess(pin);
     return true;
 }
 

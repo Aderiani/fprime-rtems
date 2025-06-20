@@ -1,4 +1,4 @@
-<dictionary topology="LedBlinker" framework_version="3.6.0-145-gf84fed879" project_version="3.6.0-145-gf84fed879">
+<dictionary topology="LedBlinker" framework_version="3.6.0-146-g569984e81" project_version="3.6.0-146-g569984e81">
   <enums>
     <enum type="Fw::DeserialStatus" serialize_type="I32">
       <item name="OK" value="0" description=""/>
@@ -344,24 +344,15 @@
         <arg name="errorCode" description="Error code" type="U32"/>
       </args>
     </event>
-    <event component="rateGroup1" name="RateGroupStarted" id="0x200" severity="DIAGNOSTIC" description="Informational event that rate group has started" format_string="Rate group started.">
-      <args/>
-    </event>
     <event component="rateGroup1" name="RateGroupCycleSlip" id="0x201" severity="WARNING_HI" description="Warning event that rate group has had a cycle slip" format_string="Rate group cycle slipped on cycle %u">
       <args>
         <arg name="cycle" description="The cycle where the cycle occurred" type="U32"/>
       </args>
     </event>
-    <event component="rateGroup2" name="RateGroupStarted" id="0x300" severity="DIAGNOSTIC" description="Informational event that rate group has started" format_string="Rate group started.">
-      <args/>
-    </event>
     <event component="rateGroup2" name="RateGroupCycleSlip" id="0x301" severity="WARNING_HI" description="Warning event that rate group has had a cycle slip" format_string="Rate group cycle slipped on cycle %u">
       <args>
         <arg name="cycle" description="The cycle where the cycle occurred" type="U32"/>
       </args>
-    </event>
-    <event component="rateGroup3" name="RateGroupStarted" id="0x400" severity="DIAGNOSTIC" description="Informational event that rate group has started" format_string="Rate group started.">
-      <args/>
     </event>
     <event component="rateGroup3" name="RateGroupCycleSlip" id="0x401" severity="WARNING_HI" description="Warning event that rate group has had a cycle slip" format_string="Rate group cycle slipped on cycle %u">
       <args>
