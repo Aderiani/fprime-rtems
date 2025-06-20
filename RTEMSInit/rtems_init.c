@@ -26,7 +26,7 @@ void initialize_rtems_clock(void) {
     // Set to Jan 1, 2025, 00:00:00
     tod.year   = 2025;
     tod.month  = 6;
-    tod.day    = 12;  // Adjusted to June 12, 2025
+    tod.day    = 20;  // Adjusted to June 12, 2025
     tod.hour   = 15;
     tod.minute = 38;
     tod.second = 0;

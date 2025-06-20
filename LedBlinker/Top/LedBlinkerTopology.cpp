@@ -181,13 +181,13 @@ void configureTopology() {
     gpioDriver.configurePin(0, Drv::GR740GpioDriver::GPIO_DIRECTION_OUTPUT, Fw::Logic::LOW);
 }
 
-bool checkAndProcessTimerTick() {
-    // Instead of checkTick() which might not work as expected,
-    // always generate a tick when called
-    // printf("[TICK] Manually calling timerDriver.generateTick()\n");
-    timerDriver.generateTick();
-    return true;
-}
+// bool checkAndProcessTimerTick() {
+//     // Instead of checkTick() which might not work as expected,
+//     // always generate a tick when called
+//     // printf("[TICK] Manually calling timerDriver.generateTick()\n");
+//     timerDriver.generateTick();
+//     return true;
+// }
 
 void setupTopology(const TopologyState& state) {
     // Initialize components one by one

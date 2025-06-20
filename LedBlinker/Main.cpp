@@ -1,156 +1,71 @@
-// ======================================================================
-// \title  Main.cpp
-// \brief Main program for F' application
-// ======================================================================
-
 #include <signal.h>
+#include <cstdlib>
 #include <Fw/Logger/Logger.hpp>
 #include <LedBlinker/Top/LedBlinkerTopology.hpp>
 #include <Os/Os.hpp>
-#include <cstdlib>  // For atoi
-#include <cstring>  // For strcmp
-
 #include <rtems.h>
 #include <rtems/rtems/clock.h>
-#include <time.h>
-// Add this for direct console output that doesn't rely on OS services
 #include <stdio.h>
-
-// External network initialization functions (optional, only for RTEMS)
-#ifdef __rtems__
-extern "C" {
-void system_init();
-}
-#endif
 
 extern "C" {
 #include "RTEMSInit/network_init.h"
 void initialize_rtems_clock(void);
-
-// void checkResources() {
-//     rtems_resource_snapshot snapshot;
-//     rtems_resource_snapshot_take(&snapshot);
-
-//     printf("RTEMS Resources: Tasks: %d/%d, Semaphores: %d/%d\n", snapshot.tasks_count, CONFIGURE_MAXIMUM_TASKS,
-//            snapshot.semaphores_count, CONFIGURE_MAXIMUM_SEMAPHORES);
-// }
 }
 
-// static void signalHandler(int signum) {
-//     LedBlinker::stopSimulatedCycle();
-// }
+static void signalHandler(int signum) {
+    Fw::Logger::log("Main: Received signal %d, initiating shutdown\n", signum);
+    LedBlinker::TopologyState inputs;
+    inputs.hostname = "192.168.0.67";
+    inputs.port = 50000;
+    LedBlinker::teardownTopology(inputs);
+    exit(0);
+}
 
 extern "C" int fprime_main(int argc, char* argv[]) {
-    // Existing F' initialization code...
+    // Initialize OS
     Os::init();
+    Fw::Logger::log("Main: OS initialized\n");
 
+    // Initialize RTEMS clock
     initialize_rtems_clock();
+    Fw::Logger::log("Main: RTEMS clock initialized\n");
 
     // Initialize network
     if (initialize_fprime_network() != 0) {
-        printf("Failed to initialize network\n");
-        // return -1;
+        Fw::Logger::log("Main: Failed to initialize network\n");
+        return -1;
     }
-
-    LedBlinker::TopologyState inputs;
-
-    inputs.hostname = "192.168.0.67";
-    inputs.port = 50000;  // Default port
+    Fw::Logger::log("Main: Network initialized\n");
 
     // Setup topology
+    LedBlinker::TopologyState inputs;
+    inputs.hostname = "192.168.0.67";
+    inputs.port = 50000;
 
     LedBlinker::setupTopology(inputs);
+    Fw::Logger::log("Main: Topology setup complete\n");
 
-    // // Setup program shutdown via Ctrl-C
-    // signal(SIGINT, signalHandler);
-    // signal(SIGTERM, signalHandler);
-    // (void)printf("Hit Ctrl-C to quit\n");
+    // Setup signal handlers for graceful shutdown
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
+    Fw::Logger::log("Main: Signal handlers installed, hit Ctrl-C to quit\n");
 
-    // In LedBlinker/Main.cpp main loop:
+    // Diagnostic loop to verify system health
     volatile bool keep_running = true;
     unsigned int counter = 0;
-
-    printf("\n=== Time Configuration Debug ===\n");
-    printf("Time serialized size: %d bytes\n", Fw::Time::SERIALIZED_SIZE);
-    printf("FwPacketDescriptorType: %zu bytes\n", sizeof(FwPacketDescriptorType));
-    printf("FwEventIdType: %zu bytes\n", sizeof(FwEventIdType));
-    printf("LogSeverity: %zu bytes\n", sizeof(Fw::LogSeverity));
-    
-    // Test time creation
-    Fw::Time testTime(TimeBase::TB_WORKSTATION_TIME, 0, 1750000000, 123456);
-    printf("\nTest time: base=%d, ctx=%d, sec=%u, usec=%u\n",
-           static_cast<int>(testTime.getTimeBase()), 
-           static_cast<int>(testTime.getContext()),
-           testTime.getSeconds(), 
-           testTime.getUSeconds());
-    
-    // Calculate expected event packet size
-    U32 minEventSize = sizeof(FwPacketDescriptorType) + 
-                       sizeof(FwEventIdType) + 
-                       Fw::Time::SERIALIZED_SIZE + 
-                       sizeof(I32);  // Severity as enum
-    
-    printf("\nMinimum event packet size: %u bytes\n", minEventSize);
-    printf("================================\n\n");
-
-
-        printf("\n=== Endianness Check ===\n");
-    
-    U32 testValue = 0x12345678;
-    U8* bytes = (U8*)&testValue;
-    
-    printf("Test value: 0x%08X\n", testValue);
-    printf("Byte order in memory: ");
-    for (int i = 0; i < 4; i++) {
-        printf("%02X ", bytes[i]);
-    }
-    printf("\n");
-    
-    if (bytes[0] == 0x12) {
-        printf("System is BIG-ENDIAN (correct for SPARC)\n");
-    } else if (bytes[0] == 0x78) {
-        printf("System is LITTLE-ENDIAN (unexpected for SPARC!)\n");
-    }
-    
-    // Test F' serialization
-    U8 buffer[16];
-    Fw::ExternalSerializeBuffer serBuf(buffer, sizeof(buffer));
-    serBuf.serialize(testValue);
-    
-    printf("\nF' serialized bytes: ");
-    for (U32 i = 0; i < 4; i++) {
-        printf("%02X ", buffer[i]);
-    }
-    printf("\n");
-    printf("========================\n\n");
-
-
-    // Critical: Don't exit the loop until explicitly told to
-    while (keep_running) {
-        // Print heartbeat occasionally
-        if (counter % 500 == 0) {
-            // printf("F' style main heartbeat: %u\n", counter / 500);
-        }
+    while (keep_running && counter < 50) { // Run for ~5s
+        Fw::Logger::log("Main: Heartbeat %u, checking system health\n", counter);
+        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 10); // 100ms
         counter++;
-
-        // Generate a tick every second (approximately)
-        if (counter % 10 == 0) {
-            // printf("[MAIN] Calling LedBlinker::checkAndProcessTimerTick()\n");
-            LedBlinker::checkAndProcessTimerTick();
-        }
-
-        // Sleep for a short period
-        rtems_task_wake_after(rtems_clock_get_ticks_per_second() / 10);
     }
 
-    // If we somehow exit the loop, don't exit immediately
-    printf("Main loop exited, suspending main task\n");
-    rtems_task_suspend(RTEMS_SELF);  // Keep the task alive
+    // Suspend main task
+    Fw::Logger::log("Main: Suspending main task, system running\n");
+    rtems_task_suspend(RTEMS_SELF);
 
-    // We should never reach here
-    printf("Tearing down topology");
+    // Should never reach here
+    Fw::Logger::log("Main: Tearing down topology\n");
     LedBlinker::teardownTopology(inputs);
-    printf("Topology teardown complete");
-
+    Fw::Logger::log("Main: Topology teardown complete\n");
     return 0;
 }
