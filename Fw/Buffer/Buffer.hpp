@@ -14,6 +14,7 @@
 
 #include <FpConfig.hpp>
 #include <Fw/Types/Serializable.hpp>
+#include <Fw/Cfg/SerIds.hpp>
 #if FW_SERIALIZABLE_TO_STRING
     #include <Fw/Types/StringType.hpp>
     #ifdef BUILD_UT
@@ -47,7 +48,7 @@ public:
         SERIALIZED_SIZE = sizeof(U32) + sizeof(U32) + sizeof(U8*), //!< Size of Fw::Buffer when serialized
         NO_CONTEXT = 0xFFFFFFFF //!< Value representing no context
     };
-
+    static constexpr U32 TYPE_ID = FW_TYPEID_BUFF;
     //! Construct a buffer with no context nor data
     //!
     //! Constructs a buffer setting the context to the default no-context value of 0xffffffff. In addition, the size

@@ -75,55 +75,40 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // printf("FwPacketDescriptorType: %zu bytes\n", sizeof(FwPacketDescriptorType));
     // printf("FwEventIdType: %zu bytes\n", sizeof(FwEventIdType));
     // printf("LogSeverity: %zu bytes\n", sizeof(Fw::LogSeverity));
-    
+
     // // Test time creation
     // Fw::Time testTime(TimeBase::TB_WORKSTATION_TIME, 0, 1750000000, 123456);
-    // printf("\nTest time: base=%d, ctx=%d, sec=%u, usec=%u\n",
-    //        static_cast<int>(testTime.getTimeBase()), 
-    //        static_cast<int>(testTime.getContext()),
-    //        testTime.getSeconds(), 
-    //        testTime.getUSeconds());
-    
+    // printf("\nTest time: base=%d, ctx=%d, sec=%u, usec=%u\n", static_cast<int>(testTime.getTimeBase()),
+    //        static_cast<int>(testTime.getContext()), testTime.getSeconds(), testTime.getUSeconds());
+
     // // Calculate expected event packet size
-    // U32 minEventSize = sizeof(FwPacketDescriptorType) + 
-    //                    sizeof(FwEventIdType) + 
-    //                    Fw::Time::SERIALIZED_SIZE + 
+    // U32 minEventSize = sizeof(FwPacketDescriptorType) + sizeof(FwEventIdType) + Fw::Time::SERIALIZED_SIZE +
     //                    sizeof(I32);  // Severity as enum
-    
+
     // printf("\nMinimum event packet size: %u bytes\n", minEventSize);
     // printf("================================\n\n");
 
+    // printf("\n=== Endianness Check ===\n");
 
-    //     printf("\n=== Endianness Check ===\n");
-    
-    // U32 testValue = 0x12345678;
-    // U8* bytes = (U8*)&testValue;
-    
-    // printf("Test value: 0x%08X\n", testValue);
-    // printf("Byte order in memory: ");
-    // for (int i = 0; i < 4; i++) {
-    //     printf("%02X ", bytes[i]);
-    // }
-    // printf("\n");
-    
-    // if (bytes[0] == 0x12) {
-    //     printf("System is BIG-ENDIAN (correct for SPARC)\n");
-    // } else if (bytes[0] == 0x78) {
+    // // Endianness check
+
+    // uint32_t test = 0x01020304;
+    // uint8_t* bytes = (uint8_t*)&test;
+
+    // printf("Endianness check:\n");
+    // printf("uint32_t value: 0x%08X\n", test);
+    // printf("Byte order: %02X %02X %02X %02X\n", bytes[0], bytes[1], bytes[2], bytes[3]);
+
+    // if (bytes[0] == 0x01) {
+    //     printf("System is BIG-ENDIAN (SPARC expected)\n");
+    // } else if (bytes[0] == 0x04) {
     //     printf("System is LITTLE-ENDIAN (unexpected for SPARC!)\n");
     // }
-    
-    // // Test F' serialization
-    // U8 buffer[16];
-    // Fw::ExternalSerializeBuffer serBuf(buffer, sizeof(buffer));
-    // serBuf.serialize(testValue);
-    
-    // printf("\nF' serialized bytes: ");
-    // for (U32 i = 0; i < 4; i++) {
-    //     printf("%02X ", buffer[i]);
-    // }
-    // printf("\n");
-    // printf("========================\n\n");
+    printf("FwTimeBaseStoreType size: %d bytes\n", sizeof(FwTimeBaseStoreType));
+    printf("FwTimeContextStoreType size: %d bytes\n", sizeof(FwTimeContextStoreType));
 
+
+    // printf("========================\n\n");
 
     // Critical: Don't exit the loop until explicitly told to
     while (keep_running) {

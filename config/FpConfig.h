@@ -56,8 +56,8 @@ typedef PlatformQueuePriorityType FwQueuePriorityType;
 #define PRI_FwQueuePriorityType PRI_PlatformQueuePriorityType
 
 // The type used to serialize a size value
-typedef U16 FwSizeStoreType;
-#define PRI_FwSizeStoreType PRIu16
+typedef U32 FwSizeStoreType;
+#define PRI_FwSizeStoreType PRIu32
 
 // The type used to serialize a C++ enumeration constant
 // FPP enumerations are serialized according to their representation types
@@ -76,8 +76,8 @@ typedef enum {
 #define FW_CONTEXT_DONT_CARE 0xFF  //!< Don't care value for time contexts in sequences
 
 // The type used to serialize a time base value
-typedef U16 FwTimeBaseStoreType;
-#define PRI_FwTimeBaseStoreType PRIu16
+typedef U8 FwTimeBaseStoreType;
+#define PRI_FwTimeBaseStoreType PRIu8
 
 // The type used to serialize a time context value
 typedef U8 FwTimeContextStoreType;
@@ -211,7 +211,7 @@ typedef FwIndexType FwQueueSizeType;
 
 #ifndef FW_SERIALIZATION_TYPE_ID
 #define FW_SERIALIZATION_TYPE_ID \
-    0  //!< Indicates if type id is stored when type is serialized. (More storage, but more type safety)
+    1  //!< Indicates if type id is stored when type is serialized. (More storage, but more type safety)
 #endif
 
 // Number of bytes to use for serialization IDs. More
@@ -251,7 +251,7 @@ typedef FwIndexType FwQueueSizeType;
 // When dumping the contents of the registry, this specifies the size of the buffer used to store object names. Should
 // be >= FW_OBJ_NAME_BUFFER_SIZE.
 #ifndef FW_OBJ_SIMPLE_REG_BUFF_SIZE
-#define FW_OBJ_SIMPLE_REG_BUFF_SIZE 1024 *2 //!< Size of object registry dump string
+#define FW_OBJ_SIMPLE_REG_BUFF_SIZE 1024 //!< Size of object registry dump string
 #endif
 #endif
 
@@ -300,7 +300,7 @@ typedef FwIndexType FwQueueSizeType;
 // Setting the below to zero will disable the check at the cost of not detecting commands that
 // are too large.
 #ifndef FW_CMD_CHECK_RESIDUAL
-#define FW_CMD_CHECK_RESIDUAL 1  //!< Check for leftover command bytes
+#define FW_CMD_CHECK_RESIDUAL  1 //!< Check for leftover command bytes
 #endif
 
 // Specifies the size of the buffer that contains the serialized log arguments.
@@ -311,7 +311,7 @@ typedef FwIndexType FwQueueSizeType;
 // Specifies the maximum size of a string in a log event
 // Note: This constant truncates file names in assertion failure event reports
 #ifndef FW_LOG_STRING_MAX_SIZE
-#define FW_LOG_STRING_MAX_SIZE 200  //!< Max size of log string parameter type
+#define FW_LOG_STRING_MAX_SIZE 500  //!< Max size of log string parameter type
 #endif
 
 // Specifies the size of the buffer that contains the serialized telemetry value.
@@ -321,7 +321,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the maximum size of a string in a telemetry channel
 #ifndef FW_TLM_STRING_MAX_SIZE
-#define FW_TLM_STRING_MAX_SIZE 40  //!< Max size of channelized telemetry string type
+#define FW_TLM_STRING_MAX_SIZE 256  //!< Max size of channelized telemetry string type
 #endif
 
 // Specifies the size of the buffer that contains the serialized parameter value.
