@@ -56,8 +56,8 @@ typedef PlatformQueuePriorityType FwQueuePriorityType;
 #define PRI_FwQueuePriorityType PRI_PlatformQueuePriorityType
 
 // The type used to serialize a size value
-typedef U32 FwSizeStoreType;
-#define PRI_FwSizeStoreType PRIu32
+typedef U16 FwSizeStoreType;
+#define PRI_FwSizeStoreType PRIu16
 
 // The type used to serialize a C++ enumeration constant
 // FPP enumerations are serialized according to their representation types
@@ -76,8 +76,8 @@ typedef enum {
 #define FW_CONTEXT_DONT_CARE 0xFF  //!< Don't care value for time contexts in sequences
 
 // The type used to serialize a time base value
-typedef U8 FwTimeBaseStoreType;
-#define PRI_FwTimeBaseStoreType PRIu8
+typedef U16 FwTimeBaseStoreType;
+#define PRI_FwTimeBaseStoreType PRIu16
 
 // The type used to serialize a time context value
 typedef U8 FwTimeContextStoreType;
@@ -211,7 +211,7 @@ typedef FwIndexType FwQueueSizeType;
 
 #ifndef FW_SERIALIZATION_TYPE_ID
 #define FW_SERIALIZATION_TYPE_ID \
-    1  //!< Indicates if type id is stored when type is serialized. (More storage, but more type safety)
+    0  //!< Indicates if type id is stored when type is serialized. (More storage, but more type safety)
 #endif
 
 // Number of bytes to use for serialization IDs. More
@@ -362,7 +362,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Some settings to enable AMPCS compatibility. This breaks regular ISF GUI compatibility
 #ifndef FW_AMPCS_COMPATIBLE
-#define FW_AMPCS_COMPATIBLE 1  //!< Whether or not JPL AMPCS ground system support is enabled.
+#define FW_AMPCS_COMPATIBLE 0 //!< Whether or not JPL AMPCS ground system support is enabled.
 #endif
 
 // These settings configure whether or not the timebase and context values for the Fw::Time
@@ -459,25 +459,14 @@ typedef FwSizeStoreType FwBuffSizeType;
  */
 
 
-
-
-// Use PolyDB as needed for your system
-#define FW_OBJECT_TO_STRING 1
-#define FW_OBJECT_NAMES 1
-
-#ifdef TGT_OS_TYPE_RTEMS
-#undef FW_PORT_SERIALIZATION
-#define FW_PORT_SERIALIZATION 1
-#endif
-
 // If using file system, set appropriate macros for RTEMS
 #define RTEMS_FS 1
 
 
-#define FW_COMPONENT_QUEUE_MISMATCH_BEHAVIOR 1  // 0=assert, 1=log warning, 2=ignore
-#define FW_QUEUE_BUFFER_SIZE_SAFETY_MARGIN 256 
+// #define FW_COMPONENT_QUEUE_MISMATCH_BEHAVIOR 1  // 0=assert, 1=log warning, 2=ignore
+// #define FW_QUEUE_BUFFER_SIZE_SAFETY_MARGIN 256 
 
-// Include the platform types
-#include <PlatformTypes.h>
+// // Include the platform types
+// #include <PlatformTypes.h>
 
 
