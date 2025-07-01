@@ -373,7 +373,7 @@ typedef FwIndexType FwQueueSizeType;
 #endif
 
 #ifndef FW_USE_TIME_CONTEXT
-#define FW_USE_TIME_CONTEXT 0  //!< Whether or not to serialize the time context
+#define FW_USE_TIME_CONTEXT 1  //!< Whether or not to serialize the time context
 #endif
 
 // Configuration for Fw::String
