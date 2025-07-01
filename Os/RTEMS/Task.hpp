@@ -2,11 +2,25 @@
 // \title Os/RTEMS/Task.hpp
 // \brief RTEMS implementation for Os::Task, header and test definitions
 // ======================================================================
-#include <Os/Task.hpp>
-#include <rtems.h>
-
 #ifndef OS_RTEMS_TASK_HPP
 #define OS_RTEMS_TASK_HPP
+
+#include <Os/Task.hpp>
+
+// Fix for missing flsl in RTEMS SMP headers
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifndef flsl
+static inline int flsl(long value) {
+    return value ? (sizeof(long) * 8) - __builtin_clzl(value) : 0;
+}
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+#include <rtems.h>
 
 namespace Os {
 namespace RTEMS {
@@ -42,6 +56,10 @@ class RTEMSTask : public TaskInterface {
     void resume() override;
     Status _delay(Fw::TimeInterval interval) override;
     TaskHandle* getHandle() override;
+    
+    // Add these method declarations
+    Status setCpuAffinity(int cpu_num);
+    static void printCpuStats();
 
   private:
     RTEMSTaskHandle m_handle;  //!< RTEMS task handle

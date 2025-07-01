@@ -2,6 +2,10 @@
 #define IFNAMSIZ IF_NAMESIZE  // For compatibility with older versions of RTEMS
 #endif
 
+#ifndef flsl
+#define flsl(x) __builtin_flsl(x)
+#endif
+
 #include "network_init.h"
 #include <errno.h>
 #include <grlib/network_interface_add.h>  // For ethernet_config

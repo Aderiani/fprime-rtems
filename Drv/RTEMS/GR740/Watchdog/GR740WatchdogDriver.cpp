@@ -1,13 +1,13 @@
 // GR740WatchdogDriver.cpp
 #include <Drv/RTEMS/GR740/Watchdog/GR740WatchdogDriver.hpp>
 #include <Fw/Logger/Logger.hpp>
-
-extern "C" {
 #include <bsp.h>
 #include <bsp/watchdog.h>
 #include <rtems.h>  // For RTEMS functions
-#include <leon.h>  // For watchdog functions
-}
+
+// extern "C" {
+// #include <leon.h>  // For watchdog functions
+// }
 
 namespace Drv {
 

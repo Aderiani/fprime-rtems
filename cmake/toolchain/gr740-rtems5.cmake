@@ -26,7 +26,7 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE
 
 # Path to your RTEMS installation
 set(RTEMS_PATH "/opt/rtems/rcc-1.3.2-gcc" CACHE PATH "RTEMS installation path")
-set(RTEMS_BSP "gr740" CACHE STRING "RTEMS BSP")
+set(RTEMS_BSP "gr740_smp" CACHE STRING "RTEMS BSP")
 # Check toolchain directory exists
 if(NOT EXISTS "${RTEMS_PATH}")
     message(FATAL_ERROR "RTEMS toolchain not found at ${RTEMS_PATH}.")
@@ -105,8 +105,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -faligned-new")
 
 # Add RTEMS pthread support
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -qbsp=gr740")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qbsp=gr740")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -qbsp=gr740_smp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -qbsp=gr740_smp")
 
 # Linker flags for RTEMS
 set(RTEMS_LDFLAGS "-Wl,--gc-sections -Wl,--wrap=printf -Wl,--wrap=puts -Wl,--wrap=putchar")

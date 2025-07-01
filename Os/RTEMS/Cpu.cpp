@@ -16,8 +16,15 @@ namespace RTEMS {
 namespace Cpu {
 
 CpuInterface::Status RtemsCpu::_getCount(FwSizeType& cpu_count) {
-    // Use rtems_get_processor_count(), suppressing deprecation warning
+    #ifdef RTEMS_SMP
+    // Use the non-deprecated API
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     cpu_count = static_cast<FwSizeType>(rtems_get_processor_count());
+    #pragma GCC diagnostic pop
+    #else
+    cpu_count = 1;  // Single processor system
+    #endif
     return CpuInterface::Status::OP_OK;
 }
 

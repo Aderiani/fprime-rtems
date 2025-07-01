@@ -15,6 +15,8 @@
 #include <Os/Mutex.hpp>
 #include <Os/Task.hpp>
 #include "LedBlinkerTopology.hpp"
+#include "SmpConfig.hpp"
+
 
 // Include generated topology headers
 #include <Fw/Types/MallocAllocator.hpp>
@@ -144,7 +146,6 @@ void configureTopology() {
     prmDb.configure("PrmDb.dat");
 
     // Set default parameters before reading from file
-    U32 defaultBlinkInterval = 1;
 
     // Then try to read from file
     prmDb.readParamFile();
@@ -222,6 +223,8 @@ void setupTopology(const TopologyState& state) {
     timerDriver.initialize(TIMER_HZ);
     timerDriver.start();
     // Fw::Logger::log("Hardware timer started at %u Hz", TIMER_HZ);
+
+    SmpConfig::configureComponentAffinity();
 }
 
 void teardownTopology(const TopologyState& state) {
