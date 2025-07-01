@@ -121,7 +121,7 @@ SocketIpStatus TcpServerSocket::startup(SocketDescriptor& socketDescriptor) {
 
     char addrStr[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(address.sin_addr), addrStr, INET_ADDRSTRLEN);
-    Fw::Logger::log("Listening for single client at %s:%hu\n", addrStr, ntohs(address.sin_port));
+    // Fw::Logger::log("Listening for single client at %s:%hu\n", addrStr, ntohs(address.sin_port));
 
     FW_ASSERT(serverFd != -1);
     socketDescriptor.serverFd = serverFd;
@@ -190,7 +190,7 @@ SocketIpStatus TcpServerSocket::openProtocol(SocketDescriptor& socketDescriptor)
 
     char clientIp[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &clientAddr.sin_addr, clientIp, INET_ADDRSTRLEN);
-    Fw::Logger::log("Accepted client from %s:%hu\n", clientIp, ntohs(clientAddr.sin_port));
+    // Fw::Logger::log("Accepted client from %s:%hu\n", clientIp, ntohs(clientAddr.sin_port));
     socketDescriptor.fd = clientFd;
     return SOCK_SUCCESS;
 }

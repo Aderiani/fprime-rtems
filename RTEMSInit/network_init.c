@@ -18,7 +18,7 @@ int initialize_fprime_network(void) {
     // printf("Initializing RTEMS networking for GR740...\n");
 
 #ifdef RTEMS_DRVMGR_STARTUP
-    printf("Using RTEMS_DRVMGR_STARTUP mode\n");
+    // printf("Using RTEMS_DRVMGR_STARTUP mode\n");
 #else
     printf("WARNING: RTEMS_DRVMGR_STARTUP not defined\n");
 #endif

@@ -42,7 +42,7 @@ int board_initialize(void) {
     // printf("Manually registering GRLIB root bus\n");
     ambapp_grlib_root_register(&grlib_bus_config);
     #else
-    printf("Using RTEMS_DRVMGR_STARTUP, driver resources defined but registration handled by BSP\n");
+    // printf("Using RTEMS_DRVMGR_STARTUP, driver resources defined but registration handled by BSP\n");
     #endif
     
     // Print registered devices 

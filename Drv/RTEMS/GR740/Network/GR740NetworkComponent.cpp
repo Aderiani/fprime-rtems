@@ -101,7 +101,6 @@ void GR740NetworkComponent::START_NETWORK_cmdHandler(
     m_bsdnetConfig.tcp_rx_buf_size = 8192;
 
     // Initialize the network stack
-    this->log_ACTIVITY_HI_NetworkInitSuccessful(useDhcp, ipAddress, netmask); // Log intent
     int status = rtems_bsdnet_initialize_network();
     if (status != 0) {
         this->log_WARNING_HI_NetworkInitFailed(status);

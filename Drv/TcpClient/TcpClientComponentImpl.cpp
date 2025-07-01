@@ -82,7 +82,7 @@ SocketIpStatus TcpClientComponentImpl::startup() {
             // Port was already set in configure()
             
             // Log connection - using proper logging method
-            Fw::Logger::log(m_hostname_str.toChar(), m_port);
+            // Fw::Logger::log(m_hostname_str.toChar(), m_port);
         }
         return status;
     }

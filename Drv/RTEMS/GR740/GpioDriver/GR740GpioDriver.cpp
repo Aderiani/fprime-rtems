@@ -252,7 +252,7 @@ GpioStatus GR740GpioDriver::gpioRead_handler(const FwIndexType portNum, Fw::Logi
     // Read pin value
     state = (*data_reg & pin_mask) ? Fw::Logic::HIGH : Fw::Logic::LOW;
 
-    this->log_DIAGNOSTIC_GpioPinReadSuccess(portNum);
+    // this->log_DIAGNOSTIC_GpioPinReadSuccess(portNum);
     return GpioStatus::OP_OK;
 }
 

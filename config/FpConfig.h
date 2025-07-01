@@ -200,13 +200,8 @@ typedef FwIndexType FwQueueSizeType;
 #endif
 
 
-// And modify it to conditionally enable serialization for components that need it:
-#ifdef TGT_OS_TYPE_RTEMS
-  // For RTEMS, generally disable serialization
-  #define FW_PORT_SERIALIZATION 1
-#else
-  // For other platforms, enable serialization by default
-  #define FW_PORT_SERIALIZATION 1
+#ifndef FW_PORT_SERIALIZATION
+#define FW_PORT_SERIALIZATION 1
 #endif
 
 #ifndef FW_SERIALIZATION_TYPE_ID
@@ -279,7 +274,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the size of the buffer attached to state machine signals.
 #ifndef FW_SM_SIGNAL_BUFFER_MAX_SIZE
-#define FW_SM_SIGNAL_BUFFER_MAX_SIZE 256  // Not to exceed size of NATIVE_UINT_TYPE
+#define FW_SM_SIGNAL_BUFFER_MAX_SIZE 128  // Not to exceed size of NATIVE_UINT_TYPE
 #endif
 
 // Specifies the size of the buffer that contains the serialized command arguments.
@@ -300,7 +295,7 @@ typedef FwIndexType FwQueueSizeType;
 // Setting the below to zero will disable the check at the cost of not detecting commands that
 // are too large.
 #ifndef FW_CMD_CHECK_RESIDUAL
-#define FW_CMD_CHECK_RESIDUAL  1 //!< Check for leftover command bytes
+#define FW_CMD_CHECK_RESIDUAL 1  //!< Check for leftover command bytes
 #endif
 
 // Specifies the size of the buffer that contains the serialized log arguments.
@@ -311,7 +306,7 @@ typedef FwIndexType FwQueueSizeType;
 // Specifies the maximum size of a string in a log event
 // Note: This constant truncates file names in assertion failure event reports
 #ifndef FW_LOG_STRING_MAX_SIZE
-#define FW_LOG_STRING_MAX_SIZE 500  //!< Max size of log string parameter type
+#define FW_LOG_STRING_MAX_SIZE 200  //!< Max size of log string parameter type
 #endif
 
 // Specifies the size of the buffer that contains the serialized telemetry value.
@@ -321,7 +316,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the maximum size of a string in a telemetry channel
 #ifndef FW_TLM_STRING_MAX_SIZE
-#define FW_TLM_STRING_MAX_SIZE 256  //!< Max size of channelized telemetry string type
+#define FW_TLM_STRING_MAX_SIZE 40  //!< Max size of channelized telemetry string type
 #endif
 
 // Specifies the size of the buffer that contains the serialized parameter value.
@@ -331,7 +326,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the maximum size of a string in a parameter
 #ifndef FW_PARAM_STRING_MAX_SIZE
-#define FW_PARAM_STRING_MAX_SIZE 256  //!< Max size of parameter string type
+#define FW_PARAM_STRING_MAX_SIZE 40  //!< Max size of parameter string type
 #endif
 
 // Specifies the maximum size of a file upload chunk
@@ -341,7 +336,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Specifies the maximum size of a string in an interface call
 #ifndef FW_INTERNAL_INTERFACE_STRING_MAX_SIZE
-#define FW_INTERNAL_INTERFACE_STRING_MAX_SIZE 2*1024  //!< Max size of interface string parameter type
+#define FW_INTERNAL_INTERFACE_STRING_MAX_SIZE 1024  //!< Max size of interface string parameter type
 #endif
 
 // enables text logging of events as well as data logging. Adds a second logging port for text output.
@@ -351,7 +346,7 @@ typedef FwIndexType FwQueueSizeType;
 
 // Define the size of the text log string buffer. Should be large enough for format string and arguments
 #ifndef FW_LOG_TEXT_BUFFER_SIZE
-#define FW_LOG_TEXT_BUFFER_SIZE 512 //!< Max size of string for text log message
+#define FW_LOG_TEXT_BUFFER_SIZE 256  //!< Max size of string for text log message
 #endif
 
 // Define if serializables have toString() method. Turning off will save code space and
@@ -362,14 +357,14 @@ typedef FwIndexType FwQueueSizeType;
 
 // Some settings to enable AMPCS compatibility. This breaks regular ISF GUI compatibility
 #ifndef FW_AMPCS_COMPATIBLE
-#define FW_AMPCS_COMPATIBLE 1 //!< Whether or not JPL AMPCS ground system support is enabled.
+#define FW_AMPCS_COMPATIBLE 0  //!< Whether or not JPL AMPCS ground system support is enabled.
 #endif
 
 // These settings configure whether or not the timebase and context values for the Fw::Time
 // class are used. Some systems may not use or need those fields
 
 #ifndef FW_USE_TIME_BASE
-#define FW_USE_TIME_BASE 0  //!< Whether or not to use the time base
+#define FW_USE_TIME_BASE 1  //!< Whether or not to use the time base
 #endif
 
 #ifndef FW_USE_TIME_CONTEXT
@@ -379,24 +374,24 @@ typedef FwIndexType FwQueueSizeType;
 // Configuration for Fw::String
 
 #ifndef FW_FIXED_LENGTH_STRING_SIZE
-#define FW_FIXED_LENGTH_STRING_SIZE 512  //!< Character array size for Fw::String
+#define FW_FIXED_LENGTH_STRING_SIZE 256  //!< Character array size for Fw::String
 #endif
 
 // OS configuration
 #ifndef FW_CONSOLE_HANDLE_MAX_SIZE
-#define FW_CONSOLE_HANDLE_MAX_SIZE 512  //!< Maximum size of a handle for OS queues
+#define FW_CONSOLE_HANDLE_MAX_SIZE 24  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_TASK_HANDLE_MAX_SIZE
-#define FW_TASK_HANDLE_MAX_SIZE 512  //!< Maximum size of a handle for OS queues
+#define FW_TASK_HANDLE_MAX_SIZE 24  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_FILE_HANDLE_MAX_SIZE
-#define FW_FILE_HANDLE_MAX_SIZE 512  //!< Maximum size of a handle for OS queues
+#define FW_FILE_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_MUTEX_HANDLE_MAX_SIZE
-#define FW_MUTEX_HANDLE_MAX_SIZE 10* 1024  //!< Maximum size of a handle for OS queues
+#define FW_MUTEX_HANDLE_MAX_SIZE 1024  //!< Maximum size of a handle for OS queues
 #endif
 
 #ifndef FW_QUEUE_HANDLE_MAX_SIZE
@@ -404,19 +399,19 @@ typedef FwIndexType FwQueueSizeType;
 #endif
 
 #ifndef FW_DIRECTORY_HANDLE_MAX_SIZE
-#define FW_DIRECTORY_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
+#define FW_DIRECTORY_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
 #endif
 
 #ifndef FW_FILESYSTEM_HANDLE_MAX_SIZE
-#define FW_FILESYSTEM_HANDLE_MAX_SIZE 128  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
+#define FW_FILESYSTEM_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS resources (files, queues, locks, etc.)
 #endif
 
 #ifndef FW_RAW_TIME_HANDLE_MAX_SIZE
-#define FW_RAW_TIME_HANDLE_MAX_SIZE 256  //!< Maximum size of a handle for OS::RawTime objects
+#define FW_RAW_TIME_HANDLE_MAX_SIZE 24  //!< Maximum size of a handle for OS::RawTime objects
 #endif
 
 #ifndef FW_RAW_TIME_SERIALIZATION_MAX_SIZE
-#define FW_RAW_TIME_SERIALIZATION_MAX_SIZE 16  //!< Maximum allowed serialization size for Os::RawTime objects
+#define FW_RAW_TIME_SERIALIZATION_MAX_SIZE 8  //!< Maximum allowed serialization size for Os::RawTime objects
 #endif
 
 #ifndef FW_CONDITION_VARIABLE_HANDLE_MAX_SIZE
@@ -424,15 +419,15 @@ typedef FwIndexType FwQueueSizeType;
 #endif
 
 #ifndef FW_CPU_HANDLE_MAX_SIZE
-#define FW_CPU_HANDLE_MAX_SIZE 32  //!< Maximum size of a handle for OS cpu
+#define FW_CPU_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS cpu
 #endif
 
 #ifndef FW_MEMORY_HANDLE_MAX_SIZE
-#define FW_MEMORY_HANDLE_MAX_SIZE 32  //!< Maximum size of a handle for OS memory
+#define FW_MEMORY_HANDLE_MAX_SIZE 16  //!< Maximum size of a handle for OS memory
 #endif
 
 #ifndef FW_HANDLE_ALIGNMENT
-#define FW_HANDLE_ALIGNMENT 16  //!< Alignment of handle storage
+#define FW_HANDLE_ALIGNMENT 8  //!< Alignment of handle storage
 #endif
 
 // Note: One buffer of this size will be stack-allocated during certain OSAL operations e.g. when copying a file

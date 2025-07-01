@@ -83,20 +83,22 @@ module Drv {
       useDhcp: bool @< Whether DHCP was used
       ipAddress: string size 20 @< IP address assigned or configured
       netmask: string size 20 @< Netmask assigned or configured
-    ) severity activity high format "Network initialized successfully: DHCP={} IP={} Netmask={}"
+    ) severity activity high \
+    id 0 \
+     format "Network initialized successfully: DHCP={} IP={} Netmask={}"
 
     @ Network initialization failed event
     event NetworkInitFailed(
       errorCode: I32 @< Error code from initialization
-    ) severity warning high format "Network initialization failed with error code {}"
+    ) severity warning high id 1 format "Network initialization failed with error code {}"
 
     @ Network reset event
-    event NetworkReset() severity activity high format "Network reset initiated"
+    event NetworkReset() severity activity high id 2 format "Network reset initiated"
 
     @ Network reset result event
     event NetworkResetResult(
       success: bool @< Whether reset was successful
-    ) severity activity high format "Network reset completed with status: {}"
+    ) severity activity high id 3 format "Network reset completed with status: {}"
 
     # ----------------------------------------------------------------------
     # Telemetry

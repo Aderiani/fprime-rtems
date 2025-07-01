@@ -104,8 +104,8 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // } else if (bytes[0] == 0x04) {
     //     printf("System is LITTLE-ENDIAN (unexpected for SPARC!)\n");
     // }
-    printf("FwTimeBaseStoreType size: %d bytes\n", sizeof(FwTimeBaseStoreType));
-    printf("FwTimeContextStoreType size: %d bytes\n", sizeof(FwTimeContextStoreType));
+    // printf("FwTimeBaseStoreType size: %d bytes\n", sizeof(FwTimeBaseStoreType));
+    // printf("FwTimeContextStoreType size: %d bytes\n", sizeof(FwTimeContextStoreType));
 
 
     // printf("========================\n\n");
