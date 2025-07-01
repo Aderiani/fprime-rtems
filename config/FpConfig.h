@@ -362,18 +362,18 @@ typedef FwIndexType FwQueueSizeType;
 
 // Some settings to enable AMPCS compatibility. This breaks regular ISF GUI compatibility
 #ifndef FW_AMPCS_COMPATIBLE
-#define FW_AMPCS_COMPATIBLE 0 //!< Whether or not JPL AMPCS ground system support is enabled.
+#define FW_AMPCS_COMPATIBLE 1 //!< Whether or not JPL AMPCS ground system support is enabled.
 #endif
 
 // These settings configure whether or not the timebase and context values for the Fw::Time
 // class are used. Some systems may not use or need those fields
 
 #ifndef FW_USE_TIME_BASE
-#define FW_USE_TIME_BASE 1  //!< Whether or not to use the time base
+#define FW_USE_TIME_BASE 0  //!< Whether or not to use the time base
 #endif
 
 #ifndef FW_USE_TIME_CONTEXT
-#define FW_USE_TIME_CONTEXT 1  //!< Whether or not to serialize the time context
+#define FW_USE_TIME_CONTEXT 0  //!< Whether or not to serialize the time context
 #endif
 
 // Configuration for Fw::String
