@@ -6,7 +6,6 @@
 #define OS_RTEMS_MEMORY_HPP
 
 #include <Os/Memory.hpp>
-#include <malloc.h>
 
 namespace Os {
 namespace RTEMS {
@@ -27,7 +26,7 @@ class RtemsMemory : public MemoryInterface {
     //! Copy constructor - deleted
     RtemsMemory(const RtemsMemory& other) = delete;
 
-    //! Assignment operator - deleted (this fixes the error)
+    //! Assignment operator - deleted
     RtemsMemory& operator=(const MemoryInterface& other) override = delete;
 
     //! Get memory usage
