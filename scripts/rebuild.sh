@@ -10,17 +10,12 @@ fprime-util generate -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain/gr740-rtems5.cmake
 
 cd Components/Led
 
-fprime-util build
+fprime-util build -j4
 
 cd ../../
 
-cd LedBlinker
 
-fprime-util build
-
-cd ..
-
-fprime-util build
+fprime-util build -j4
 
 wait
 

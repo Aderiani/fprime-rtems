@@ -40,6 +40,13 @@ void initialize_rtems_clock(void);
 //     LedBlinker::stopSimulatedCycle();
 // }
 
+// Test function to add to your main deployment or a test component
+#include <Os/Cpu.hpp>
+#include <cstdio>
+
+
+
+
 extern "C" int fprime_main(int argc, char* argv[]) {
     // Existing F' initialization code...
     Os::init();
@@ -106,7 +113,6 @@ extern "C" int fprime_main(int argc, char* argv[]) {
     // }
     // printf("FwTimeBaseStoreType size: %d bytes\n", sizeof(FwTimeBaseStoreType));
     // printf("FwTimeContextStoreType size: %d bytes\n", sizeof(FwTimeContextStoreType));
-
 
     // printf("========================\n\n");
 

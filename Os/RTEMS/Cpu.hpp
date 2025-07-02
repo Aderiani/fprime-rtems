@@ -8,6 +8,20 @@
 #include <Os/Cpu.hpp>
 #include <rtems.h>
 #include <rtems/rtems/tasks.h>
+#include <rtems/score/timestamp.h>
+
+// Include the maximum processors configuration
+#ifndef CONFIGURE_MAXIMUM_PROCESSORS
+#define CONFIGURE_MAXIMUM_PROCESSORS 4
+#endif
+
+// Define CPU usage data structure if not available in RTEMS
+#ifndef RTEMS_CPU_USAGE_DATA_DEFINED
+typedef struct {
+    Timestamp_Control total_elapsed_time;
+    Timestamp_Control idle_elapsed_time;
+} rtems_cpu_usage_data;
+#endif
 
 namespace Os {
 namespace RTEMS {
@@ -28,7 +42,7 @@ class RtemsCpu : public CpuInterface {
     //! Copy constructor - deleted
     RtemsCpu(const RtemsCpu& other) = delete;
 
-    //! Assignment operator - deleted (this fixes the error)
+    //! Assignment operator - deleted
     RtemsCpu& operator=(const CpuInterface& other) override = delete;
 
     //! Get CPU count
