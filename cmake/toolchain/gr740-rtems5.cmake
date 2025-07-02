@@ -60,7 +60,7 @@ set(ISA_FLAG "-mcpu=leon3")
 set(COMMON_FLAGS "-g ${ISA_FLAG}")
 
 # Define compile flags
-set(DEF_FLAGS "-DTGT_OS_TYPE_RTEMS -D__rtems__")
+set(DEF_FLAGS "-DTGT_OS_TYPE_RTEMS -D__rtems__ -DRTEMS_SMP -DRTEMS_VERBOSE")
 set(C_CXX_FLAGS "-O2 -ffunction-sections -fdata-sections -Wall")
 
 set(C_FLAGS "-Wmissing-prototypes -Wimplicit-function-declaration -Wstrict-prototypes -Wnested-externs")

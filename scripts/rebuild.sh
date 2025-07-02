@@ -10,12 +10,12 @@ fprime-util generate -DCMAKE_TOOLCHAIN_FILE=./cmake/toolchain/gr740-rtems5.cmake
 
 cd Components/Led
 
-fprime-util build -j4
+fprime-util build -j8
 
 cd ../../
 
 
-fprime-util build -j4
+fprime-util build -j8
 
 wait
 

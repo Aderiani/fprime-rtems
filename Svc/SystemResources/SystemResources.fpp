@@ -73,41 +73,42 @@ module Svc {
     @ System's CPU Percentage
     telemetry CPU_03: F32 id 8 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_04: F32 id 9 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_04: F32 id 9 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_05: F32 id 10 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_05: F32 id 10 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_06: F32 id 11 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_06: F32 id 11 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_07: F32 id 12 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_07: F32 id 12 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_08: F32 id 13 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_08: F32 id 13 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_09: F32 id 14 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_09: F32 id 14 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_10: F32 id 15 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_10: F32 id 15 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_11: F32 id 16 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_11: F32 id 16 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_12: F32 id 17 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_12: F32 id 17 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_13: F32 id 18 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_13: F32 id 18 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_14: F32 id 19 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_14: F32 id 19 format "{.2f} percent"
 
-    @ System's CPU Percentage
-    telemetry CPU_15: F32 id 20 format "{.2f} percent"
+    # @ System's CPU Percentage
+    # telemetry CPU_15: F32 id 20 format "{.2f} percent"
+
 
   }
 

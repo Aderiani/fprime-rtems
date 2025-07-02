@@ -71,7 +71,7 @@ class SystemResources final : public SystemResourcesComponentBase {
     F32 compCpuUtil(Os::Cpu::Ticks current, Os::Cpu::Ticks previous);
 
 
-    static const U32 CPU_COUNT = 16; /*!< Maximum number of CPUs to report as telemetry */
+    static const U32 CPU_COUNT = 4; /*!< Maximum number of CPUs to report as telemetry */
 
     cpuTlmFunc m_cpu_tlm_functions[CPU_COUNT];       /*!< Function pointer to specific CPU telemetry */
     FwSizeType m_cpu_count;                          /*!< Number of CPUs used by the system */

@@ -39,6 +39,13 @@ target_include_directories(RTEMSInit PRIVATE
     ${RTEMS_BSP_PATH}/lib/include/networking
 )
 
+if(EXISTS "${CMAKE_SYSROOT}/lib/include/grlib/l4stat.h")
+    target_compile_definitions(Os_Cpu_RTEMS PRIVATE HAS_L4STAT_DRIVER)
+    message(STATUS "L4STAT support enabled")
+else()
+    message(WARNING "L4STAT header not found, using CPU estimation")
+endif()
+
 # Disable warnings that would cause issues with RTEMS headers
 target_compile_options(RTEMSInit PRIVATE
     -Wno-pedantic

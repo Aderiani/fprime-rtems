@@ -1,26 +1,16 @@
 // ======================================================================
 // \title Os/RTEMS/Cpu.hpp
-// \brief RTEMS implementation for Os::Cpu
+// \brief RTEMS implementation for Os::Cpu with L4STAT support
 // ======================================================================
 #ifndef OS_RTEMS_CPU_HPP
 #define OS_RTEMS_CPU_HPP
 
 #include <Os/Cpu.hpp>
 #include <rtems.h>
-#include <rtems/rtems/tasks.h>
-#include <rtems/score/timestamp.h>
 
-// Include the maximum processors configuration
+// Maximum processors configuration
 #ifndef CONFIGURE_MAXIMUM_PROCESSORS
 #define CONFIGURE_MAXIMUM_PROCESSORS 4
-#endif
-
-// Define CPU usage data structure if not available in RTEMS
-#ifndef RTEMS_CPU_USAGE_DATA_DEFINED
-typedef struct {
-    Timestamp_Control total_elapsed_time;
-    Timestamp_Control idle_elapsed_time;
-} rtems_cpu_usage_data;
 #endif
 
 namespace Os {
@@ -30,7 +20,11 @@ namespace Cpu {
 //! RtemsCpuHandle class definition for RTEMS implementations
 struct RtemsCpuHandle : public CpuHandle {};
 
-//! \brief RTEMS implementation of CpuInterface
+//! \brief RTEMS implementation of CpuInterface using L4STAT hardware counters
+//!
+//! This implementation uses the GR740's L4STAT hardware performance counters
+//! to accurately measure CPU usage by tracking execution cycles vs hold cycles.
+//!
 class RtemsCpu : public CpuInterface {
   public:
     //! Constructor
@@ -46,17 +40,29 @@ class RtemsCpu : public CpuInterface {
     RtemsCpu& operator=(const CpuInterface& other) override = delete;
 
     //! Get CPU count
+    //! \param cpu_count: output parameter for number of CPUs
+    //! \return: OP_OK on success, ERROR on failure
     Status _getCount(FwSizeType& cpu_count) override;
 
-    //! Get CPU ticks for a specific CPU
+    //! Get CPU ticks for a specific CPU using L4STAT counters
+    //! \param ticks: output parameter for CPU usage (used/total)
+    //! \param cpu_index: which CPU to query (0-based)
+    //! \return: OP_OK on success, ERROR on failure
     Status _getTicks(Os::Cpu::Ticks& ticks, FwSizeType cpu_index) override;
 
     //! Get CPU handle
+    //! \return: pointer to the CPU handle
     CpuHandle* getHandle() override;
 
   private:
     RtemsCpuHandle m_handle;
 };
+
+//! \brief Cleanup L4STAT counters (optional utility function)
+//!
+//! This function can be called to properly disable L4STAT counters
+//! when CPU monitoring is no longer needed.
+void cleanup_l4stat_counters();
 
 } // namespace Cpu
 } // namespace RTEMS

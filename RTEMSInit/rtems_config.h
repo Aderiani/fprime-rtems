@@ -5,6 +5,12 @@
 #define LEON3  // Needed for some GRLIB configurations
 
 #define RTEMS_DRVMGR_STARTUP 1
+#define HAS_L4STAT_DRIVER 1
+#define DEBUG_L4STAT 1
+#define USE_L4STAT 1
+#define RTEMS_SMP 1
+#define RTEMS_SMP_MAXIMUM_PROCESSORS 4
+
 
 #define CONFIGURE_EXECUTIVE_RAM_SIZE	(200*1024*1024) // 200 MB
 #define CONFIGURE_INIT_TASK_STACK_SIZE (4*1024 * 1024) // 4MB
@@ -94,6 +100,10 @@ extern int fprime_main(int argc, char* argv[]); // Declare the LedBlinker entry 
 
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
+
+
+#define CONFIGURE_DRIVER_AMBAPP_GAISLER_L4STAT
+
 
 
 

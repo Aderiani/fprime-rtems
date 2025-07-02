@@ -43,18 +43,18 @@ SystemResources ::SystemResources(const char* const compName)
     m_cpu_tlm_functions[1] = &Svc::SystemResources::tlmWrite_CPU_01;
     m_cpu_tlm_functions[2] = &Svc::SystemResources::tlmWrite_CPU_02;
     m_cpu_tlm_functions[3] = &Svc::SystemResources::tlmWrite_CPU_03;
-    m_cpu_tlm_functions[4] = &Svc::SystemResources::tlmWrite_CPU_04;
-    m_cpu_tlm_functions[5] = &Svc::SystemResources::tlmWrite_CPU_05;
-    m_cpu_tlm_functions[6] = &Svc::SystemResources::tlmWrite_CPU_06;
-    m_cpu_tlm_functions[7] = &Svc::SystemResources::tlmWrite_CPU_07;
-    m_cpu_tlm_functions[8] = &Svc::SystemResources::tlmWrite_CPU_08;
-    m_cpu_tlm_functions[9] = &Svc::SystemResources::tlmWrite_CPU_09;
-    m_cpu_tlm_functions[10] = &Svc::SystemResources::tlmWrite_CPU_10;
-    m_cpu_tlm_functions[11] = &Svc::SystemResources::tlmWrite_CPU_11;
-    m_cpu_tlm_functions[12] = &Svc::SystemResources::tlmWrite_CPU_12;
-    m_cpu_tlm_functions[13] = &Svc::SystemResources::tlmWrite_CPU_13;
-    m_cpu_tlm_functions[14] = &Svc::SystemResources::tlmWrite_CPU_14;
-    m_cpu_tlm_functions[15] = &Svc::SystemResources::tlmWrite_CPU_15;
+    // m_cpu_tlm_functions[4] = &Svc::SystemResources::tlmWrite_CPU_04;
+    // m_cpu_tlm_functions[5] = &Svc::SystemResources::tlmWrite_CPU_05;
+    // m_cpu_tlm_functions[6] = &Svc::SystemResources::tlmWrite_CPU_06;
+    // m_cpu_tlm_functions[7] = &Svc::SystemResources::tlmWrite_CPU_07;
+    // m_cpu_tlm_functions[8] = &Svc::SystemResources::tlmWrite_CPU_08;
+    // m_cpu_tlm_functions[9] = &Svc::SystemResources::tlmWrite_CPU_09;
+    // m_cpu_tlm_functions[10] = &Svc::SystemResources::tlmWrite_CPU_10;
+    // m_cpu_tlm_functions[11] = &Svc::SystemResources::tlmWrite_CPU_11;
+    // m_cpu_tlm_functions[12] = &Svc::SystemResources::tlmWrite_CPU_12;
+    // m_cpu_tlm_functions[13] = &Svc::SystemResources::tlmWrite_CPU_13;
+    // m_cpu_tlm_functions[14] = &Svc::SystemResources::tlmWrite_CPU_14;
+    // m_cpu_tlm_functions[15] = &Svc::SystemResources::tlmWrite_CPU_15;
 }
 
 SystemResources ::~SystemResources() {}
