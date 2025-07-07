@@ -96,23 +96,26 @@ F32 SystemResources::compCpuUtil(Os::Cpu::Ticks current, Os::Cpu::Ticks previous
 
 void SystemResources::Cpu() {
     U32 count = 0;
-    F32 cpuAvg = 0;
+    F32 cpuAvg = 0.0f;
 
     for (U32 i = 0; i < m_cpu_count && i < CPU_COUNT; i++) {
-        Os::Cpu::Status status = Os::Cpu::getTicks(m_cpu[i], i);
-        // Best-effort calculations and telemetry
+        Os::Cpu::Ticks current;
+        Os::Cpu::Status status = Os::Cpu::getTicks(current, i);
         if (status == Os::Generic::OP_OK) {
-            F32 cpuUtil = compCpuUtil(m_cpu[i], m_cpu_prev[i]);
+            F32 cpuUtil = compCpuUtil(current, m_cpu_prev[i]);
+            cpuUtil = (cpuUtil < 0.0f || cpuUtil > 100.0f || std::isnan(cpuUtil)) ? 0.0f : cpuUtil;
+
+            // Send telemetry
+            if (m_cpu_tlm_functions[i]) {
+                (this->*m_cpu_tlm_functions[i])(cpuUtil, Fw::Time());
+            }
+
+            // Store current ticks
+            m_cpu_prev[i] = current;
             cpuAvg += cpuUtil;
-
-            // Send telemetry using telemetry output table
-            FW_ASSERT(this->m_cpu_tlm_functions[i]);
-            (this->*m_cpu_tlm_functions[i])(cpuUtil, Fw::Time());
-
-            // Store cpu used and total
-            m_cpu_prev[i] = m_cpu[i];
             count++;
-        }
+        } 
+        
     }
 
     cpuAvg = (count == 0) ? 0.0f : (cpuAvg / static_cast<F32>(count));
@@ -120,9 +123,14 @@ void SystemResources::Cpu() {
 }
 
 void SystemResources::Mem() {
-    if (Os::Memory::getUsage(m_mem) == Os::Generic::OP_OK) {
+    if (Os::Memory::getUsage(m_mem) == Os::Memory::Status::OP_OK) {
         this->tlmWrite_MEMORY_TOTAL(m_mem.total / 1024);
         this->tlmWrite_MEMORY_USED(m_mem.used / 1024);
+    }
+    else {
+        // If we cannot get memory usage, set to zero
+        this->tlmWrite_MEMORY_TOTAL(0);
+        this->tlmWrite_MEMORY_USED(0);
     }
 }
 
@@ -133,6 +141,11 @@ void SystemResources::PhysMem() {
     if (Os::FileSystem::getFreeSpace("/", total, free) == Os::FileSystem::OP_OK) {
         this->tlmWrite_NON_VOLATILE_FREE(free / 1024);
         this->tlmWrite_NON_VOLATILE_TOTAL(total / 1024);
+    }
+    else {
+        // If we cannot get file system usage, set to zero
+        this->tlmWrite_NON_VOLATILE_FREE(0);
+        this->tlmWrite_NON_VOLATILE_TOTAL(0);
     }
 }
 

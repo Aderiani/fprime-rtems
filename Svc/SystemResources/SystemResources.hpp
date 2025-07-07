@@ -16,6 +16,7 @@
 #include "Svc/SystemResources/SystemResourcesComponentAc.hpp"
 #include "Os/Cpu.hpp"
 #include "Os/Memory.hpp"
+#include "Os/RTEMS/Memory.hpp"
 #include "Os/FileSystem.hpp"
 
 namespace Svc {

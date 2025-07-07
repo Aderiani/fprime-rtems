@@ -22,12 +22,12 @@ MemoryInterface::Status RtemsMemory::_getUsage(Os::Memory::Usage& memory_usage) 
     const FwSizeType configured_memory = 200 * 1024 * 1024; // 200MB as per rtems_config.h
     
     // Debug print to confirm this is being called
-    static bool first_call = true;
-    if (first_call) {
-        printf("RTEMS Memory: _getUsage called, configured for %lu MB\n", 
-               static_cast<unsigned long>(configured_memory / (1024 * 1024)));
-        first_call = false;
-    }
+    // static bool first_call = true;
+    // if (first_call) {
+    //     printf("RTEMS Memory: _getUsage called, configured for %lu MB\n", 
+    //            static_cast<unsigned long>(configured_memory / (1024 * 1024)));
+    //     first_call = false;
+    // }
     
     // Try to get heap usage from mallinfo
     struct mallinfo mi = mallinfo();
@@ -38,9 +38,9 @@ MemoryInterface::Status RtemsMemory::_getUsage(Os::Memory::Usage& memory_usage) 
         memory_usage.total = static_cast<FwSizeType>(mi.arena);       // Total heap size
         memory_usage.used = static_cast<FwSizeType>(mi.uordblks);     // Used heap size
         
-        printf("RTEMS Memory: mallinfo provided - total=%lu KB, used=%lu KB\n",
-               static_cast<unsigned long>(memory_usage.total / 1024),
-               static_cast<unsigned long>(memory_usage.used / 1024));
+        // printf("RTEMS Memory: mallinfo provided - total=%lu KB, used=%lu KB\n",
+        //        static_cast<unsigned long>(memory_usage.total / 1024),
+        //        static_cast<unsigned long>(memory_usage.used / 1024));
     } else {
         // mallinfo is stubbed (returning zeros), use fallback estimation
         memory_usage.total = configured_memory;
@@ -67,14 +67,14 @@ MemoryInterface::Status RtemsMemory::_getUsage(Os::Memory::Usage& memory_usage) 
             memory_usage.used = memory_usage.total * 9 / 10; // Cap at 90%
         }
         
-        static int debug_count = 0;
-        if (debug_count++ % 10 == 0) { // Print every 10th call
-            printf("RTEMS Memory: Using estimation - total=%lu KB, used=%lu KB (%.1f%%)\n",
-                   static_cast<unsigned long>(memory_usage.total / 1024),
-                   static_cast<unsigned long>(memory_usage.used / 1024),
-                   static_cast<float>(static_cast<double>(memory_usage.used) * 100.0 / 
-                                     static_cast<double>(memory_usage.total)));
-        }
+        // static int debug_count = 0;
+        // if (debug_count++ % 10 == 0) { // Print every 10th call
+        //     printf("RTEMS Memory: Using estimation - total=%lu KB, used=%lu KB (%.1f%%)\n",
+        //            static_cast<unsigned long>(memory_usage.total / 1024),
+        //            static_cast<unsigned long>(memory_usage.used / 1024),
+        //            static_cast<float>(static_cast<double>(memory_usage.used) * 100.0 / 
+        //                              static_cast<double>(memory_usage.total)));
+        // }
     }
     
     // Ensure values make sense
